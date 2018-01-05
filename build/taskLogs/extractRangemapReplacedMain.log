@@ -1,0 +1,152 @@
+Symbol range map extraction starting
+Processing 50 files
+startProcessing "agp\andwhat5\AGP.java" md5: 8a657e474cff92558a28c804dff276a7
+endProcessing "agp\andwhat5\AGP.java"
+
+startProcessing "agp\andwhat5\AGPTickHandler.java" md5: a9a52af8bba04919ce080c3afa304876
+endProcessing "agp\andwhat5\AGPTickHandler.java"
+
+startProcessing "agp\andwhat5\PlayerCheck.java" md5: 46c481a78c8b9c3a350dd508b475e332
+endProcessing "agp\andwhat5\PlayerCheck.java"
+
+startProcessing "agp\andwhat5\Utils.java" md5: 354d8cef80846f321f969b402208701f
+endProcessing "agp\andwhat5\Utils.java"
+
+startProcessing "agp\andwhat5\api\AgpAPI.java" md5: ce4d0e41c67bc30b0481dee6cce4bf23
+endProcessing "agp\andwhat5\api\AgpAPI.java"
+
+startProcessing "agp\andwhat5\commands\Command.java" md5: ccc1294d0e29ef191e979a9232fa4f11
+endProcessing "agp\andwhat5\commands\Command.java"
+
+startProcessing "agp\andwhat5\commands\administrative\AGPReload.java" md5: 18c0f288e088bd0f1b707fe5fba21c30
+endProcessing "agp\andwhat5\commands\administrative\AGPReload.java"
+
+startProcessing "agp\andwhat5\commands\administrative\DelBadge.java" md5: fbaccab876e4edc89835f78aef5e1167
+endProcessing "agp\andwhat5\commands\administrative\DelBadge.java"
+
+startProcessing "agp\andwhat5\commands\administrative\GiveBadge.java" md5: 356d19b5cf811a07db8c464633b14717
+endProcessing "agp\andwhat5\commands\administrative\GiveBadge.java"
+
+startProcessing "agp\andwhat5\commands\administrative\SpawnNPCLeader.java" md5: a26eb2ac57eebc2cfee956e63afbf632
+endProcessing "agp\andwhat5\commands\administrative\SpawnNPCLeader.java"
+
+startProcessing "agp\andwhat5\commands\administrative\StorageConverter.java" md5: b7eb9af88b53b173ef201b52d7453869
+endProcessing "agp\andwhat5\commands\administrative\StorageConverter.java"
+
+startProcessing "agp\andwhat5\commands\gyms\AddGym.java" md5: 6d7508279ce1f3a1e96a9f27f209a05d
+endProcessing "agp\andwhat5\commands\gyms\AddGym.java"
+
+startProcessing "agp\andwhat5\commands\gyms\CloseGym.java" md5: 7997c9fe0660dcbff70d950a51e4700e
+endProcessing "agp\andwhat5\commands\gyms\CloseGym.java"
+
+startProcessing "agp\andwhat5\commands\gyms\DeleteGym.java" md5: 9334b320019705cf95231c3bcea5669d
+endProcessing "agp\andwhat5\commands\gyms\DeleteGym.java"
+
+startProcessing "agp\andwhat5\commands\gyms\EditGym.java" md5: 574c94329fcb1385aa706695a7223947
+endProcessing "agp\andwhat5\commands\gyms\EditGym.java"
+
+startProcessing "agp\andwhat5\commands\gyms\GymList.java" md5: f633d19a917408feb24c310f45e97631
+endProcessing "agp\andwhat5\commands\gyms\GymList.java"
+
+startProcessing "agp\andwhat5\commands\gyms\OpenGym.java" md5: 1da4005391609120a4e7372e8a941e17
+endProcessing "agp\andwhat5\commands\gyms\OpenGym.java"
+
+startProcessing "agp\andwhat5\commands\gyms\SetGymWarp.java" md5: 6363317ef32b992fc70b16ae903beac8
+endProcessing "agp\andwhat5\commands\gyms\SetGymWarp.java"
+
+startProcessing "agp\andwhat5\commands\leaders\AcceptChallenge.java" md5: 84b7d3665fa92c9d23a66ccd1cf8374a
+endProcessing "agp\andwhat5\commands\leaders\AcceptChallenge.java"
+
+startProcessing "agp\andwhat5\commands\leaders\AddLeader.java" md5: 67495dff6c781beb889ebb14d35eb3a5
+endProcessing "agp\andwhat5\commands\leaders\AddLeader.java"
+
+startProcessing "agp\andwhat5\commands\leaders\DeleteLeader.java" md5: 5a8867d7cfa714d705fdb31220df2b61
+endProcessing "agp\andwhat5\commands\leaders\DeleteLeader.java"
+
+startProcessing "agp\andwhat5\commands\leaders\DenyChallenge.java" md5: b2d4b703b16c9bc21918bfdf44302ce0
+endProcessing "agp\andwhat5\commands\leaders\DenyChallenge.java"
+
+startProcessing "agp\andwhat5\commands\leaders\QueueList.java" md5: 46b34d90ddc2cd98f4440d732401d640
+endProcessing "agp\andwhat5\commands\leaders\QueueList.java"
+
+startProcessing "agp\andwhat5\commands\players\CancelChallenge.java" md5: 70b69320ca2ec5cd7d086d33d116e4fe
+endProcessing "agp\andwhat5\commands\players\CancelChallenge.java"
+
+startProcessing "agp\andwhat5\commands\players\ChallengeGym.java" md5: f171d56500acfdcd2b580299b1c5362a
+endProcessing "agp\andwhat5\commands\players\ChallengeGym.java"
+
+startProcessing "agp\andwhat5\commands\players\CheckBadges.java" md5: bfa99f37f6ceb2e6a486870d50548ea0
+endProcessing "agp\andwhat5\commands\players\CheckBadges.java"
+
+startProcessing "agp\andwhat5\commands\players\GymWarp.java" md5: f2149a607b6d66edd43ef2d79f8696ec
+endProcessing "agp\andwhat5\commands\players\GymWarp.java"
+
+startProcessing "agp\andwhat5\config\AGPConfig.java" md5: e6ffdad09d54b54e42a310ffcaf83cb8
+endProcessing "agp\andwhat5\config\AGPConfig.java"
+
+startProcessing "agp\andwhat5\config\structs\ArenaStruc.java" md5: bcbb87b7e66170729fa5eb32be1de868
+endProcessing "agp\andwhat5\config\structs\ArenaStruc.java"
+
+startProcessing "agp\andwhat5\config\structs\BadgeStruc.java" md5: 0b51bae404f6833d5e0355c60145a90b
+endProcessing "agp\andwhat5\config\structs\BadgeStruc.java"
+
+startProcessing "agp\andwhat5\config\structs\BattleStruc.java" md5: eb5197f14990b691b85d12972cea511a
+endProcessing "agp\andwhat5\config\structs\BattleStruc.java"
+
+startProcessing "agp\andwhat5\config\structs\ConfigStruc.java" md5: a431c290a02d142723441ecfccd4437e
+endProcessing "agp\andwhat5\config\structs\ConfigStruc.java"
+
+startProcessing "agp\andwhat5\config\structs\DataStruc.java" md5: f4dc3e359e998c49d0aaed86900e873f
+endProcessing "agp\andwhat5\config\structs\DataStruc.java"
+
+startProcessing "agp\andwhat5\config\structs\GymStruc.java" md5: 289b4e764da2a685d1ad978e442c4b6d
+endProcessing "agp\andwhat5\config\structs\GymStruc.java"
+
+startProcessing "agp\andwhat5\config\structs\LeaderStruc.java" md5: de2debaa564f104731b7d6a83726978c
+endProcessing "agp\andwhat5\config\structs\LeaderStruc.java"
+
+startProcessing "agp\andwhat5\config\structs\PlayerStruc.java" md5: 5677c11e7621fce15929f5e933c66b0e
+endProcessing "agp\andwhat5\config\structs\PlayerStruc.java"
+
+startProcessing "agp\andwhat5\config\structs\Vec3dStruc.java" md5: a9ccc3f421aaaa275fe908c84e723d21
+endProcessing "agp\andwhat5\config\structs\Vec3dStruc.java"
+
+startProcessing "agp\andwhat5\listeners\GymExperienceGain.java" md5: 9347ba7f0890da4e357f0c2910659812
+endProcessing "agp\andwhat5\listeners\GymExperienceGain.java"
+
+startProcessing "agp\andwhat5\listeners\GymNPCDefeatListener.java" md5: 75c0d746c81610277a5e78bac4b7d1f5
+endProcessing "agp\andwhat5\listeners\GymNPCDefeatListener.java"
+
+startProcessing "agp\andwhat5\listeners\GymPlayerDefeatListener.java" md5: 4878c86f6d7f777e35a0e007f10921d6
+endProcessing "agp\andwhat5\listeners\GymPlayerDefeatListener.java"
+
+startProcessing "agp\andwhat5\storage\Dependencies.java" md5: 1ca604c25c893aadee7eca00160fdcac
+endProcessing "agp\andwhat5\storage\Dependencies.java"
+
+startProcessing "agp\andwhat5\storage\FlatFileProvider.java" md5: b50840f21ab2b76d51ae0acc3c022140
+endProcessing "agp\andwhat5\storage\FlatFileProvider.java"
+
+startProcessing "agp\andwhat5\storage\Storage.java" md5: b7c14197aa339778991ff54ad77e9fde
+endProcessing "agp\andwhat5\storage\Storage.java"
+
+startProcessing "agp\andwhat5\storage\sql\H2Provider.java" md5: 539461e101889821e9f8125123fc9d89
+endProcessing "agp\andwhat5\storage\sql\H2Provider.java"
+
+startProcessing "agp\andwhat5\storage\sql\MySQLProvider.java" md5: 690c09e23357c3541198c804e424ecfa
+endProcessing "agp\andwhat5\storage\sql\MySQLProvider.java"
+
+startProcessing "agp\andwhat5\storage\sql\SQLDatabase.java" md5: aeb88918b74d13d1fbdd3871c49e1dcd
+endProcessing "agp\andwhat5\storage\sql\SQLDatabase.java"
+
+startProcessing "agp\andwhat5\ui\AbstractContainer.java" md5: f162c783733dad5467cdcc8474388a24
+endProcessing "agp\andwhat5\ui\AbstractContainer.java"
+
+startProcessing "agp\andwhat5\ui\EnumGUIType.java" md5: 2fbc1cc29eb19ea02547cb4a97a92403
+endProcessing "agp\andwhat5\ui\EnumGUIType.java"
+
+startProcessing "agp\andwhat5\ui\display\checkbadges\CheckBadgesContainer.java" md5: 8caca1a96888ab6425c227ae309d3160
+endProcessing "agp\andwhat5\ui\display\checkbadges\CheckBadgesContainer.java"
+
+startProcessing "agp\andwhat5\ui\display\gymlist\GymListContainer.java" md5: 7638502ab95d48fa10cafbe0152216e1
+endProcessing "agp\andwhat5\ui\display\gymlist\GymListContainer.java"
+

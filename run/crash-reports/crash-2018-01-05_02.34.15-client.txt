@@ -1,0 +1,107 @@
+---- Minecraft Crash Report ----
+// Don't be sad. I'll do better next time, I promise!
+
+Time: 1/5/18 2:34 AM
+Description: Initializing game
+
+java.lang.OutOfMemoryError: Initializing game
+	at sun.misc.Unsafe.allocateMemory(Native Method)
+	at java.nio.DirectByteBuffer.<init>(Unknown Source)
+	at java.nio.ByteBuffer.allocateDirect(Unknown Source)
+	at net.minecraft.client.renderer.GLAllocation.createDirectByteBuffer(GLAllocation.java:55)
+	at net.minecraft.client.renderer.BufferBuilder.<init>(BufferBuilder.java:42)
+	at net.minecraft.client.renderer.Tessellator.<init>(Tessellator.java:22)
+	at net.minecraft.client.renderer.Tessellator.<clinit>(Tessellator.java:12)
+	at net.minecraft.client.renderer.RenderGlobal.generateStars(RenderGlobal.java:371)
+	at net.minecraft.client.renderer.RenderGlobal.<init>(RenderGlobal.java:198)
+	at net.minecraft.client.Minecraft.init(Minecraft.java:573)
+	at net.minecraft.client.Minecraft.run(Minecraft.java:421)
+	at net.minecraft.client.main.Main.main(Main.java:118)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at net.minecraft.launchwrapper.Launch.launch(Launch.java:135)
+	at net.minecraft.launchwrapper.Launch.main(Launch.java:28)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at net.minecraftforge.gradle.GradleStartCommon.launch(GradleStartCommon.java:97)
+	at GradleStart.main(GradleStart.java:26)
+
+
+A detailed walkthrough of the error, its code path and all known details is as follows:
+---------------------------------------------------------------------------------------
+
+-- Head --
+Thread: Client thread
+Stacktrace:
+	at sun.misc.Unsafe.allocateMemory(Native Method)
+	at java.nio.DirectByteBuffer.<init>(Unknown Source)
+	at java.nio.ByteBuffer.allocateDirect(Unknown Source)
+	at net.minecraft.client.renderer.GLAllocation.createDirectByteBuffer(GLAllocation.java:55)
+	at net.minecraft.client.renderer.BufferBuilder.<init>(BufferBuilder.java:42)
+	at net.minecraft.client.renderer.Tessellator.<init>(Tessellator.java:22)
+	at net.minecraft.client.renderer.Tessellator.<clinit>(Tessellator.java:12)
+	at net.minecraft.client.renderer.RenderGlobal.generateStars(RenderGlobal.java:371)
+	at net.minecraft.client.renderer.RenderGlobal.<init>(RenderGlobal.java:198)
+	at net.minecraft.client.Minecraft.init(Minecraft.java:573)
+
+-- Initialization --
+Details:
+Stacktrace:
+	at net.minecraft.client.Minecraft.run(Minecraft.java:421)
+	at net.minecraft.client.main.Main.main(Main.java:118)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at net.minecraft.launchwrapper.Launch.launch(Launch.java:135)
+	at net.minecraft.launchwrapper.Launch.main(Launch.java:28)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at net.minecraftforge.gradle.GradleStartCommon.launch(GradleStartCommon.java:97)
+	at GradleStart.main(GradleStart.java:26)
+
+-- System Details --
+Details:
+	Minecraft Version: 1.12.2
+	Operating System: Windows 10 (amd64) version 10.0
+	Java Version: 1.8.0_111, Oracle Corporation
+	Java VM Version: Java HotSpot(TM) 64-Bit Server VM (mixed mode), Oracle Corporation
+	Memory: 358661432 bytes (342 MB) / 1502609408 bytes (1433 MB) up to 3799515136 bytes (3623 MB)
+	JVM Flags: 0 total; 
+	IntCache: cache: 0, tcache: 0, allocated: 0, tallocated: 0
+	FML: MCP 9.42 Powered by Forge 14.23.1.2555 6 mods loaded, 6 mods active
+	States: 'U' = Unloaded 'L' = Loaded 'C' = Constructed 'H' = Pre-initialized 'I' = Initialized 'J' = Post-initialized 'A' = Available 'D' = Disabled 'E' = Errored
+
+	| State | ID        | Version      | Source                                                    | Signature |
+	|:----- |:--------- |:------------ |:--------------------------------------------------------- |:--------- |
+	| UCH   | minecraft | 1.12.2       | minecraft.jar                                             | None      |
+	| UCH   | mcp       | 9.42         | minecraft.jar                                             | None      |
+	| UCH   | FML       | 8.0.99.99    | forgeSrc-1.12.2-14.23.1.2555-PROJECT(AGP Development).jar | None      |
+	| UCH   | forge     | 14.23.1.2555 | forgeSrc-1.12.2-14.23.1.2555-PROJECT(AGP Development).jar | None      |
+	| UCH   | pixelmon  | 6.0.1        | Pixelmon-1.12.2-6.0.1-universal.jar                       | None      |
+	| UCH   | agp       | 0.5.3        | bin                                                       | None      |
+
+	Loaded coremods (and transformers): 
+	GL info: ' Vendor: 'NVIDIA Corporation' Version: '4.5.0 NVIDIA 384.94' Renderer: 'GeForce GTX 860M/PCIe/SSE2'
+	Launched Version: 1.12.2
+	LWJGL: 2.9.4
+	OpenGL: GeForce GTX 860M/PCIe/SSE2 GL version 4.5.0 NVIDIA 384.94, NVIDIA Corporation
+	GL Caps: Using GL 1.3 multitexturing.
+Using GL 1.3 texture combiners.
+Using framebuffer objects because OpenGL 3.0 is supported and separate blending is supported.
+Shaders are available because OpenGL 2.1 is supported.
+VBOs are available because OpenGL 1.5 is supported.
+
+	Using VBOs: Yes
+	Is Modded: Definitely; Client brand changed to 'fml,forge'
+	Type: Client (map_client.txt)
+	Resource Packs: 
+	Current Language: English (US)
+	Profiler Position: N/A (disabled)
+	CPU: 8x Intel(R) Core(TM) i7-4710HQ CPU @ 2.50GHz

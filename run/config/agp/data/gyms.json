@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "Water",
+    "Badge": "pixelmon:rain_badge",
+    "Requirement": "null",
+    "LevelCap": 10,
+    "Money": 1000,
+    "Leaders": [],
+    "Items": [
+      "null",
+      "null"
+    ],
+    "Arenas": []
+  }
+]
