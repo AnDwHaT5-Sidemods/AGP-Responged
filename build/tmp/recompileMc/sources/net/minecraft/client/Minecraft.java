@@ -2730,7 +2730,6 @@ public class Minecraft implements IThreadListener, ISnooperInfo
 
     public static boolean isGuiEnabled()
     {
-        /** The instance of the Minecraft Client, set in the constructor. */
         return instance == null || !instance.gameSettings.hideGUI;
     }
 
@@ -2905,7 +2904,6 @@ public class Minecraft implements IThreadListener, ISnooperInfo
      */
     public static Minecraft getMinecraft()
     {
-        /** The instance of the Minecraft Client, set in the constructor. */
         return instance;
     }
 
@@ -3391,10 +3389,6 @@ public class Minecraft implements IThreadListener, ISnooperInfo
 
     public static int getDebugFPS()
     {
-        /**
-         * This is set to fpsCounter every debug screen update, and is shown on the debug screen. It's also sent as part
-         * of the usage snooping.
-         */
         return debugFPS;
     }
 

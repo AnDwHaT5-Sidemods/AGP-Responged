@@ -62,7 +62,6 @@ public class DistancePredicate
         }
         else
         {
-            /** The predicate that matches any distance. */
             return ANY;
         }
     }

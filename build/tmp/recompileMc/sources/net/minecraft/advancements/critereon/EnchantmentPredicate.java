@@ -84,7 +84,6 @@ public class EnchantmentPredicate
         }
         else
         {
-            /** The predicate that matches any set of enchantments. */
             return ANY;
         }
     }

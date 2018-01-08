@@ -64,7 +64,6 @@ public class RenderHelper
         COLOR_BUFFER.clear();
         COLOR_BUFFER.put(p_74521_0_).put(p_74521_1_).put(p_74521_2_).put(p_74521_3_);
         COLOR_BUFFER.flip();
-        /** Float buffer used to set OpenGL material colors */
         return COLOR_BUFFER;
     }
 

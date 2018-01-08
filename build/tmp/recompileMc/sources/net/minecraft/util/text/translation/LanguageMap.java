@@ -80,7 +80,6 @@ public class LanguageMap
      */
     static LanguageMap getInstance()
     {
-        /** Is the private singleton instance of StringTranslate. */
         return instance;
     }
 

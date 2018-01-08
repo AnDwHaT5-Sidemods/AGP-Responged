@@ -13,7 +13,6 @@ public class Tessellator
 
     public static Tessellator getInstance()
     {
-        /** The static instance of the Tessellator. */
         return INSTANCE;
     }
 

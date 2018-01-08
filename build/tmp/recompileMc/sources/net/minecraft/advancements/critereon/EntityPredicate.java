@@ -86,7 +86,6 @@ public class EntityPredicate
         }
         else
         {
-            /** The predicate that matches any entity. */
             return ANY;
         }
     }

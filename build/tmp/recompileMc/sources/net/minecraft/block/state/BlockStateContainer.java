@@ -521,7 +521,6 @@ public class BlockStateContainer
             //Forge Start
             public ImmutableTable<IProperty<?>, Comparable<?>, IBlockState> getPropertyValueTable()
             {
-                /** Lookup-table for IBlockState instances. This is a Table<Property, Value, State>. */
                 return propertyValueTable;
             }
 

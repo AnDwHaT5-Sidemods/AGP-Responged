@@ -515,7 +515,6 @@ public class NetworkManager extends SimpleChannelInboundHandler < Packet<? >>
 
     public Channel channel()
     {
-        /** The active channel */
         return channel;
     }
 

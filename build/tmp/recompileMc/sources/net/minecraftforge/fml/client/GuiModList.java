@@ -356,13 +356,11 @@ public class GuiModList extends GuiScreen
 
     Minecraft getMinecraftInstance()
     {
-        /** Reference to the Minecraft object. */
         return mc;
     }
 
     FontRenderer getFontRenderer()
     {
-        /** The FontRenderer used by GuiScreen */
         return fontRenderer;
     }
 

@@ -36,7 +36,6 @@ public class BiomeSwamp extends Biome
 
     public WorldGenAbstractTree getRandomTreeFeature(Random rand)
     {
-        /** The swamp tree generator. */
         return SWAMP_FEATURE;
     }
 

@@ -360,7 +360,6 @@ public class TileEntityBrewingStand extends TileEntityLockable implements ITicka
     {
         if (side == EnumFacing.UP)
         {
-            /** an array of the input slot indices */
             return SLOTS_FOR_UP;
         }
         else

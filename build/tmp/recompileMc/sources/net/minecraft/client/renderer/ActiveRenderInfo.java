@@ -98,31 +98,26 @@ public class ActiveRenderInfo
 
     public static float getRotationX()
     {
-        /** The X component of the entity's yaw rotation */
         return rotationX;
     }
 
     public static float getRotationXZ()
     {
-        /** The combined X and Z components of the entity's pitch rotation */
         return rotationXZ;
     }
 
     public static float getRotationZ()
     {
-        /** The Z component of the entity's yaw rotation */
         return rotationZ;
     }
 
     public static float getRotationYZ()
     {
-        /** The Y component (scaled along the Z axis) of the entity's pitch rotation */
         return rotationYZ;
     }
 
     public static float getRotationXY()
     {
-        /** The Y component (scaled along the X axis) of the entity's pitch rotation */
         return rotationXY;
     }
 

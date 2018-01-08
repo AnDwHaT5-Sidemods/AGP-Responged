@@ -25,7 +25,6 @@ public class ThreadedFileIOBase implements Runnable
      */
     public static ThreadedFileIOBase getThreadedIOInstance()
     {
-        /** Instance of ThreadedFileIOBase */
         return INSTANCE;
     }
 

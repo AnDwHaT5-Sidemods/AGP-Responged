@@ -60,7 +60,6 @@ public class BiomeJungle extends Biome
     {
         if (rand.nextInt(10) == 0)
         {
-            /** The big tree generator. */
             return BIG_TREE_FEATURE;
         }
         else if (rand.nextInt(2) == 0)
