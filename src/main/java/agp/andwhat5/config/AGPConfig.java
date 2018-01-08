@@ -12,6 +12,7 @@ import java.util.List;
 
 public class AGPConfig
 {
+	//TODO: Migrate to Configurate
 	private static Configuration configuration;
 
 	public static class Announcements

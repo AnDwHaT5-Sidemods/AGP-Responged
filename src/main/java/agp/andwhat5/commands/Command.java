@@ -12,6 +12,8 @@ import java.util.UUID;
 
 public abstract class Command extends CommandBase
 {
+	//TODO: Migrate to Sponge
+
 	protected String name;
 	protected String usage;
 	protected int permissionLevel;

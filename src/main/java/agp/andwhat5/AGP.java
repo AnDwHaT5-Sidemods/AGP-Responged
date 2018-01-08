@@ -99,11 +99,13 @@ public class AGP
     // Forge things
 
 	private static AGP mod;
-	private Storage storage;
+	private Storage storage; //TODO: Look into storage options.
 	private File base;
-	public static EventBus EVENT_BUS = new EventBus();
+	public static EventBus EVENT_BUS = new EventBus(); //TODO: Sponge's event handler is better.
 	
 	private Timer specialTimer;
+
+	//TODO: Move storage related actions to a dedicated class
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
