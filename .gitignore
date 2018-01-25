@@ -1,10 +1,8 @@
-.git
-.gradle
-.metadata
-bin
-build
-gradle
-libs
-run
-AGP Development_Client.launch
-AGP Development_Server.launch
+/*.launch
+/run
+/gradle
+/build
+/bin
+/.metadata
+/.gradle
+/AGP Development_Client.launch
