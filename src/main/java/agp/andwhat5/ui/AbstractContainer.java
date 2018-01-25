@@ -11,6 +11,8 @@ import java.util.List;
 
 public abstract class AbstractContainer extends Container
 {
+	//TODO: Migrate to sponge... please...
+
 	private IInventory chestInventory;
 
 	private int numRows;

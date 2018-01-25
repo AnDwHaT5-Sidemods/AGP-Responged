@@ -1218,7 +1218,6 @@ public class Block extends net.minecraftforge.registries.IForgeRegistryEntry.Imp
      */
     public float getSlipperiness(IBlockState state, IBlockAccess world, BlockPos pos, @Nullable Entity entity)
     {
-        /** Determines how much velocity is maintained while moving on top of this block */
         return slipperiness;
     }
 

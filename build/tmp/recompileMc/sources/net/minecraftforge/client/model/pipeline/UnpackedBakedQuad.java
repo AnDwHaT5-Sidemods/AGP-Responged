@@ -54,11 +54,6 @@ public class UnpackedBakedQuad extends BakedQuad
                 }
             }
         }
-        /**
-         * Joined 4 vertex records, each stores packed data according to the VertexFormat of the quad. Vanilla minecraft
-         * uses DefaultVertexFormats.BLOCK, Forge uses (usually) ITEM, use BakedQuad.getFormat() to get the correct
-         * format.
-         */
         return vertexData;
     }
 

@@ -14,6 +14,9 @@ import java.util.Optional;
  */
 public class AgpAPI
 {
+	//TODO: Make the API a separate project?
+	//TODO: This should have little implementation. Most of this is in Utils as well
+
 	public AgpAPI(){}
 
 	/**

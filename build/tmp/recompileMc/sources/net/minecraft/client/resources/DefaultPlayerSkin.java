@@ -18,7 +18,6 @@ public class DefaultPlayerSkin
      */
     public static ResourceLocation getDefaultSkinLegacy()
     {
-        /** The default skin for the Steve model. */
         return TEXTURE_STEVE;
     }
 

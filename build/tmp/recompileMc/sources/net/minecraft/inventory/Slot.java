@@ -217,7 +217,6 @@ public class Slot
      */
     public int getSlotIndex()
     {
-        /** The index of the slot in the inventory. */
         return slotIndex;
     }
 

@@ -90,7 +90,6 @@ public class MobEffectsPredicate
         }
         else
         {
-            /** The predicate that matches any set of effects. */
             return ANY;
         }
     }

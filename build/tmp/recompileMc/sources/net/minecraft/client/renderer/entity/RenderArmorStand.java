@@ -41,7 +41,6 @@ public class RenderArmorStand extends RenderLivingBase<EntityArmorStand>
      */
     protected ResourceLocation getEntityTexture(EntityArmorStand entity)
     {
-        /** A constant instance of the armor stand texture, wrapped inside a ResourceLocation wrapper. */
         return TEXTURE_ARMOR_STAND;
     }
 

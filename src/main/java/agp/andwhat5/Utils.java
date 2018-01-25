@@ -34,6 +34,9 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class Utils
 {
+    //TODO: Review and update as needed.
+    //TODO: Utility methods for Player <-> EntityPlayerMP
+
 	/**
 	 * Saves all data currently in the DataStruc.gcon field
 	 *
@@ -89,6 +92,7 @@ public class Utils
 		}
 	}
 
+	//TODO: Better inventory system
 	/**
 	 * UI main calling function, setups the UI parameters based on {@link EnumGUIType} type
 	 * and proceeds to open the UI to the player
@@ -236,6 +240,7 @@ public class Utils
 		return ps != null && ps.Badges.stream().anyMatch(bs -> bs.Gym.equals(gs.Name));
 	}
 
+	//TODO: Thanks Nick.
 	/**
 	 * We sort the available gyms in alphabetical order.
 	 * Now even though this method accepts a boolean argument,
@@ -280,7 +285,7 @@ public class Utils
 	}
 
 	/**
-	 * Did you read the method name?
+	 * Did you read the method name? No, the javadoc came first.
 	 */
 	public static void sortGyms()
 	{

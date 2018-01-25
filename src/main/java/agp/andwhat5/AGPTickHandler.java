@@ -4,6 +4,7 @@ import agp.andwhat5.config.AGPConfig;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
+//TODO: Migrate to Scheduler
 public class AGPTickHandler
 {
 	private static int ticks = 0;

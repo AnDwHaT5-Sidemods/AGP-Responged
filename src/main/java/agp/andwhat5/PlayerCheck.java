@@ -27,6 +27,8 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 
 public class PlayerCheck
 {
+    //TODO: Redesign
+
 	private static List<String> devs = Lists.newArrayList();
 	private static List<String> scrubs = Lists.newArrayList();
 
@@ -83,7 +85,6 @@ public class PlayerCheck
 	    });
 		thread.start();
 	}
-
 
 	private boolean isDeveloper(EntityPlayerMP player)
 	{
@@ -252,6 +253,8 @@ public class PlayerCheck
 		}
 		
 	}
+
+	//TODO: ???
 	
 	//The best of eastereggs.
 	int eventCounter = 0;

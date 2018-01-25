@@ -66,7 +66,6 @@ public class NBTPredicate
         }
         else
         {
-            /** The predicate that matches any NBT tag. */
             return ANY;
         }
     }

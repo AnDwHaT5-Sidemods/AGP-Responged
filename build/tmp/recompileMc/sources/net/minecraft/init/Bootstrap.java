@@ -85,7 +85,6 @@ public class Bootstrap
      */
     public static boolean isRegistered()
     {
-        /** Whether the blocks, items, etc have already been registered */
         return alreadyRegistered;
     }
 

@@ -8,6 +8,10 @@ buildscript {
     }
 }
 
+plugins {
+    id 'org.spongepowered.plugin' version '0.8.1'
+}
+
 apply plugin: 'net.minecraftforge.gradle.forge'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
@@ -28,8 +32,9 @@ minecraft {
 }
 
 dependencies {
+    compile 'org.spongepowered:spongeapi:7.1.0-SNAPSHOT'
     compile group: 'com.zaxxer', name: 'HikariCP', version: '2.5.1'
-		compile files('libs/Pixelmon-1.12.2-6.0.0-universal.jar')
+    compile fileTree(dir: 'libs', include: '*.jar')
 }
 
 processResources

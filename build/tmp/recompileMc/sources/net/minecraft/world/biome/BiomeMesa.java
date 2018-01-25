@@ -64,7 +64,6 @@ public class BiomeMesa extends Biome
 
     public WorldGenAbstractTree getRandomTreeFeature(Random rand)
     {
-        /** The tree generator. */
         return TREE_FEATURE;
     }
 
