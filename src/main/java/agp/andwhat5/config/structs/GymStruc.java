@@ -48,6 +48,9 @@ public class GymStruc
 	@Expose
 	public List<ArenaStruc> Arenas = new ArrayList<>();
 
+	@Expose
+	public String Rules = "";
+	
 	public short Status = 1;
 	
 	public Queue<String> Queue = new LinkedList<>();

@@ -1,33 +1,5 @@
 package agp.andwhat5;
 
-import agp.andwhat5.commands.administrative.*;
-import agp.andwhat5.commands.gyms.*;
-import agp.andwhat5.commands.leaders.*;
-import agp.andwhat5.commands.players.CancelChallenge;
-import agp.andwhat5.commands.players.ChallengeGym;
-import agp.andwhat5.commands.players.CheckBadges;
-import agp.andwhat5.commands.players.GymWarp;
-import agp.andwhat5.config.AGPConfig;
-import agp.andwhat5.config.structs.GymStruc;
-import agp.andwhat5.listeners.GymNPCDefeatListener;
-import agp.andwhat5.listeners.GymPlayerDefeatListener;
-import agp.andwhat5.listeners.ListenerBadgeObtained;
-import agp.andwhat5.storage.FlatFileProvider;
-import agp.andwhat5.storage.Storage;
-import agp.andwhat5.storage.sql.H2Provider;
-import agp.andwhat5.storage.sql.MySQLProvider;
-import com.google.inject.Inject;
-import com.pixelmonmod.pixelmon.Pixelmon;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.event.*;
-import net.minecraftforge.fml.common.eventhandler.EventBus;
-import org.slf4j.Logger;
-import org.spongepowered.api.plugin.Dependency;
-import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.plugin.PluginContainer;
-
 /* A file header of amazingness
  *                               ,-'   ,"",
                              / / ,-'.-'
@@ -72,14 +44,62 @@ j       | ,-"'    `    .'         `. `        `.
 import java.io.File;
 import java.util.Timer;
 
-@Plugin(id = "agp", name = "AGP", version = "0.5.3-beta", dependencies = @Dependency(id = "pixelmon"), description = "Another gym plugin.")
+import org.slf4j.Logger;
+import org.spongepowered.api.plugin.PluginContainer;
+
+import com.pixelmonmod.pixelmon.Pixelmon;
+
+import agp.andwhat5.commands.administrative.AGPReload;
+import agp.andwhat5.commands.administrative.DelBadge;
+import agp.andwhat5.commands.administrative.GiveBadge;
+import agp.andwhat5.commands.administrative.SpawnNPCLeader;
+import agp.andwhat5.commands.administrative.StorageConverter;
+import agp.andwhat5.commands.gyms.AddGym;
+import agp.andwhat5.commands.gyms.CloseGym;
+import agp.andwhat5.commands.gyms.DeleteGym;
+import agp.andwhat5.commands.gyms.EditGym;
+import agp.andwhat5.commands.gyms.GymList;
+import agp.andwhat5.commands.gyms.OpenGym;
+import agp.andwhat5.commands.gyms.SetGymWarp;
+import agp.andwhat5.commands.leaders.AcceptChallenge;
+import agp.andwhat5.commands.leaders.AddLeader;
+import agp.andwhat5.commands.leaders.DeleteLeader;
+import agp.andwhat5.commands.leaders.DenyChallenge;
+import agp.andwhat5.commands.leaders.QueueList;
+import agp.andwhat5.commands.players.CancelChallenge;
+import agp.andwhat5.commands.players.ChallengeGym;
+import agp.andwhat5.commands.players.CheckBadges;
+import agp.andwhat5.commands.players.GymRules;
+import agp.andwhat5.commands.players.GymWarp;
+import agp.andwhat5.config.AGPConfig;
+import agp.andwhat5.config.structs.GymStruc;
+import agp.andwhat5.listeners.GymNPCDefeatListener;
+import agp.andwhat5.listeners.GymPlayerDefeatListener;
+import agp.andwhat5.listeners.ListenerBadgeObtained;
+import agp.andwhat5.storage.FlatFileProvider;
+import agp.andwhat5.storage.Storage;
+import agp.andwhat5.storage.sql.H2Provider;
+import agp.andwhat5.storage.sql.MySQLProvider;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.fml.common.eventhandler.EventBus;
+
+//@Plugin(id = "agp", name = "AGP", version = "0.5.3-beta", dependencies = @Dependency(id = "pixelmon"), description = "Another gym plugin.")
+@Mod(modid="agp", name="Another Gym Plugin", version="1.0.0-Beta", dependencies = "required-after:pixelmon", acceptableRemoteVersions="*")
 public class AGP
 {
 	private static AGP plugin;
 	private static PluginContainer container;
 	private static Logger logger;
 
-	@Inject
+	/*@Inject
 	public AGP(PluginContainer container) {
 		AGP.plugin = this;
 		AGP.container = container;
@@ -94,7 +114,7 @@ public class AGP
 	}
 	public static Logger getLogger() {
 		return logger;
-	}
+	}*/
 
     // Forge things
 
@@ -182,6 +202,7 @@ public class AGP
 		event.registerServerCommand(new CloseGym());
 		event.registerServerCommand(new DelBadge());
 		event.registerServerCommand(new DeleteGym());
+		event.registerServerCommand(new GymRules());
 		event.registerServerCommand(new DeleteLeader());
 		event.registerServerCommand(new DenyChallenge());
 		event.registerServerCommand(new EditGym());

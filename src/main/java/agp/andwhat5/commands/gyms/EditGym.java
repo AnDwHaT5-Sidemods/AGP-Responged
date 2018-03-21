@@ -23,7 +23,7 @@ public class EditGym extends Command
 {
 	public EditGym()
 	{
-		super("editgym", "/editgym <gym> <name:(name) | badge:(badge) | require:(gym) | level:(level) | money:(money) | items:(item1,item2)>");
+		super("editgym", "/editgym <gym> <name:(name) | badge:(badge) | require:(gym) | rules:(rules) | level:(level) | money:(money) | items:(item1,item2)>");
 	}
 
 	@Override
@@ -39,7 +39,37 @@ public class EditGym extends Command
 			// Parse options
 			for(int i = 1; i < args.length; i++)
 			{
-				if (args[i].toLowerCase().startsWith("require:")&&!args[i].toLowerCase().equals("require:"))
+				if(args[i].toLowerCase().startsWith("rules:")&&!args[i].toLowerCase().equalsIgnoreCase("rules:"))
+				{
+					gym.Rules = "";
+					int index = 0;
+					for(String s : args)
+					{
+						if(index != 0)
+						{
+							if(s.startsWith("rules:"))
+							{
+								gym.Rules += s.split("rules:")[1] + " ";
+							}
+							else
+							{
+								gym.Rules += s + " ";
+							}
+						}
+						index++;
+					}
+					if(AGPConfig.Storage.storageType.equalsIgnoreCase("flatfile"))
+					{
+						Utils.editGym(gym);
+						AGP.getInstance().getStorage().saveData(DataStruc.gcon);
+					}
+					else
+						Utils.addGym(gym);
+					sender.sendMessage(Utils.toText("&7Successfully updated the gyms rules!", true));
+					return;
+				}
+				else
+				if (args[i].toLowerCase().startsWith("require:")&&!args[i].toLowerCase().equalsIgnoreCase("require:"))
 				{
 					if(Utils.gymExists(args[i].substring(8)))
 					{
@@ -58,7 +88,7 @@ public class EditGym extends Command
 					}
 					
 				}
-				else if (args[i].toLowerCase().startsWith("level:")&&!args[i].toLowerCase().equals("level:"))
+				else if (args[i].toLowerCase().startsWith("level:")&&!args[i].toLowerCase().equalsIgnoreCase("level:"))
 				{
 					int levelcap = Integer.valueOf(args[i].substring(6));
 					if(levelcap >= 0 && levelcap <= PixelmonConfig.maxLevel)
@@ -71,11 +101,11 @@ public class EditGym extends Command
 						sender.sendMessage(Utils.toText("&7The level you provided is out of the level cap range, &b0-"+PixelmonConfig.maxLevel+"&7!", true));
 					}
 				}
-				else if(args[i].toLowerCase().startsWith("money:")&&!args[i].toLowerCase().equals("money:")){
+				else if(args[i].toLowerCase().startsWith("money:")&&!args[i].toLowerCase().equalsIgnoreCase("money:")){
 					gym.Money = Integer.parseInt(args[i].substring(6));
 					sender.sendMessage(Utils.toText("&7Successfully changed the reward money of the &b"+gym.Name+"&7 gym to &b"+gym.Money+"&7!", true));
 				}
-				else if(args[i].toLowerCase().startsWith("name:")&&!args[i].toLowerCase().equals("name:"))
+				else if(args[i].toLowerCase().startsWith("name:")&&!args[i].toLowerCase().equalsIgnoreCase("name:"))
 				{
 					if(!Utils.gymExists(args[i].substring(5)))
 					{
@@ -87,13 +117,13 @@ public class EditGym extends Command
 						sender.sendMessage(Utils.toText("&7That gym already exists!", true));
 					}
 				}
-				else if(args[i].toLowerCase().startsWith("badge:")&&!args[i].toLowerCase().equals("badge:"))
+				else if(args[i].toLowerCase().startsWith("badge:")&&!args[i].toLowerCase().equalsIgnoreCase("badge:"))
 				{
 					gym.Badge = args[i].substring(6);
 					sender.sendMessage(Utils.toText("&7Successfully changed the badge of the &b"+gym.Name+"&7 gym to &b"+gym.Badge+"&7!", true));
 
 				}
-				else if(args[i].toLowerCase().startsWith("items:")&&!args[i].toLowerCase().equals("items:"))
+				else if(args[i].toLowerCase().startsWith("items:")&&!args[i].toLowerCase().equalsIgnoreCase("items:"))
 				{
 					if(args[i].substring(6).split(",").length == 2)
 					{
@@ -137,7 +167,7 @@ public class EditGym extends Command
 		else
 		if(args.length == 2)
 		{
-			return getListOfStringsMatchingLastWord(args, Lists.newArrayList("money:", "require:", "badge:", "name:", "items:", "level:", "rules:"));
+			return getListOfStringsMatchingLastWord(args, Lists.newArrayList("money:", "require:", "rules:", "badge:", "name:", "items:", "level:", "rules:"));
 		}
 		return null;
 	}

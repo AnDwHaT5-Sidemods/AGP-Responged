@@ -78,7 +78,8 @@ public abstract class SQLDatabase implements Storage
 						"Leaders MEDIUMTEXT, " +
 						"ArenaData MEDIUMTEXT, " +
 						"Lobby MEDIUMTEXT," +
-						"Requirement MEDIUMTEXT);"))
+						"Requirement MEDIUMTEXT," +
+						"Rules MEDIUMTEXT);"))
 				{
 					statement.executeUpdate();
 					statement.close();
@@ -273,6 +274,7 @@ public abstract class SQLDatabase implements Storage
 						gym.Name = result.getString("Gym");
 						gym.Badge = result.getString("Badge");
 						gym.Requirement = result.getString("Requirement");
+						gym.Rules = result.getString("Rules");
 						gym.LevelCap = result.getInt("LevelCap");
 						gym.Money = result.getInt("Money");
 						gym.Leaders = Lists.newArrayList(result.getString("Leaders").replace("[", "").replace("]", "")
@@ -338,7 +340,7 @@ public abstract class SQLDatabase implements Storage
 					try (PreparedStatement ps = connection
 							.prepareStatement("REPLACE INTO `" + gymTable + "` VALUES('" + gym.Name + "', '" + gym
 									.Badge +  "', '" + gym.LevelCap + "', '" + gym.Items + "', '" + gym.Money + "', '" + gym
-									.Leaders + "', '" + new Gson().toJson(gym.Arenas) + "', '" + new Gson().toJson(gym.Lobby) + "', '" + gym.Requirement +"')"))
+									.Leaders + "', '" + new Gson().toJson(gym.Arenas) + "', '" + new Gson().toJson(gym.Lobby) + "', '" + gym.Requirement + "', '" + gym.Rules + "')"))
 					{
 						ps.executeUpdate();
 						ps.close();
