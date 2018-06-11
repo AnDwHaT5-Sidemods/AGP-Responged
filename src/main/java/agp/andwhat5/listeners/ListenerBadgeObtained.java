@@ -8,6 +8,6 @@ public class ListenerBadgeObtained {
 	@SubscribeEvent
 	public void onBadgeObtained(AGPBadgeGivenEvent event)
 	{
-		System.out.println(event.player.Name + " has recieved the " + event.badge.Badge + " badge!");
+		//System.out.println(event.player.Name + " has recieved the " + event.badge.Badge + " badge!");
 	}
 }

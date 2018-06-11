@@ -76,20 +76,19 @@ public class Utils
 	public static void giveBadge(EntityPlayerMP player, GymStruc gs, String leader)
 	{
 		BadgeStruc bs = new BadgeStruc(gs.Name, gs.Badge, leader, Date.from(Instant.now()));
-		if(AGP.EVENT_BUS.post(new AGPBadgeGivenEvent(getPlayerData(player), bs)))
+		AGP.EVENT_BUS.post(new AGPBadgeGivenEvent(getPlayerData(player), bs));
+		
+		Optional<PlayerStorage> storage = PixelmonStorage.pokeBallManager.getPlayerStorage(player);
+		if (storage.isPresent())
 		{
-			Optional<PlayerStorage> storage = PixelmonStorage.pokeBallManager.getPlayerStorage(player);
-			if (storage.isPresent())
+			for (NBTTagCompound nbt : storage.get().getList())
 			{
-				for (NBTTagCompound nbt : storage.get().getList())
-				{
-					if (nbt != null)
-						bs.Pokemon.add(nbt.getString(NbtKeys.NAME));
-				}
+				if (nbt != null)
+					bs.Pokemon.add(nbt.getString(NbtKeys.NAME));
 			}
-			AGP.getInstance().getStorage().updateObtainedBadges(player.getUniqueID(), player.getName(), bs, true);
-			saveAGPData();
 		}
+		AGP.getInstance().getStorage().updateObtainedBadges(player.getUniqueID(), player.getName(), bs, true);
+		saveAGPData();
 	}
 
 	//TODO: Better inventory system

@@ -49,9 +49,28 @@ public abstract class AbstractContainer extends Container
 	{
 		if (index > (numRows * 9) - 1 || index < 0)
 		{
+			//Taken from Container#slotClick to bypass a bug
+			if (clickTypeIn == ClickType.QUICK_MOVE && (dragType == 0 || dragType == 1))
+			{
+				if (index < 0)
+				{
+					return ItemStack.EMPTY;
+				}
+
+				Slot slot5 = this.inventorySlots.get(index);
+
+				if (slot5 == null || !slot5.canTakeStack(player))
+				{
+					return ItemStack.EMPTY;
+				}
+
+				//Avoids an infinite loop from Container#slotClick
+				return this.transferStackInSlot(player, index);
+			}
+
 			return super.slotClick(index, dragType, clickTypeIn, player);
 		}
-		return ItemStack.EMPTY;
+return ItemStack.EMPTY;
 	}
 
 	@Override
