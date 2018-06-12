@@ -91,32 +91,9 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
 
-//@Plugin(id = "agp", name = "AGP", version = "0.5.3-beta", dependencies = @Dependency(id = "pixelmon"), description = "Another gym plugin.")
-@Mod(modid="agp", name="Another Gym Plugin", version="1.0.0-Beta", dependencies = "required-after:pixelmon", acceptableRemoteVersions="*")
+@Mod(modid="agp", name="Another Gym Plugin", version="0.5.5-Beta", dependencies = "required-after:pixelmon", acceptableRemoteVersions="*")
 public class AGP
 {
-	private static AGP plugin;
-	private static PluginContainer container;
-	private static Logger logger;
-
-	/*@Inject
-	public AGP(PluginContainer container) {
-		AGP.plugin = this;
-		AGP.container = container;
-		AGP.logger = container.getLogger();
-	}
-
-	public static AGP getPlugin() {
-		return plugin;
-	}
-	public static PluginContainer getContainer() {
-		return container;
-	}
-	public static Logger getLogger() {
-		return logger;
-	}*/
-
-    // Forge things
 
 	private static AGP mod;
 	private Storage storage; //TODO: Look into storage options.
