@@ -2,7 +2,6 @@ package agp.andwhat5.listeners;
 
 import java.util.Optional;
 
-import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.api.events.BattleStartedEvent;
 import com.pixelmonmod.pixelmon.api.events.BeatTrainerEvent;
 import com.pixelmonmod.pixelmon.entities.npcs.NPCTrainer;
@@ -99,7 +98,14 @@ public class GymNPCDefeatListener
 				Utils.giveBadge(e.player, gs, "NPC");
 				if (gs.Money != 0)
 				{
-					Pixelmon.moneyManager.getBankAccount(e.player).get().changeMoney(gs.Money);
+					Optional<PlayerStorage> ps = PixelmonStorage.pokeBallManager.getPlayerStorage(e.player);
+					if (ps.isPresent())
+					{
+						ps.get().addCurrency(gs.Money);
+					} else {
+						e.player.sendMessage(Utils.toText("&7Unable to give your money award as your player storage could not be" +
+													  " found! You should contact an administrator.", true));
+					}
 				}
 				if (AGPConfig.General.physicalBadge)
 				{
