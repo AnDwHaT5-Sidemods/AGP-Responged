@@ -9,7 +9,6 @@ import agp.andwhat5.config.AGPConfig;
 import agp.andwhat5.config.structs.GymStruc;
 
 import com.google.common.collect.Lists;
-import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.entities.pixelmon.drops.DropItemHelper;
 import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
 import com.pixelmonmod.pixelmon.storage.PlayerStorage;
@@ -46,7 +45,14 @@ public class GiveBadge extends Command
 						Utils.giveBadge(player, gs, sender.getName());
 						if (gs.Money != 0)
 						{
-							Pixelmon.moneyManager.getBankAccount(player).get().changeMoney(gs.Money);
+							Optional<PlayerStorage> ps = PixelmonStorage.pokeBallManager.getPlayerStorage(player);
+							if (ps.isPresent())
+							{
+								ps.get().addCurrency(gs.Money);
+							} else
+							{
+								sender.sendMessage(Utils.toText("&7An error occurred adjusting &b" + player.getName() + "&7's balance!", true));
+							}
 						}
 						if (AGPConfig.General.physicalBadge)
 						{

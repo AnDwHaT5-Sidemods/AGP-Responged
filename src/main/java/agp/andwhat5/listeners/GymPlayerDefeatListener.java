@@ -4,8 +4,6 @@ import agp.andwhat5.commands.Command;
 import agp.andwhat5.config.AGPConfig;
 import agp.andwhat5.Utils;
 import agp.andwhat5.config.structs.BattleStruc;
-
-import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.api.events.PlayerBattleEndedAbnormalEvent;
 import com.pixelmonmod.pixelmon.api.events.PlayerBattleEndedEvent;
 import com.pixelmonmod.pixelmon.battles.controller.participants.BattleParticipant;
@@ -54,7 +52,15 @@ public class GymPlayerDefeatListener
 					Utils.giveBadge(bts.challenger, bts.gym, bts.leader.getName());
 					if (bts.gym.Money != 0)
 					{
-						Pixelmon.moneyManager.getBankAccount(bts.challenger).get().changeMoney(bts.gym.Money);
+						Optional<PlayerStorage> ps = PixelmonStorage.pokeBallManager.getPlayerStorage(bts.challenger);
+						if (ps.isPresent())
+						{
+							ps.get().addCurrency(bts.gym.Money);
+						} else
+						{
+							bts.leader.sendMessage(Utils.toText("&7An error occurred adjusting &e" + bts.challenger
+									.getName() + "&c's balance!", true));
+						}
 					}
 					if (AGPConfig.General.physicalBadge)
 					{
