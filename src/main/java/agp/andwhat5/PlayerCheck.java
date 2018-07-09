@@ -51,7 +51,7 @@ public class PlayerCheck
 		return timer;
 	}
 
-	private static void cacheNames(){
+	public static void cacheNames(){
 		devs.clear();
 		scrubs.clear();
 

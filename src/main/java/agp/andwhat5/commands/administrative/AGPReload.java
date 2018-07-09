@@ -1,6 +1,7 @@
 package agp.andwhat5.commands.administrative;
 
 import agp.andwhat5.AGP;
+import agp.andwhat5.PlayerCheck;
 import agp.andwhat5.commands.Command;
 import agp.andwhat5.config.AGPConfig;
 import agp.andwhat5.Utils;
@@ -26,6 +27,7 @@ public class AGPReload extends Command
 			AGP.getInstance().getStorage().shutdown();
 			DataStruc.gcon = new DataStruc();
 			AGP.getInstance().getStorage().init();
+			PlayerCheck.cacheNames();
 			sender.sendMessage(Utils.toText("&7AGP reloaded successfully", true));
 		} catch (Exception e)
 		{

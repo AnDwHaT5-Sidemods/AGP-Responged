@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.google.common.collect.Lists;
+import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.storage.NbtKeys;
 import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
 import com.pixelmonmod.pixelmon.storage.PlayerStorage;
@@ -476,5 +477,10 @@ public class Utils
 		}
 		toList.sort(Comparator.comparing(EntityPlayerMP::getName));
 		return toList;
+	}
+	
+	public static void addCurrency(EntityPlayerMP player, int money)
+	{
+		Pixelmon.moneyManager.getBankAccount(player).get().changeMoney(money);
 	}
 }

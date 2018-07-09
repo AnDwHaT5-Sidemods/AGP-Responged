@@ -52,15 +52,7 @@ public class GymPlayerDefeatListener
 					Utils.giveBadge(bts.challenger, bts.gym, bts.leader.getName());
 					if (bts.gym.Money != 0)
 					{
-						Optional<PlayerStorage> ps = PixelmonStorage.pokeBallManager.getPlayerStorage(bts.challenger);
-						if (ps.isPresent())
-						{
-							ps.get().addCurrency(bts.gym.Money);
-						} else
-						{
-							bts.leader.sendMessage(Utils.toText("&7An error occurred adjusting &e" + bts.challenger
-									.getName() + "&c's balance!", true));
-						}
+						Utils.addCurrency(bts.challenger, bts.gym.Money);
 					}
 					if (AGPConfig.General.physicalBadge)
 					{

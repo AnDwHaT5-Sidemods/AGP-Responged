@@ -45,14 +45,7 @@ public class GiveBadge extends Command
 						Utils.giveBadge(player, gs, sender.getName());
 						if (gs.Money != 0)
 						{
-							Optional<PlayerStorage> ps = PixelmonStorage.pokeBallManager.getPlayerStorage(player);
-							if (ps.isPresent())
-							{
-								ps.get().addCurrency(gs.Money);
-							} else
-							{
-								sender.sendMessage(Utils.toText("&7An error occurred adjusting &b" + player.getName() + "&7's balance!", true));
-							}
+							Utils.addCurrency(player, gs.Money);
 						}
 						if (AGPConfig.General.physicalBadge)
 						{

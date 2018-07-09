@@ -98,14 +98,7 @@ public class GymNPCDefeatListener
 				Utils.giveBadge(e.player, gs, "NPC");
 				if (gs.Money != 0)
 				{
-					Optional<PlayerStorage> ps = PixelmonStorage.pokeBallManager.getPlayerStorage(e.player);
-					if (ps.isPresent())
-					{
-						ps.get().addCurrency(gs.Money);
-					} else {
-						e.player.sendMessage(Utils.toText("&7Unable to give your money award as your player storage could not be" +
-													  " found! You should contact an administrator.", true));
-					}
+					Utils.addCurrency(e.player, gs.Money);
 				}
 				if (AGPConfig.General.physicalBadge)
 				{
