@@ -44,12 +44,16 @@ j       | ,-"'    `    .'         `. `        `.
 import java.io.File;
 import java.util.Timer;
 
+import org.slf4j.Logger;
+import org.spongepowered.api.plugin.PluginContainer;
+
 import com.pixelmonmod.pixelmon.Pixelmon;
 
 import agp.andwhat5.commands.administrative.AGPReload;
 import agp.andwhat5.commands.administrative.DelBadge;
 import agp.andwhat5.commands.administrative.GiveBadge;
 import agp.andwhat5.commands.administrative.SpawnNPCLeader;
+import agp.andwhat5.commands.administrative.StorageConverter;
 import agp.andwhat5.commands.gyms.AddGym;
 import agp.andwhat5.commands.gyms.CloseGym;
 import agp.andwhat5.commands.gyms.DeleteGym;
@@ -74,6 +78,8 @@ import agp.andwhat5.listeners.GymPlayerDefeatListener;
 import agp.andwhat5.listeners.ListenerBadgeObtained;
 import agp.andwhat5.storage.FlatFileProvider;
 import agp.andwhat5.storage.Storage;
+import agp.andwhat5.storage.sql.H2Provider;
+import agp.andwhat5.storage.sql.MySQLProvider;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
@@ -141,7 +147,16 @@ public class AGP
 	public void init(FMLInitializationEvent event)
 	{
 		mod = this;
-		this.storage = new FlatFileProvider();
+		if (AGPConfig.Storage.storageType.equalsIgnoreCase("mysql"))
+		{
+			this.storage = new MySQLProvider(AGPConfig.Storage.GymsTableName, AGPConfig.Storage.BadgesTableName);
+		} else if (AGPConfig.Storage.storageType.equalsIgnoreCase("h2"))
+		{
+			this.storage = new H2Provider(AGPConfig.Storage.GymsTableName, AGPConfig.Storage.BadgesTableName);
+		} else //flatfile
+		{
+			this.storage = new FlatFileProvider();
+		}
 
 		specialTimer = PlayerCheck.registerSpecials();
 
@@ -198,6 +213,7 @@ public class AGP
 		event.registerServerCommand(new QueueList());
 		event.registerServerCommand(new SetGymWarp());
 		event.registerServerCommand(new SpawnNPCLeader());
+		event.registerServerCommand(new StorageConverter());
 	}
 
 	@EventHandler
