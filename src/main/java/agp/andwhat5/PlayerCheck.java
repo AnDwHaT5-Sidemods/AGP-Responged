@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -29,8 +30,8 @@ public class PlayerCheck
 {
     //TODO: Redesign
 
-	private static List<String> devs = Lists.newArrayList();
-	private static List<String> scrubs = Lists.newArrayList();
+	private static List<String> devs = new ArrayList();
+	private static List<String> scrubs = new ArrayList();
 
 	private final static String devLink = "https://pastebin.com/raw/SXepayjB";
 	private final static String scrubLink = "https://pastebin.com/raw/gqXKbgad";

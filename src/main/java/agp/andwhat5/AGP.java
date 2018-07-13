@@ -92,7 +92,7 @@ import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
 
 //@Plugin(id = "agp", name = "AGP", version = "0.5.3-beta", dependencies = @Dependency(id = "pixelmon"), description = "Another gym plugin.")
-@Mod(modid="agp", name="Another Gym Plugin", version="1.0.0-Beta", dependencies = "required-after:pixelmon", acceptableRemoteVersions="*")
+@Mod(modid="agp", name="Another Gym Plugin", version="0.5.6-DevBuild2", dependencies = "required-after:pixelmon", acceptableRemoteVersions="*")
 public class AGP
 {
 	private static AGP plugin;

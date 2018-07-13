@@ -65,6 +65,7 @@ public class GymNPCDefeatListener
 					if(!Utils.hasBadge(player, Utils.getGym(gym.Requirement)))
 					{
 						((ICommandSender)player).sendMessage(Utils.toText("&7You must have the badge from the &b"+gym.Requirement+" &7gym before challenging this one!", true));
+						player.closeScreen();
 						event.setCanceled(true);
 						return;
 					}
