@@ -7,27 +7,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-public class DataStruc
-{
+public class DataStruc {
 
-	public DataStruc()
-	{
-		this.GymData = new ArrayList<>();
-		this.PlayerData = new HashMap<>();
-		this.ArenaData = new ArrayList<>();
-		this.GymBattlers = new ArrayList<>();
-	}
+    public static DataStruc gcon = new DataStruc();
+    @Expose
+    public List<GymStruc> GymData;
 
-	@Expose
-	public List<GymStruc> GymData;
+    @Expose
+    public HashMap<UUID, PlayerStruc> PlayerData;
 
-	@Expose
-	public HashMap<UUID, PlayerStruc> PlayerData;
+    @Expose
+    public List<ArenaStruc> ArenaData;
 
-	@Expose
-	public List<ArenaStruc> ArenaData;
+    public List<BattleStruc> GymBattlers;
 
-	public List<BattleStruc> GymBattlers;
-
-	public static DataStruc gcon = new DataStruc();
+    public DataStruc() {
+        this.GymData = new ArrayList<>();
+        this.PlayerData = new HashMap<>();
+        this.ArenaData = new ArrayList<>();
+        this.GymBattlers = new ArrayList<>();
+    }
 }

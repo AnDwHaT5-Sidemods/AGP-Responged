@@ -1,0 +1,81 @@
+buildscript {
+    repositories {
+        maven {
+            name = 'forge'
+            url = 'http://files.minecraftforge.net/maven'
+        }
+        maven {
+            name = 'sponge'
+            url = 'https://repo.spongepowered.org/maven'
+        }
+    }
+
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'org.spongepowered.plugin' version '0.8.1'
+    id 'com.github.johnrengelman.shadow' version '2.0.4'
+}
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+
+group = "moe.clienthax"
+version = "1.0.0"
+
+compileJava {
+    sourceCompatibility = targetCompatibility = "1.8"
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven {
+        name = "Sponge"
+        url = "http://repo.spongepowered.org/maven"
+    }
+    maven {
+        name = "Forge"
+        url = "http://files.minecraftforge.net/maven"
+    }
+    maven {
+        url 'https://jitpack.io'
+    }
+}
+
+dependencies {
+	dependencies {
+		compile "com.github.SimonFlash.TeslaPowered:TeslaLibs:v1.1.4"
+	}
+    compile group: 'com.zaxxer', name: 'HikariCP', version: '2.5.1'
+
+    compileOnly files('libs/Pixelmon-1.12.2-6.2.1-universal-deobf.jar')
+
+}
+
+shadowJar {
+    dependencies {
+        include dependency("com.github.SimonFlash.TeslaPowered:TeslaLibs:v1.1.4")
+    }
+    relocate 'com.mcsimonflash.sponge.teslalibs', 'moe.clienthax.anothergympluginsponge.tesla'
+}
+
+reobf {
+    shadowJar { mappingType = 'SEARGE' }
+}
+
+minecraft {
+    version = "2705"
+    mappings = "snapshot_20171111"
+    makeObfSourceJar = false
+}
+
+sponge.plugin.id = "anothergympluginsponge"

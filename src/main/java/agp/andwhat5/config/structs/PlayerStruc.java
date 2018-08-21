@@ -5,25 +5,25 @@ import com.google.gson.annotations.Expose;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlayerStruc
-{
-	public PlayerStruc() {}
+public class PlayerStruc {
+    @Expose
+    public String Name;//TODO can we remove this?
 
-	public PlayerStruc(String name) {
-		Name = name;
-		Badges = new ArrayList<>();
-	}
+    @Expose
+    public List<BadgeStruc> Badges = new ArrayList<>();
 
-	@Expose
-	public String Name;
-	@Expose
-	public List<BadgeStruc> Badges = new ArrayList<>();
+    public PlayerStruc() {
+    }
 
-	public static class Leader
-	{
-		@Expose
-		public boolean isLeader = false;
-		@Expose
-		public boolean JoinMessage = false;
-	}
+    public PlayerStruc(String name) {
+        Name = name;
+        Badges = new ArrayList<>();
+    }
+
+    public static class Leader {
+        @Expose
+        public boolean isLeader = false;
+        @Expose
+        public boolean JoinMessage = false;
+    }
 }

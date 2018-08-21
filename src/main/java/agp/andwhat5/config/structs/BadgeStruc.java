@@ -6,31 +6,26 @@ import com.google.gson.annotations.Expose;
 import java.util.Date;
 import java.util.List;
 
-public class BadgeStruc
-{
-	public BadgeStruc() {}
+public class BadgeStruc {
+    @Expose
+    public String Gym;
+    @Expose
+    public String Badge;
+    @Expose
+    public String Leader;
+    @Expose
+    public Date Obtained;
+    @Expose
+    public List<String> Pokemon;
 
-	public BadgeStruc(String gym, String badge, String leader, Date obtained)
-	{
-		Gym = gym;
-		Badge = badge;
-		Leader = leader;
-		Obtained = obtained;
-		Pokemon = Lists.newArrayList();
-	}
+    public BadgeStruc() {
+    }
 
-	@Expose
-	public String Gym;
-
-	@Expose
-	public String Badge;
-
-	@Expose
-	public String Leader;
-
-	@Expose
-	public Date Obtained;
-
-	@Expose
-	public List<String> Pokemon;
+    public BadgeStruc(String gym, String badge, String leader, Date obtained) {
+        Gym = gym;
+        Badge = badge;
+        Leader = leader;
+        Obtained = obtained;
+        Pokemon = Lists.newArrayList();
+    }
 }

@@ -1,7 +1,12 @@
 buildscript {
     repositories {
         jcenter()
-        maven { url = "http://files.minecraftforge.net/maven" }
+        maven {
+            url = "http://files.minecraftforge.net/maven"
+        }
+        maven {
+            url = "https://jitpack.io"
+        }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
@@ -9,36 +14,65 @@ buildscript {
 }
 
 plugins {
+    id 'java'
     id 'org.spongepowered.plugin' version '0.8.1'
+    id 'com.github.johnrengelman.shadow' version '2.0.4'
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
-//Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
-version = "1.12.2-0.5.6-devbuild1"
-group = "agp.andwhat5" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "Another-Gym-Plugin"
+group 'agp.andwhat5'
+version '1.0.0'
+ext.spongeversion = '7.1.0-SNAPSHOT'
+ext.teslaversion = '1.1.4'
+ext.pixelmonversion = '6.3.4'
 
-sourceCompatibility = targetCompatibility = 1.8
-compileJava {
-    sourceCompatibility = targetCompatibility = 1.8
-}
-
-minecraft {
-    version = "1.12.2-14.23.4.2705"
-    runDir = "run"
-    mappings = "snapshot_20171007"
-    useDepAts = true
+repositories {
+    maven {
+        url 'https://jitpack.io'
+    }
 }
 
 dependencies {
-    compile 'org.spongepowered:spongeapi:7.1.0-SNAPSHOT'
-    compile group: 'com.zaxxer', name: 'HikariCP', version: '2.5.1'
-    compile fileTree(dir: '../../libs', include: '*.jar')
+    shadow "org.spongepowered:spongeapi:${spongeversion}"
+    implementation "com.github.SimonFlash.TeslaPowered:TeslaLibs:v${teslaversion}"
+    shadow fileTree(dir: 'libs-', include: "Pixelmon-1.12.2-${pixelmonversion}-server-deobf.jar")
+	compile group: 'com.zaxxer', name: 'HikariCP', version: '2.5.1'
 }
 
-processResources
-{
+jar {
+    archiveName = "${project.name}-s${spongeversion[0..2]}-t${teslaversion}-v${version}.jar"
+}
+
+shadowJar {
+    dependencies {
+        include dependency("com.github.SimonFlash.TeslaPowered:TeslaLibs:v${teslaversion}")
+    }
+    relocate 'com.mcsimonflash.sponge.teslalibs', 'agp.andwhat5.sponge.wondertrade.teslalibs'
+    archiveName = "${project.name}-s${spongeversion.substring(0, 3)}-v${version}.jar"
+}
+
+reobf {
+    shadowJar {
+        mappingType = 'SEARGE'
+    }
+}
+
+task copyJars(type: Copy) {
+    from shadowJar into project.file("#releases/${version[0..4]}")
+}
+
+build.dependsOn(reobfShadowJar)
+build.dependsOn(copyJars)
+
+minecraft {
+    version = "1.12.2-14.23.2.2611"
+    runDir = "run"
+    mappings = "snapshot_20171003"
+    useDepAts = true
+}
+
+processResources {
     // this will ensure that this task is redone when the versions change.
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
@@ -48,7 +82,7 @@ processResources
         include 'mcmod.info'
 
         // replace version and mcversion
-        expand 'version':project.version, 'mcversion':project.minecraft.version
+        expand 'version': project.version, 'mcversion': project.minecraft.version
     }
 
     // copy everything else, thats not the mcmod.info

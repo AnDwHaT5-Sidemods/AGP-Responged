@@ -1,22 +1,19 @@
 package agp.andwhat5.config.structs;
 
-import net.minecraft.entity.player.EntityPlayerMP;
+import java.util.UUID;
 
-public class BattleStruc
-{
-	public BattleStruc() {}
+public class BattleStruc {
+    public UUID leader;
+    public UUID challenger;
+    public GymStruc gym;
 
-	public BattleStruc(GymStruc gym, EntityPlayerMP leader, EntityPlayerMP challenger)
-	{
-		this.gym = gym;
-		this.leader = leader;
-		this.challenger = challenger;
-	}
+    public BattleStruc() {
+    }
 
-	public EntityPlayerMP leader;
-
-	public EntityPlayerMP challenger;
-
-	public GymStruc gym;
+    public BattleStruc(GymStruc gym, UUID leader, UUID challenger) {
+        this.gym = gym;
+        this.leader = leader;
+        this.challenger = challenger;
+    }
 
 }

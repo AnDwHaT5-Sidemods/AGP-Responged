@@ -41,211 +41,183 @@ j       | ,-"'    `    .'         `. `        `.
  * AGP designed by AnDwHaT5
  */
 
-import java.io.File;
-import java.util.Timer;
-
-import org.slf4j.Logger;
-import org.spongepowered.api.plugin.PluginContainer;
-
-import com.pixelmonmod.pixelmon.Pixelmon;
-
-import agp.andwhat5.commands.administrative.AGPReload;
-import agp.andwhat5.commands.administrative.DelBadge;
-import agp.andwhat5.commands.administrative.GiveBadge;
-import agp.andwhat5.commands.administrative.SpawnNPCLeader;
-import agp.andwhat5.commands.administrative.StorageConverter;
-import agp.andwhat5.commands.gyms.AddGym;
-import agp.andwhat5.commands.gyms.CloseGym;
-import agp.andwhat5.commands.gyms.DeleteGym;
-import agp.andwhat5.commands.gyms.EditGym;
-import agp.andwhat5.commands.gyms.GymList;
-import agp.andwhat5.commands.gyms.OpenGym;
-import agp.andwhat5.commands.gyms.SetGymWarp;
-import agp.andwhat5.commands.leaders.AcceptChallenge;
-import agp.andwhat5.commands.leaders.AddLeader;
-import agp.andwhat5.commands.leaders.DeleteLeader;
-import agp.andwhat5.commands.leaders.DenyChallenge;
-import agp.andwhat5.commands.leaders.QueueList;
-import agp.andwhat5.commands.players.CancelChallenge;
-import agp.andwhat5.commands.players.ChallengeGym;
-import agp.andwhat5.commands.players.CheckBadges;
-import agp.andwhat5.commands.players.GymRules;
-import agp.andwhat5.commands.players.GymWarp;
+import agp.andwhat5.commands.administrative.*;
+import agp.andwhat5.commands.gyms.*;
+import agp.andwhat5.commands.leaders.*;
+import agp.andwhat5.commands.players.*;
 import agp.andwhat5.config.AGPConfig;
 import agp.andwhat5.config.structs.GymStruc;
-import agp.andwhat5.listeners.GymNPCDefeatListener;
-import agp.andwhat5.listeners.GymPlayerDefeatListener;
 import agp.andwhat5.listeners.ListenerBadgeObtained;
+import agp.andwhat5.listeners.forge.GymNPCDefeatListener;
+import agp.andwhat5.listeners.forge.GymPlayerDefeatListener;
 import agp.andwhat5.storage.FlatFileProvider;
 import agp.andwhat5.storage.Storage;
 import agp.andwhat5.storage.sql.H2Provider;
 import agp.andwhat5.storage.sql.MySQLProvider;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
-import net.minecraftforge.fml.common.eventhandler.EventBus;
+import com.google.common.reflect.TypeToken;
+import com.google.inject.Inject;
+import com.pixelmonmod.pixelmon.Pixelmon;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.loader.ConfigurationLoader;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandManager;
+import org.spongepowered.api.config.DefaultConfig;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.game.state.GameStartedServerEvent;
+import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
+import org.spongepowered.api.plugin.Dependency;
+import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.scheduler.Task;
+import static agp.andwhat5.config.structs.GymStruc.EnumStatus.*;
 
-//@Plugin(id = "agp", name = "AGP", version = "0.5.3-beta", dependencies = @Dependency(id = "pixelmon"), description = "Another gym plugin.")
-@Mod(modid="agp", name="Another Gym Plugin", version="0.5.6-DevBuild2", dependencies = "required-after:pixelmon", acceptableRemoteVersions="*")
-public class AGP
-{
-	private static AGP plugin;
-	private static PluginContainer container;
-	private static Logger logger;
 
-	/*@Inject
-	public AGP(PluginContainer container) {
-		AGP.plugin = this;
-		AGP.container = container;
-		AGP.logger = container.getLogger();
-	}
+import java.io.File;
+import java.io.IOException;
+import java.util.Timer;
 
-	public static AGP getPlugin() {
-		return plugin;
-	}
-	public static PluginContainer getContainer() {
-		return container;
-	}
-	public static Logger getLogger() {
-		return logger;
-	}*/
+@Plugin(id = "agp", name = "AGP", version = "0.5.6-DevBuild2", dependencies = @Dependency(id = "pixelmon"), description = "Another gym plugin.")
+public class AGP {
 
-    // Forge things
+    private static AGP instance;
+    @Inject
+    public PluginContainer container;
+    public AGPConfig config;
+    Task announcementTask;
+    @Inject
+    @DefaultConfig(sharedRoot = false)
+    private ConfigurationLoader<CommentedConfigurationNode> configLoader;
+    private CommentedConfigurationNode node;
+    private Storage storage; //TODO: Look into storage options.
+    private File base;
+    private Timer specialTimer;
 
-	private static AGP mod;
-	private Storage storage; //TODO: Look into storage options.
-	private File base;
-	public static EventBus EVENT_BUS = new EventBus(); //TODO: Sponge's event handler is better.
-	
-	private Timer specialTimer;
+    //TODO: Move storage related actions to a dedicated class
 
-	//TODO: Move storage related actions to a dedicated class
+    public static AGP getInstance() {
+        return instance;
+    }
 
-	@EventHandler
-	public void preInit(FMLPreInitializationEvent event)
-	{
-		base = new File(event.getModConfigurationDirectory(), "agp");
-		if (!base.exists())
-		{
-			base.mkdirs();
-		}
-		Configuration configuration = new Configuration(new File(base, "agp.cfg"));
-		AGPConfig.load(configuration);
-		if (configuration.hasChanged())
-		{
-			configuration.save();
-		}
-	}
+    //TODO make config converter
+    public void loadConfig() throws IOException, ObjectMappingException {
+        //Config
+        this.node = this.configLoader.load();
+        TypeToken<AGPConfig> type = TypeToken.of(AGPConfig.class);
+        this.config = node.getValue(type, new AGPConfig());
+        node.setValue(type, this.config);
+        this.configLoader.save(node);
+        //End config
+    }
 
-	@EventHandler
-	public void init(FMLInitializationEvent event)
-	{
-		mod = this;
-		if (AGPConfig.Storage.storageType.equalsIgnoreCase("mysql"))
-		{
-			this.storage = new MySQLProvider(AGPConfig.Storage.GymsTableName, AGPConfig.Storage.BadgesTableName);
-		} else if (AGPConfig.Storage.storageType.equalsIgnoreCase("h2"))
-		{
-			this.storage = new H2Provider(AGPConfig.Storage.GymsTableName, AGPConfig.Storage.BadgesTableName);
-		} else //flatfile
-		{
-			this.storage = new FlatFileProvider();
-		}
+    public void saveConfig() {
+        try {
+            TypeToken<AGPConfig> type = TypeToken.of(AGPConfig.class);
+            node.setValue(type, this.config);
+            this.configLoader.save(node);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-		specialTimer = PlayerCheck.registerSpecials();
+    @Listener
+    public void init(GameStartedServerEvent event) {
+        instance = this;
+        if (AGPConfig.Storage.storageType.equalsIgnoreCase("mysql")) {
+            this.storage = new MySQLProvider(AGPConfig.Storage.GymsTableName, AGPConfig.Storage.BadgesTableName);
+        } else if (AGPConfig.Storage.storageType.equalsIgnoreCase("h2")) {
+            this.storage = new H2Provider(AGPConfig.Storage.GymsTableName, AGPConfig.Storage.BadgesTableName);
+        } else //flatfile
+        {
+            this.storage = new FlatFileProvider();
+        }
 
-		try
-		{
-			this.storage.init();
-			for(GymStruc gs : AGP.getInstance().getStorage().getGyms())
-			{
-				if(gs.Leaders.stream().anyMatch(l -> l.equalsIgnoreCase("NPC")))
-				{
-					gs.Status = 2;
-				} else
-				{
-					gs.Status = 1;
-				}
-			}
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
+        specialTimer = PlayerCheck.registerSpecials();
 
-	@EventHandler
-	public void postInit(FMLLoadCompleteEvent event)
-	{
-		MinecraftForge.EVENT_BUS.register(AGPTickHandler.class);
-		MinecraftForge.EVENT_BUS.register(new PlayerCheck());
-		Pixelmon.EVENT_BUS.register(new GymNPCDefeatListener());
-		Pixelmon.EVENT_BUS.register(new GymPlayerDefeatListener());
-		AGP.EVENT_BUS.register(new ListenerBadgeObtained());
-	}
+        try {
+            this.storage.init();
+            for (GymStruc gs : AGP.getInstance().getStorage().getGyms()) {
+                if (gs.NPCAmount > 0) {
+                    gs.Status = NPC;
+                } else {
+                    gs.Status = CLOSED;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	@EventHandler
-	public void onServerStart(FMLServerStartingEvent event)
-	{
-		event.registerServerCommand(new AcceptChallenge());
-		event.registerServerCommand(new AddGym());
-		event.registerServerCommand(new AddLeader());
-		event.registerServerCommand(new AGPReload());
-		event.registerServerCommand(new CancelChallenge());
-		event.registerServerCommand(new ChallengeGym());
-		event.registerServerCommand(new CheckBadges());
-		event.registerServerCommand(new CloseGym());
-		event.registerServerCommand(new DelBadge());
-		event.registerServerCommand(new DeleteGym());
-		event.registerServerCommand(new GymRules());
-		event.registerServerCommand(new DeleteLeader());
-		event.registerServerCommand(new DenyChallenge());
-		event.registerServerCommand(new EditGym());
-		event.registerServerCommand(new GiveBadge());
-		event.registerServerCommand(new GymList());
-		event.registerServerCommand(new GymWarp());
-		event.registerServerCommand(new OpenGym());
-		event.registerServerCommand(new QueueList());
-		event.registerServerCommand(new SetGymWarp());
-		event.registerServerCommand(new SpawnNPCLeader());
-		event.registerServerCommand(new StorageConverter());
-	}
+    public void setupTasks() {
+        if (announcementTask != null)
+            announcementTask.cancel();
 
-	@EventHandler
-	public void onServerStop(FMLServerStoppingEvent e)
-	{
-		try
-		{
-			this.storage.shutdown();
-			specialTimer.cancel();
-		} catch (Exception e1)
-		{
-			e1.printStackTrace();
-		}
-	}
+        if (AGPConfig.Announcements.announcementEnabled) {
+            announcementTask = Task.builder()
+                    .execute(task -> Utils.sendToAll(AGPConfig.Announcements.announcementMessage, false))
+                    .intervalTicks(AGPConfig.Announcements.announcementTimer)
+                    .submit(this);
+        }
+    }
 
-	public static AGP getInstance()
-	{
-		return mod;
-	}
+    @Listener
+    public void postInit(GameStartedServerEvent event) {
+        setupTasks();
+        Sponge.getEventManager().registerListeners(this, new PlayerCheck());
+        Pixelmon.EVENT_BUS.register(new GymNPCDefeatListener());
+        Pixelmon.EVENT_BUS.register(new GymPlayerDefeatListener());
+        Sponge.getEventManager().registerListeners(this, new ListenerBadgeObtained());
+    }
 
-	public Storage getStorage()
-	{
-		return this.storage;
-	}
+    @Listener
+    public void onServerStart(GameStartedServerEvent event) throws IOException, ObjectMappingException {
+        loadConfig();
 
-	public void setStorage(Storage storage)
-	{
-		this.storage = storage;
-	}
+        CommandManager commandManager = Sponge.getCommandManager();
+        commandManager.register(this, new AcceptChallenge(), "acceptchallenge", "ac");
+        commandManager.register(this, new AddGym(), "addgym");
+        commandManager.register(this, new AddLeader(), "addleader");
+        commandManager.register(this, new AGPReload(), "agpreload");
+        commandManager.register(this, new CancelChallenge(), "cancelchallenge", "cc");
+        commandManager.register(this, new ChallengeGym(), "chalgym", "challengegym");
+        commandManager.register(this, new CheckBadges(), "checkbadges", "cb", "badges");
+        commandManager.register(this, new CloseGym(), "closegym");
+        commandManager.register(this, new DelBadge(), "delbadge");
+        commandManager.register(this, new DeleteGym(), "delgym");
+        commandManager.register(this, new GymRules(), "gymrules");
+        commandManager.register(this, new DeleteLeader(), "delleader");
+        commandManager.register(this, new DenyChallenge(), "denychallenge", "dc");
+        commandManager.register(this, new EditGym(), "editgym");
+        commandManager.register(this, new GiveBadge(), "givebadge");
+        commandManager.register(this, new GymList(), "gl", "gyms", "gymlist");
+        commandManager.register(this, new GymWarp(), "gymwarp");
+        commandManager.register(this, new OpenGym(), "opengym");
+        commandManager.register(this, new QueueList(), "queuelist", "ql");
+        commandManager.register(this, new SetGymWarp(), "setgymwarp", "sgw", "setgwarp");
+        commandManager.register(this, new SpawnNPCLeader(), "spawnnpcleader", "snl", "spawnleader");
+        commandManager.register(this, new StorageConverter(), "stc");
+    }
 
-	public File getBase()
-	{
-		return base;
-	}
+    @Listener
+    public void onServerStop(GameStoppedServerEvent e) {
+        try {
+            this.storage.shutdown();
+            specialTimer.cancel();
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+    }
+
+    public Storage getStorage() {
+        return this.storage;
+    }
+
+    public void setStorage(Storage storage) {
+        this.storage = storage;
+    }
+
+    public File getBase() {
+        return base;
+    }
+
 }
