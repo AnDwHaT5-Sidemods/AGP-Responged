@@ -10,3 +10,8 @@
 /.project
 /.idea
 out
+.settings
+#releases
+eclipse
+#releases
+#releases/1.0.0

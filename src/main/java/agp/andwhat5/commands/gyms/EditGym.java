@@ -21,7 +21,7 @@ import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord
  */
 public class EditGym extends Command {
     public EditGym() {
-        super("/editgym <gym> <name:(name) | badge:(badge) | require:(gym) | rules:(rules) | level:(level) | money:(money) | items:(item1,item2)>");
+        super("/editgym <gym> <name:(name) | badge:(badge) | require:(gym) | rules:(rules) | level:(level) | money:(money)>");
     }
 
     @Override
@@ -93,17 +93,6 @@ public class EditGym extends Command {
             } else if (args[i].toLowerCase().startsWith("badge:") && !args[i].toLowerCase().equalsIgnoreCase("badge:")) {
                 gym.Badge = args[i].substring(6);
                 sender.sendMessage(Utils.toText("&7Successfully changed the badge of the &b" + gym.Name + "&7 gym to &b" + gym.Badge + "&7!", true));
-            } else if (args[i].toLowerCase().startsWith("items:") && !args[i].toLowerCase().equalsIgnoreCase("items:")) {
-                if (args[i].substring(6).split(",").length != 2) {
-                    sender.sendMessage(Utils.toText("&7Incorrect formatting of item values. Example: &b/EditGym Water items:pixelmon:rare_candy,null", true));
-                    return;
-                }
-                gym.Items.clear();
-                gym.Items.add(args[i].substring(5).split(",")[0]);
-                gym.Items.add(args[i].substring(5).split(",")[1]);
-                sender.sendMessage(Utils.toText("&7You have successfully changed the two items of the &b" + gym.Name + " &7Gym to &b"
-                        + args[i].substring(5).split(",")[0].replace("null", "nothing") + " &7and &b" + args[i].substring(5).split(",")[1].replace("null", "nothing")
-                        + "&7!", true));
             } else {
                 super.sendUsage(sender);
             }
@@ -122,7 +111,7 @@ public class EditGym extends Command {
         if (args.length == 1) {
             return getListOfStringsMatchingLastWord(args, Utils.getGymNames(true));
         } else if (args.length == 2) {
-            return getListOfStringsMatchingLastWord(args, Lists.newArrayList("money:", "require:", "rules:", "badge:", "name:", "items:", "level:", "rules:"));
+            return getListOfStringsMatchingLastWord(args, Lists.newArrayList("money:", "require:", "rules:", "badge:", "name:", "level:", "rules:"));
         }
         return null;
     }

@@ -10,6 +10,8 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 
@@ -36,14 +38,14 @@ public class GiveBadge extends Command {
             }
 
             GymStruc gs = Utils.getGym(gymName);
-            if (Utils.isGymLeader((Player) sender, gs) || sender.hasPermission("agp.headleader")) {
+            if (!Utils.isGymLeader((Player) sender, gs) || !sender.hasPermission("agp.headleader")) {
                 sender.sendMessage(Utils.toText("&7You must be a leader of the &b" + gs.Name + " &7Gym to give its badge!", true));
                 return;
             }
 
             Player player = requireEntityPlayer(playerName);
 
-            if (!Utils.hasBadge(player, gs)) {
+            if (Utils.hasBadge(player, gs)) {
                 sender.sendMessage(Utils.toText("&b" + player.getName() + " &7has already beaten the &b" + gs.Name + " &7Gym!", true));
                 return;
             }
@@ -56,13 +58,9 @@ public class GiveBadge extends Command {
                 ItemStack item = new ItemStack(getItemByText((ICommandSender) sender, gs.Badge), 1);
                 DropItemHelper.giveItemStackToPlayer((EntityPlayer) player, item);
             }
-            if (!gs.Items.get(0).equals("null")) {
-                ItemStack item1 = new ItemStack(getItemByText((ICommandSender) sender, gs.Items.get(0)), 1);
-                DropItemHelper.giveItemStackToPlayer((EntityPlayer) player, item1);
-            }
-            if (!gs.Items.get(1).equals("null")) {
-                ItemStack item2 = new ItemStack(getItemByText((ICommandSender) sender, gs.Items.get(1)), 1);
-                DropItemHelper.giveItemStackToPlayer((EntityPlayer) player, item2);
+            if(!gs.Commands.isEmpty())
+            {
+            	gs.Commands.stream().forEach(i -> Sponge.getCommandManager().process((CommandSource) Sponge.getServer(), i.trim()));
             }
 
             sender.sendMessage(Utils.toText("&7Successfully gave &b" + player.getName() + " &7the &b" + gs.Name + " &7Gym's badge!", true));
