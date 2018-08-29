@@ -21,6 +21,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.Map;
@@ -62,13 +63,9 @@ public class GymPlayerDefeatListener {
                                 ItemStack item = new ItemStack(CommandBase.getItemByText((ICommandSender) leader, bts.gym.Badge), 1);
                                 DropItemHelper.giveItemStackToPlayer((EntityPlayer) challenger, item);
                             }
-                            if (!bts.gym.Items.get(0).equals("null")) {
-                                ItemStack item1 = new ItemStack(CommandBase.getItemByText((ICommandSender) leader, bts.gym.Items.get(0)), 1);
-                                DropItemHelper.giveItemStackToPlayer((EntityPlayer) challenger, item1);
-                            }
-                            if (!bts.gym.Items.get(1).equals("null")) {
-                                ItemStack item2 = new ItemStack(CommandBase.getItemByText((ICommandSender) leader, bts.gym.Items.get(1)), 1);
-                                DropItemHelper.giveItemStackToPlayer((EntityPlayer) challenger, item2);
+                            if(!bts.gym.Commands.isEmpty())
+                            {
+                            	bts.gym.Commands.stream().forEach(i -> Sponge.getCommandManager().process((CommandSource) Sponge.getServer(), i.trim()));
                             }
 
                             challenger.sendMessage(Utils.toText("&7Congratulations, you defeated the &b" + bts.gym.Name + " &7gym! ", true));

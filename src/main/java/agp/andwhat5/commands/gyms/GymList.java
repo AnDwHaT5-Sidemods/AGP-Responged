@@ -7,7 +7,9 @@ import agp.andwhat5.ui.EnumGUIType;
 import net.minecraft.command.CommandException;
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.text.Text;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,9 +24,14 @@ public class GymList extends Command {
 
     @Override
     public void execute(MinecraftServer server, CommandSource sender, String[] args) throws CommandException {
-        if (args.length == 0) {
+    	Arrays.asList(args).stream().forEach(e -> sender.sendMessage(Text.of(e)));
+        if (args.length == 0) 
+        {
             Utils.openGUI(requireEntityPlayer(sender), requireEntityPlayer(sender), EnumGUIType.GymList);
-        } else if (args.length == 1 && args[0].equalsIgnoreCase("-nogui")) {
+        } 
+        else 
+        if (args.length == 1 && args[0].equalsIgnoreCase("-nogui")) 
+        {
             sender.sendMessage(Utils.toText("&f--==[&dAGP - Gyms List&f]==--", false));
             sender.sendMessage(Utils.toText("&bGyms: &7(&aOpen&7) &7(&cClosed&7)", false));
             sender.sendMessage(Utils.toText("&bLeaders: &7(&aOnline&7) &7(&eNPC&7) &7(&cOffline&7)", false));
@@ -48,7 +55,9 @@ public class GymList extends Command {
                 }
                 sender.sendMessage(Utils.toText(msg.toString(), false));
             }
-        } else {
+        } 
+        else 
+        {
             super.sendUsage(sender);
         }
     }

@@ -1,22 +1,36 @@
 package agp.andwhat5.storage;
 
-import agp.andwhat5.Utils;
-import agp.andwhat5.config.structs.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.service.user.UserStorageService;
+
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.service.user.UserStorageService;
-import org.spongepowered.common.util.SpongeUsernameCache;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
+import agp.andwhat5.Utils;
+import agp.andwhat5.config.structs.ArenaStruc;
+import agp.andwhat5.config.structs.BadgeStruc;
+import agp.andwhat5.config.structs.ConfigStruc;
+import agp.andwhat5.config.structs.DataStruc;
+import agp.andwhat5.config.structs.GymStruc;
+import agp.andwhat5.config.structs.PlayerStruc;
 
 public class FlatFileProvider implements Storage {
 
@@ -120,13 +134,18 @@ public class FlatFileProvider implements Storage {
                     Optional<User> user = userStorageService.get(leader);
                     if (!user.isPresent()) {
                         //Attempt 2, grab from the cache file incase the player files were wiped
-                        UUID lastKnownUUID = SpongeUsernameCache.getLastKnownUUID(leader);
-                        if (lastKnownUUID == null) {
-                            System.out.println("Error while looking up user for leader " + leader + " in gym " + gym.Name);
-                        } else {
-                            gym.PlayerLeaders.add(lastKnownUUID);
-                            System.out.println("Converting username to new format " + leader + " " + lastKnownUUID);
-                            gym.Leaders.remove(leader);
+                        
+                        User user1 = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(leader).orElse(null);
+                        if(user1 != null)
+                        {
+                        	UUID lastKnownUUID = user1.getUniqueId();
+	                        if (lastKnownUUID == null) {
+	                            System.out.println("Error while looking up user for leader " + leader + " in gym " + gym.Name);
+	                        } else {
+	                            gym.PlayerLeaders.add(lastKnownUUID);
+	                            System.out.println("Converting username to new format " + leader + " " + lastKnownUUID);
+	                            gym.Leaders.remove(leader);
+	                        }
                         }
                     } else {
                         gym.PlayerLeaders.add(user.get().getUniqueId());

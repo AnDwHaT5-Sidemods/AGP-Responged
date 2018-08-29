@@ -18,7 +18,7 @@ public class GymExperienceGain {
     @SubscribeEvent
     public void onExpGain(ExperienceGainEvent event) {
         EntityPlayerMP player = event.pokemon.getPlayerOwner();
-        if (Utils.isInAnyBattle((Player) player)) {
+        if (Utils.isInGymBattle((Player) player)) {
             event.setExperience(0);
         }
     }

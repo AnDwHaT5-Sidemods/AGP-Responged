@@ -50,7 +50,7 @@ public abstract class SQLDatabase implements Storage {
                 }
                 // Gym Table for Data
                 try (PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `" + gymTable
-                        + "` (Gym varchar(50) NOT NULL PRIMARY KEY, Badge MEDIUMTEXT, LevelCap Integer, Items " +
+                        + "` (Gym varchar(50) NOT NULL PRIMARY KEY, Badge MEDIUMTEXT, LevelCap Integer, Commands " +
                         "MEDIUMTEXT, Money DECIMAL, " +
                         "Leaders MEDIUMTEXT, " +
                         "ArenaData MEDIUMTEXT, " +
@@ -222,8 +222,8 @@ public abstract class SQLDatabase implements Storage {
                             uuids.add(UUID.fromString(playerLeader));
                         }
                         gym.PlayerLeaders = uuids;
-                        gym.Items = Lists.newArrayList(
-                                result.getString("Items").replace("[", "").replace("]", "").split(Pattern.quote(", ")));
+                        gym.Commands = Lists.newArrayList(
+                                result.getString("Commands").replace("[", "").replace("]", "").split(Pattern.quote(", ")));
 
                         TypeToken<List<ArenaStruc>> arenaType = new TypeToken<List<ArenaStruc>>() {
                         };
@@ -272,7 +272,7 @@ public abstract class SQLDatabase implements Storage {
                 if (add) {
                     try (PreparedStatement ps = connection
                             .prepareStatement("REPLACE INTO `" + gymTable + "` VALUES('" + gym.Name + "', '" + gym
-                                    .Badge + "', '" + gym.LevelCap + "', '" + gym.Items + "', '" + gym.Money + "', '" + gym
+                                    .Badge + "', '" + gym.LevelCap + "', '" + gym.Commands + "', '" + gym.Money + "', '" + gym
                                     .PlayerLeaders + "', '" + new Gson().toJson(gym.Arenas) + "', '" + new Gson().toJson(gym.Lobby) + "', '" + gym.Requirement + "', '" + gym.Rules + "')")) {
                         ps.executeUpdate();
                         ps.close();

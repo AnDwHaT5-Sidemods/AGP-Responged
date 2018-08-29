@@ -53,7 +53,7 @@ public class ChallengeGym extends Command {
             sender.sendMessage(Utils.toText("&7You may not challenge the &b" + gs.Name + " &7Gym as it is currently closed!", true));
             return;
         }
-        if (Utils.isInAnyBattle(user)) {
+        if (Utils.isInGymBattle(user)) {
             sender.sendMessage(Utils.toText("&7You may not challenge the &b" + gs.Name + " &7Gym as you are currently in a gym battle!", true));
             return;
         }

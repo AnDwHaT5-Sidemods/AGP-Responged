@@ -1,27 +1,61 @@
 package agp.andwhat5;
 
-import agp.andwhat5.api.AGPBadgeGivenEvent;
-import agp.andwhat5.config.structs.*;
-import agp.andwhat5.ui.EnumGUIType;
+import java.time.Instant;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Consumer;
+
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.data.manipulator.mutable.item.LoreData;
+import org.spongepowered.api.data.value.mutable.ListValue;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.event.CauseStackManager;
+import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
+import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.ItemTypes;
+import org.spongepowered.api.item.inventory.Inventory;
+import org.spongepowered.api.item.inventory.InventoryArchetypes;
+import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.property.InventoryDimension;
+import org.spongepowered.api.item.inventory.property.InventoryTitle;
+import org.spongepowered.api.service.user.UserStorageService;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.serializer.TextSerializers;
+
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.Lists;
+import com.mcsimonflash.sponge.teslalibs.inventory.Action;
+import com.mcsimonflash.sponge.teslalibs.inventory.Element;
+import com.mcsimonflash.sponge.teslalibs.inventory.Layout;
+import com.mcsimonflash.sponge.teslalibs.inventory.Layout.Builder;
+import com.mcsimonflash.sponge.teslalibs.inventory.View;
 import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.storage.NbtKeys;
 import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
 import com.pixelmonmod.pixelmon.storage.PlayerStorage;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.CauseStackManager;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
-import java.time.Instant;
-import java.util.*;
+import agp.andwhat5.api.AGPBadgeGivenEvent;
+import agp.andwhat5.config.structs.ArenaStruc;
+import agp.andwhat5.config.structs.BadgeStruc;
+import agp.andwhat5.config.structs.BattleStruc;
+import agp.andwhat5.config.structs.DataStruc;
+import agp.andwhat5.config.structs.GymStruc;
+import agp.andwhat5.config.structs.GymStruc.EnumStatus;
+import agp.andwhat5.config.structs.PlayerStruc;
+import agp.andwhat5.config.structs.Vec3dStruc;
+import agp.andwhat5.ui.EnumGUIType;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 
 public class Utils {
-    //TODO: Review and update as needed.
     //TODO: Utility methods for Player <-> EntityPlayerMP
 
     /**
@@ -41,11 +75,7 @@ public class Utils {
      * @return A {@link PlayerStruc} representation of the player
      */
     public static PlayerStruc getPlayerData(Player player) {
-        if (DataStruc.gcon.PlayerData.containsKey(player.getUniqueId())) {
-            return DataStruc.gcon.PlayerData.get(player.getUniqueId());
-        } else {
-            return new PlayerStruc(player.getName());
-        }
+    	return DataStruc.gcon.PlayerData.getOrDefault(player.getUniqueId(), new PlayerStruc(player.getUniqueId()));
     }
 
     /**
@@ -74,7 +104,16 @@ public class Utils {
         saveAGPData();
     }
 
-    //TODO: Better inventory system
+    public static String getNameFromUUID(UUID uuid)
+    {
+    	UserStorageService userStorage = Sponge.getServiceManager().provide(UserStorageService.class).get();
+        Optional<User> userop = userStorage.get(uuid);
+        if(userop.isPresent())
+        {
+        	return userop.get().getName();
+        }
+    	return "INVALID USER";
+    }
 
     /**
      * UI main calling function, setups the UI parameters based on {@link EnumGUIType} type
@@ -84,40 +123,95 @@ public class Utils {
      * @param actor  The source of the UI creation
      * @param type   The type of UI to open
      */
-    public static void openGUI(Player player, Player actor, EnumGUIType type) {
-        //TODO teslalib
-		/*
-		if (actor.openContainer != actor.inventoryContainer)
-		{
-			actor.closeScreen();
-		}
-		AbstractContainer container = null;
-		String title = "";
-		if (type.equals(EnumGUIType.CheckBadges))
-		{
-			title = player.getName() + "'s Badges";
-			PlayerStruc ps = DataStruc.gcon.PlayerData.get(player.getUniqueID());
-			List<BadgeStruc> badges = (ps == null) ? Lists.newArrayList() : ps.Badges;
-			int rows = badges.size() / 9 + 1;
-			rows = (rows > 6) ? 6 : rows;
-			container = new CheckBadgesContainer(new InventoryBasic(title, false, rows * 9), actor);
-			container.fillContents(rows, badges);
-		} else if (type.equals(EnumGUIType.GymList))
-		{
-			title = "Gym List";
-			List<GymStruc> gyms = DataStruc.gcon.GymData;
-			int rows = gyms.size() / 9 + 1;
-			rows = (rows > 6) ? 6 : rows;
-			container = new GymListContainer(new InventoryBasic(title, false, rows * 9), actor);
-			sortGyms();
-			container.fillContents(rows, gyms);
-		}
-		actor.getNextWindowId();
-		actor.openContainer = container;
-		actor.connection.sendPacket(new SPacketOpenWindow(actor.currentWindowId, "minecraft:container", Utils.toText(title, false), container.getSizeOfInv()));
-		actor.openContainer.windowId = actor.currentWindowId;
-		actor.openContainer.addListener(actor);
-		*/
+    public static void openGUI(Player player, Player actor, EnumGUIType type) 
+    {
+    	if(type.equals(EnumGUIType.CheckBadges))
+    	{
+    		PlayerStruc playerData = getPlayerData(player);
+    		int slot = 0;
+    		Builder builder = Layout.builder().dimension(InventoryDimension.of(9, 6));
+    		for(BadgeStruc badge : playerData.Badges)
+    		{
+    			ItemStack itemStack = ItemStack.builder().itemType(Sponge.getRegistry().getType(ItemType.class, badge.Badge).orElse(ItemTypes.BAKED_POTATO)).build();
+    			itemStack.offer(Keys.DISPLAY_NAME, toText("&d\u2605 &b" + badge.Gym + "&d \u2605", false));
+    		    Text lore1 = toText("&7Leader: &b" + badge.Leader, false);
+    		    Text lore2 = toText("&7Date Obtained: &b" + badge.Obtained, false);
+    		    Text lore3 = toText("&7Pokemon:", false);
+    		    LoreData loreData = Sponge.getDataManager().getManipulatorBuilder(LoreData.class).get().create();
+    		    ListValue<Text> loreInfo = loreData.lore();
+    		    List<Text> loreList = Lists.newArrayList(lore1, lore2, lore3);
+    		    if (badge.Pokemon.isEmpty()) 
+    		    {
+                    loreList.add(toText("  &4" + "Unknown", false));
+                }
+    		    else
+    		    {
+    		    	for (int i = 0; i < badge.Pokemon.size(); i++) 
+    		    	{
+    		    		loreList.add(toText("  &b" + badge.Pokemon.get(i), false));
+    		    	}
+    		    }
+    	        loreInfo.addAll(loreList);
+    	        loreData.set(loreInfo);
+    	        itemStack.offer(loreData);
+    	        Element e = Element.of(itemStack);
+    			builder.set(e, slot);
+    			slot += 1;
+    		}
+    		Layout layout = builder.build();
+    		View view = View.builder().archetype(InventoryArchetypes.CHEST).property(InventoryTitle.of(toText("&8"+player.getName()+"'s Badges", false))).build(AGP.getInstance().container);
+    		view.define(layout);
+    		view.open(player);
+    	}
+    	else
+        if(type.equals(EnumGUIType.GymList))
+       	{
+        	
+    		Builder builder = Layout.builder().dimension(InventoryDimension.of(9, 6));
+
+    		int slot = 0;
+    		
+       		for(GymStruc gym : DataStruc.gcon.GymData)
+       		{
+    			ItemStack itemStack = ItemStack.builder().itemType(Sponge.getRegistry().getType(ItemType.class, gym.Badge).orElse(ItemTypes.BAKED_POTATO)).build();
+                itemStack.offer(Keys.DISPLAY_NAME, toText("&d\u2605 &b" + gym.Name + "&d \u2605", false));
+        	    Text lore1 = toText("&7Gym Status: &b" + (gym.Status.equals(EnumStatus.CLOSED) ? "&4Closed" : 
+       		    	gym.Status.equals(EnumStatus.OPEN) ? "&2Open" : "&eNPC Mode"), false);
+       		    
+       		    Text lore2 = toText("&7Requires: &b" + (gym.Requirement.equals("null") ? "None" : gym.Requirement), false);
+       		    Text lore3 = toText("&7Leaders:", false);
+       		    final LoreData loreData = Sponge.getDataManager().getManipulatorBuilder(LoreData.class).get().create();
+       	        final ListValue<Text> loreInfo = loreData.lore();
+       	        List<Text> loreList = Lists.newArrayList(lore1, lore2, lore3);
+       		    if(!gym.PlayerLeaders.isEmpty())
+       		    {
+        	    	for (int i = 0; i < gym.PlayerLeaders.size(); i++) {
+        	    		loreList.add(toText("  " + (gym.OnlineLeaders.contains(gym.PlayerLeaders.get(i)) ? "&2" : "&4") + getNameFromUUID(gym.PlayerLeaders.get(i)), false));
+       		    	}
+       		    }
+       	        loreInfo.addAll(loreList);
+       	        loreData.set(loreInfo);
+       	        
+       	        itemStack.offer(loreData);
+       	        
+       	        Consumer<Action.Click> action = a ->
+       	        {
+       	        	if(gym.Lobby != null)
+       	        	{
+       	        		setPosition(player, gym.Lobby);
+       	                player.sendMessage(Utils.toText("&7Teleported to the &b" + gym.Name + " &7Gym lobby!", true));
+       	        	}
+       	        };
+       	        		
+       	        Element e = Element.of(itemStack, action);
+       			builder.set(e, slot);
+       			slot += 1;
+       		}
+       		Layout layout = builder.build();
+    		View view = View.builder().archetype(InventoryArchetypes.CHEST).property(InventoryTitle.of(toText("&8Available Gyms", false))).build(AGP.getInstance().container);
+    		view.define(layout);
+    		view.open(player);
+       	}
     }
 
     /**
@@ -127,9 +221,7 @@ public class Utils {
      * @param prefix  Whether AGP uses its prefix in the announcement. True: Yes False: No.
      */
     public static void sendToAll(String message, boolean prefix) {
-        for (Player p : Utils.getAllPlayers()) {
-            p.sendMessage(Utils.toText(message, prefix));
-        }
+    	Utils.getAllPlayers().stream().forEach(player -> player.sendMessage(Utils.toText(message, prefix)));
     }
 
     /**
@@ -242,12 +334,8 @@ public class Utils {
      */
     public static List<String> getGymNames(boolean sort) {
         List<String> gymNames = Lists.newArrayList();
-        for (GymStruc gs : DataStruc.gcon.GymData) {
-            gymNames.add(gs.Name);
-        }
-
+        DataStruc.gcon.GymData.stream().forEach(gym -> gymNames.add(gym.Name));
         gymNames.sort(String::compareTo);
-
         return gymNames;
     }
 
@@ -323,12 +411,9 @@ public class Utils {
      */
     public static List<String> getArenaNames(GymStruc gs, boolean sort) {
         List<String> arenaNames = Lists.newArrayList();
-        for (ArenaStruc as : gs.Arenas) {
-            arenaNames.add(as.Name);
-        }
-        if (sort) {
+        gs.Arenas.stream().forEach(arena -> arenaNames.add(arena.Name));
+        if (sort)
             arenaNames.sort(Comparator.naturalOrder());
-        }
         return arenaNames;
     }
 
@@ -341,16 +426,31 @@ public class Utils {
     public static boolean isArenaEmpty(ArenaStruc as) {
         return (as.Leader == null && as.Challenger == null);
     }
-
+    
+    /**
+     * Sets the players position to the specified position.
+     * @param player The player whom will be teleported.
+     * @param loc The {@link Vec3dStruc} where the player will be teleported.
+     */
     public static void setPosition(Player player, Vec3dStruc loc) {
         player.setRotation(new Vector3d(loc.pitch, loc.yaw, 0));
         player.setLocation(player.getWorld().getLocation(loc.x, loc.y + 1, loc.z));
     }
 
+    /**
+     * Checks to see if the specified player is online.
+     * @param player The player you wish to check if is online or not.
+     * @return True: The player is online. False: The player is offline.
+     */
     public static boolean isOnline(Player player) {
         return getAllPlayers().contains(player);
     }
 
+    /**
+     * Checks to see if the specified player is a leader of any gyms.
+     * @param player The player which you would like to check against.
+     * @return True: The player is a leader of a gym. False: The player is not a leader of any gym.
+     */
     public static boolean isAnyLeader(Player player) {
         for (GymStruc gs : DataStruc.gcon.GymData) {
             if (gs.PlayerLeaders.stream().anyMatch(p -> p.equals(player.getUniqueId()))) {
@@ -360,10 +460,21 @@ public class Utils {
         return false;
     }
 
+    /**
+     * Checks to see if a player is the leader of a specific gym.
+     * @param player The player which you would like to check against.
+     * @param gs The {@link GymStruc} of the gym you are checking against.
+     * @return True: The player is the leader of the gym. False: The player is not a leader of the gym.
+     */
     public static boolean isGymLeader(Player player, GymStruc gs) {
         return gs.PlayerLeaders.stream().anyMatch(p -> p.equals(player.getUniqueId()));
     }
 
+    /**
+     * Checks to see if the player is in any gyms queue for battle.
+     * @param player The player which you would like to check against.
+     * @return True: The player is in a gym queue. False: The player is not in a gym queue.
+     */
     public static boolean isInAnyQueue(Player player) {
         for (GymStruc gs : DataStruc.gcon.GymData) {
             if (gs.Queue.stream().anyMatch(p -> p.equals(player.getUniqueId()))) {
@@ -373,15 +484,32 @@ public class Utils {
         return false;
     }
 
+    /**
+     * Checks to see if a player is in a specific gym queue.
+     * @param player The player which you would like to check against.
+     * @param gs The {@link GymStruc} of the gym you are checking against.
+     * @return The player is in the gym queue. False: The player is not in the gym queue.
+     */
     public static boolean isInGymQueue(Player player, GymStruc gs) {
         return gs.Queue.stream().anyMatch(p -> p.equals(player.getUniqueId()));
     }
 
-    public static boolean isInAnyBattle(Player player) {
+    /**
+     * Checks to see if the specified player is in a gym battle.
+     * @param player The player which you would like to check against.
+     * @return True: The player is in a gym battle. False: The player is not in a gym battle.
+     */
+    public static boolean isInGymBattle(Player player) {
         return DataStruc.gcon.GymBattlers.stream().anyMatch(bs -> bs.leader.equals(player.getUniqueId())
                 || bs.challenger.equals(player.getUniqueId()));
     }
 
+    /**
+     * Converts a string of text into a {@link Text}. Supports Minecraft color code formats.
+     * @param msg The message you would like to be converted to {@link Text}.
+     * @param prefix Whether or not to apply the AGP prefix
+     * @return A {@link Text} instance of msg.
+     */
     public static Text toText(String msg, boolean prefix) {
         if (prefix) {
             msg = "&f[&dAGP&f] " + msg;
@@ -390,44 +518,41 @@ public class Utils {
         return TextSerializers.FORMATTING_CODE.deserializeUnchecked(msg);
     }
 
+    /**
+     * Gets all of the players on the server and returns them as a {@link Collection}
+     * @return Returns all of the players as a {@link Collection}.
+     */
     public static Collection<Player> getAllPlayers() {
         return Sponge.getServer().getOnlinePlayers();
     }
-
+    
+    /**
+     * Gets all of the players waiting in the specified gyms queue for battle.
+     * @param gs The {@link GymStruc} of the gym you are checking against.
+     * @return Returns a {@link List} of {@link UUID}s of the players waiting in the list.
+     */
     public static List<UUID> getQueuedPlayers(GymStruc gs) {
         List<UUID> toList = Lists.newArrayList();
-        for (Player player : getAllPlayers()) {
-            if (isInGymQueue(player, gs)) {
-                toList.add(player.getUniqueId());
-            }
-        }
+        getAllPlayers().stream().forEach(player -> {if(isInGymQueue(player, gs)) toList.add(player.getUniqueId());});
         return toList;
     }
 
-    public static List<UUID> getBattlers(BattleStruc bs) {
-        return Lists.newArrayList(bs.leader, bs.challenger);
-    }
-
-    public static List<UUID> getAllLeaders() {
-        List<UUID> toList = Lists.newArrayList();
-        for (Player player : getAllPlayers()) {
-            if (isAnyLeader(player)) {
-                toList.add(player.getUniqueId());
-            }
-        }
-        return toList;
-    }
-
+    /**
+     * Gets a {@link List} of {@link UUID}s of the leaders of the specified gym.
+     * @param gs The {@link GymStruc} of the gym you are checking against.
+     * @return Returns a {@link List} of {@link UUID}s of the leaders of the specified gym.
+     */
     public static List<UUID> getGymLeaders(GymStruc gs) {
         List<UUID> toList = Lists.newArrayList();
-        for (Player player : getAllPlayers()) {
-            if (isGymLeader(player, gs)) {
-                toList.add(player.getUniqueId());
-            }
-        }
+        getAllPlayers().stream().forEach(player -> {if(isGymLeader(player, gs)) toList.add(player.getUniqueId());});
         return toList;
     }
-
+    
+    /**
+     * Adds the specified amount of money to the players balance.
+     * @param player The player which you would like to give the money to.
+     * @param money The amount of money you would like to give the player.
+     */
     public static void addCurrency(Player player, int money) {
         Pixelmon.moneyManager.getBankAccount((EntityPlayerMP) player).get().changeMoney(money);
     }

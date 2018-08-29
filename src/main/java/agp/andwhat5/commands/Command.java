@@ -4,6 +4,8 @@ import agp.andwhat5.Utils;
 import net.minecraft.command.CommandException;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextFormatting;
+import scala.Array;
+
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandCallable;
 import org.spongepowered.api.command.CommandResult;
@@ -139,7 +141,8 @@ public abstract class Command implements /*CommandExecutor*/ CommandCallable {
     @Override
     public CommandResult process(CommandSource source, String arguments) throws org.spongepowered.api.command.CommandException {
         try {
-            execute((MinecraftServer) Sponge.getServer(), source, arguments.split(" "));
+        	String argu[] = {};
+            execute((MinecraftServer) Sponge.getServer(), source, arguments.isEmpty() ? argu : arguments.split(" "));
         } catch (CommandException e) {
             source.sendMessage(Text.of(RED, e.getMessage()));
         }

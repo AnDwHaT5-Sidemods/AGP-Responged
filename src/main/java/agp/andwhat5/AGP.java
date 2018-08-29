@@ -77,7 +77,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Timer;
 
-@Plugin(id = "agp", name = "AGP", version = "0.5.6-DevBuild2", dependencies = @Dependency(id = "pixelmon"), description = "Another gym plugin.")
+@Plugin(id = "agp", name = "AGP Responged", version = "1.0.0-Beta1", dependencies = @Dependency(id = "pixelmon"), description = "Another gym plugin... but for Sponge!")
 public class AGP {
 
     private static AGP instance;
@@ -196,6 +196,9 @@ public class AGP {
         commandManager.register(this, new SetGymWarp(), "setgymwarp", "sgw", "setgwarp");
         commandManager.register(this, new SpawnNPCLeader(), "spawnnpcleader", "snl", "spawnleader");
         commandManager.register(this, new StorageConverter(), "stc");
+        commandManager.register(this, new AddGymCommand() , "addgymcommand");
+        commandManager.register(this, new DelGymCommand(), "delgymcommand");
+        commandManager.register(this, new ListGymCommands(), "listgymcommands");
     }
 
     @Listener
