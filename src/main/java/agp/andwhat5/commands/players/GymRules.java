@@ -9,13 +9,13 @@ import org.spongepowered.api.command.CommandSource;
 public class GymRules extends Command {
 
     public GymRules() {
-        super("/GymRules <gym>");
+        super("Shows the rules for the specified gym.");
     }
 
     @Override
     public void execute(MinecraftServer server, CommandSource sender, String[] args) throws CommandException {
         if (args.length != 1) {
-            sender.sendMessage(Utils.toText("&7Incorrect Usage: /GymRules <Gym>", true));
+            sender.sendMessage(Utils.toText("&7Incorrect Usage: &b/GymRules <gym>&7.", true));
             return;
         }
         if (!Utils.gymExists(args[0])) {

@@ -2,6 +2,7 @@ package agp.andwhat5.commands.gyms;
 
 import agp.andwhat5.Utils;
 import agp.andwhat5.commands.Command;
+import agp.andwhat5.config.structs.DataStruc;
 import agp.andwhat5.config.structs.GymStruc;
 import com.google.common.collect.Lists;
 import net.minecraft.command.CommandBase;
@@ -15,19 +16,24 @@ public class AddGym extends Command {
 
     //TODO just grab the item the player is holding?
     public AddGym() {
-        super("/addgym gym badge");
+        super("Adds a gym with the specified badge.");
     }
 
     @Override
     public void execute(MinecraftServer server, CommandSource sender, String[] args) throws CommandException {
         //Everyone wanted less functionality for addgym so I gave them less functionality. Horrah for regression.
         if (args.length != 2) {
-            super.sendUsage(sender);
+            sender.sendMessage(Utils.toText("&7Incorrect usage: &b/AddGym <gym> <badge>&7.", true));
             return;
         }
         if (Utils.gymExists(args[0])) {
             sender.sendMessage(Utils.toText("&7The &b" + Utils.getGym(args[0]).Name + " &7Gym already exists!", true));
             return;
+        }
+        if(DataStruc.gcon.GymData.size() >= 54)
+        {
+        	sender.sendMessage(Utils.toText("&7AGP already has the max supported gyms of 54 gyms. You can not add another.", true));
+        	return;
         }
         //int levelCap = parseInt(args[2]);
         //if (levelCap < 1 || levelCap > PixelmonConfig.maxLevel)

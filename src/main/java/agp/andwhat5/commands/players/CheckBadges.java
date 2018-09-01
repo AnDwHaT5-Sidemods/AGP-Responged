@@ -14,7 +14,7 @@ import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord
 
 public class CheckBadges extends Command {
     public CheckBadges() {
-        super("/checkbadges <opt-player>");
+        super("Checks your or another players badges.");
     }
 
     @Override
@@ -30,7 +30,8 @@ public class CheckBadges extends Command {
                 sender.sendMessage(Utils.toText("&7You don't have permission to access another player's badges!", true));
             }
         } else {
-            super.sendUsage(sender);
+            sender.sendMessage(Utils.toText("&7Incorrect usage: &b/CheckBadges <opt-player>&7.", true));
+            
         }
     }
 

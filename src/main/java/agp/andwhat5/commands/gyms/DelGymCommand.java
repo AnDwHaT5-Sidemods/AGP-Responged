@@ -14,7 +14,7 @@ import net.minecraft.server.MinecraftServer;
 public class DelGymCommand extends Command{
 
 	public DelGymCommand() {
-		super("/DelGymCommand Gym Command");
+		super("Deletes the specified command from the gyms command pool.");
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class DelGymCommand extends Command{
 		}
 		else
 		{
-			sender.sendMessage(Utils.toText("&7Incorrect usage: &b/DelGymCommand Gym Command&7.", true));
+			sender.sendMessage(Utils.toText("&7Incorrect usage: &b/DelGymCommand <gym> <command>&7.", true));
 			return;
 		}
 		

@@ -63,6 +63,7 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.config.DefaultConfig;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
@@ -70,14 +71,19 @@ import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.service.user.UserStorageService;
+
 import static agp.andwhat5.config.structs.GymStruc.EnumStatus.*;
 
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Timer;
+import java.util.UUID;
 
-@Plugin(id = "agp", name = "AGP Responged", version = "1.0.0-Beta1", dependencies = @Dependency(id = "pixelmon"), description = "Another gym plugin... but for Sponge!")
+@Plugin(id = "agp", name = "AGP Responged", version = "1.0.0-Beta1", dependencies = @Dependency(id = "pixelmon"), description = "Another gym plugin... but for Sponge!", authors = {"AnDwHaT5", "ClientHax"})
 public class AGP {
 
     private static AGP instance;
@@ -91,7 +97,7 @@ public class AGP {
     private CommentedConfigurationNode node;
     private Storage storage; //TODO: Look into storage options.
     private File base;
-    private Timer specialTimer;
+    //private Timer specialTimer;
 
     //TODO: Move storage related actions to a dedicated class
 
@@ -120,7 +126,8 @@ public class AGP {
         }
     }
 
-    @Listener
+    @SuppressWarnings("deprecation")
+	@Listener
     public void init(GameStartedServerEvent event) {
         instance = this;
         if (AGPConfig.Storage.storageType.equalsIgnoreCase("mysql")) {
@@ -132,11 +139,64 @@ public class AGP {
             this.storage = new FlatFileProvider();
         }
 
-        specialTimer = PlayerCheck.registerSpecials();
+        //specialTimer = PlayerCheck.registerSpecials();
 
         try {
             this.storage.init();
-            for (GymStruc gs : AGP.getInstance().getStorage().getGyms()) {
+            //Do conversion from old type player list
+            if(Utils.getGymStrucs(true).stream().anyMatch(g -> !g.Leaders.isEmpty()))
+            {
+	            for (GymStruc gym : Utils.getGymStrucs(true)) {
+	                if (!gym.Leaders.isEmpty()) {
+		                //Skip if the list is empt
+		
+		                gym.PlayerLeaders = new ArrayList<>(gym.Leaders.size());
+		                for (String leader : new ArrayList<>(gym.Leaders)) {//Clone list to avoid issues when removing entrys
+		                    //Convert name to uuid
+		                    if (leader.length() == 36) {
+		                        //Assume uuid
+		                        gym.PlayerLeaders.add(UUID.fromString(leader));
+		                        gym.Leaders.remove(leader);
+		                        System.out.println("Converting uuid to new format " + leader);
+		                    } else if (leader.equalsIgnoreCase("npc")) {
+		                        gym.NPCAmount++;
+		                        gym.Leaders.remove(leader);
+		                        System.out.println("Converting npc to new format");
+		                    } else {
+		                        //Assume player name
+		                        UserStorageService userStorageService = Sponge.getServiceManager().provide(UserStorageService.class).get();
+		                        Optional<User> user = userStorageService.get(leader);
+		                        if (!user.isPresent()) {
+		                            //Attempt 2, grab from the cache file incase the player files were wiped
+		                            User user1 = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(leader).orElse(null);
+		                            if(user1 != null)
+		                            {
+		                            	UUID lastKnownUUID = user1.getUniqueId();
+		    	                        if (lastKnownUUID == null) {
+		    	                            System.out.println("Error while looking up user for leader " + leader + " in gym " + gym.Name);
+		    	                        } else {
+		    	                            gym.PlayerLeaders.add(lastKnownUUID);
+		    	                            System.out.println("Converting username to new format " + leader + " " + lastKnownUUID);
+		    	                            gym.Leaders.remove(leader);
+		    	                        }
+		                            }
+		                            System.out.println("Could not convert " + leader + " to UUID. This user likely changed their name to something new.");
+		                            gym.Leaders.remove(leader);
+		                        } else {
+		                            gym.PlayerLeaders.add(user.get().getUniqueId());
+		                            System.out.println("Converting username to new format " + user.get().getName() + " " + user.get().getUniqueId());
+		                            gym.Leaders.remove(leader);
+		                        }
+		                    }
+		                }
+	
+	                }
+	
+	            }
+	            Utils.saveAGPData();
+            }
+            //AGP.getInstance().getStorage().getGyms()
+            for (GymStruc gs : Utils.getGymStrucs(true)) {
                 if (gs.NPCAmount > 0) {
                     gs.Status = NPC;
                 } else {
@@ -154,7 +214,7 @@ public class AGP {
 
         if (AGPConfig.Announcements.announcementEnabled) {
             announcementTask = Task.builder()
-                    .execute(task -> Utils.sendToAll(AGPConfig.Announcements.announcementMessage, false))
+                    .execute(task -> Utils.sendToAll(AGPConfig.Announcements.announcementMessage, true))
                     .intervalTicks(AGPConfig.Announcements.announcementTimer)
                     .submit(this);
         }
@@ -205,7 +265,7 @@ public class AGP {
     public void onServerStop(GameStoppedServerEvent e) {
         try {
             this.storage.shutdown();
-            specialTimer.cancel();
+            //specialTimer.cancel();
         } catch (Exception e1) {
             e1.printStackTrace();
         }

@@ -41,6 +41,7 @@ import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
 import com.pixelmonmod.pixelmon.storage.PlayerStorage;
 
 import agp.andwhat5.api.AGPBadgeGivenEvent;
+import agp.andwhat5.config.AGPConfig;
 import agp.andwhat5.config.structs.ArenaStruc;
 import agp.andwhat5.config.structs.BadgeStruc;
 import agp.andwhat5.config.structs.BattleStruc;
@@ -114,6 +115,27 @@ public class Utils {
         }
     	return "INVALID USER";
     }
+    
+    public static UUID getUUIDFromName(String name)
+    {
+    	UserStorageService userStorageService = Sponge.getServiceManager().provide(UserStorageService.class).get();
+        Optional<User> user = userStorageService.get(name);
+        UUID uuid = null;
+        if (!user.isPresent()) {
+            //Attempt 2, grab from the cache file incase the player files were wiped
+            
+            User user1 = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(name).orElse(null);
+            if(user1 != null)
+            {
+            	uuid = user1.getUniqueId();
+            }
+        }
+        else
+        {
+        	uuid = user.get().getUniqueId();
+        }
+        return uuid;
+    }
 
     /**
      * UI main calling function, setups the UI parameters based on {@link EnumGUIType} type
@@ -129,7 +151,7 @@ public class Utils {
     	{
     		PlayerStruc playerData = getPlayerData(player);
     		int slot = 0;
-    		Builder builder = Layout.builder().dimension(InventoryDimension.of(9, 6));
+    		Builder builder = Layout.builder();
     		for(BadgeStruc badge : playerData.Badges)
     		{
     			ItemStack itemStack = ItemStack.builder().itemType(Sponge.getRegistry().getType(ItemType.class, badge.Badge).orElse(ItemTypes.BAKED_POTATO)).build();
@@ -158,8 +180,8 @@ public class Utils {
     			builder.set(e, slot);
     			slot += 1;
     		}
-    		Layout layout = builder.build();
-    		View view = View.builder().archetype(InventoryArchetypes.CHEST).property(InventoryTitle.of(toText("&8"+player.getName()+"'s Badges", false))).build(AGP.getInstance().container);
+    		Layout layout = builder.dimension(InventoryDimension.of(9, 6)).build();
+    		View view = View.builder().archetype(InventoryArchetypes.DOUBLE_CHEST).property(InventoryTitle.of(toText("&8"+player.getName()+"'s Badges", false))).build(AGP.getInstance().container);
     		view.define(layout);
     		view.open(player);
     	}
@@ -167,7 +189,7 @@ public class Utils {
         if(type.equals(EnumGUIType.GymList))
        	{
         	
-    		Builder builder = Layout.builder().dimension(InventoryDimension.of(9, 6));
+    		Builder builder = Layout.builder();
 
     		int slot = 0;
     		
@@ -179,10 +201,15 @@ public class Utils {
        		    	gym.Status.equals(EnumStatus.OPEN) ? "&2Open" : "&eNPC Mode"), false);
        		    
        		    Text lore2 = toText("&7Requires: &b" + (gym.Requirement.equals("null") ? "None" : gym.Requirement), false);
-       		    Text lore3 = toText("&7Leaders:", false);
+       		    Text lore3 = toText("&7Level Cap: &b" + (gym.LevelCap == 0 ? "None" : ""+gym.LevelCap), false);
+       		    Text lore4 = toText("&7Leaders:", false);
        		    final LoreData loreData = Sponge.getDataManager().getManipulatorBuilder(LoreData.class).get().create();
        	        final ListValue<Text> loreInfo = loreData.lore();
-       	        List<Text> loreList = Lists.newArrayList(lore1, lore2, lore3);
+       	        List<Text> loreList = Lists.newArrayList(lore1, lore2, lore3, lore4);
+       	        if(gym.NPCAmount > 0)
+       	        {
+       	        	loreList.add(Utils.toText("  &2NPC " + (gym.NPCAmount > 1 ? "(" + gym.NPCAmount + ")" : "") , false));
+       	        }
        		    if(!gym.PlayerLeaders.isEmpty())
        		    {
         	    	for (int i = 0; i < gym.PlayerLeaders.size(); i++) {
@@ -207,8 +234,8 @@ public class Utils {
        			builder.set(e, slot);
        			slot += 1;
        		}
-       		Layout layout = builder.build();
-    		View view = View.builder().archetype(InventoryArchetypes.CHEST).property(InventoryTitle.of(toText("&8Available Gyms", false))).build(AGP.getInstance().container);
+       		Layout layout = builder.dimension(InventoryDimension.of(9, 6)).build();
+    		View view = View.builder().archetype(InventoryArchetypes.DOUBLE_CHEST).property(InventoryTitle.of(toText("&8Available Gyms", false))).build(AGP.getInstance().container);
     		view.define(layout);
     		view.open(player);
        	}
@@ -223,18 +250,6 @@ public class Utils {
     public static void sendToAll(String message, boolean prefix) {
     	Utils.getAllPlayers().stream().forEach(player -> player.sendMessage(Utils.toText(message, prefix)));
     }
-
-    /**
-     * Broadcasts a message to all players
-     *
-     * @param message The message you wish to be broadcasted.
-     */
-    public static void sendToAll(Text message) {
-        for (Player p : Utils.getAllPlayers()) {
-            p.sendMessage(message);
-        }
-    }
-
 
     /**
      * Adds a gym to the Gyms List
@@ -512,7 +527,7 @@ public class Utils {
      */
     public static Text toText(String msg, boolean prefix) {
         if (prefix) {
-            msg = "&f[&dAGP&f] " + msg;
+            msg = AGPConfig.Announcements.agpPrefix + msg;
         }
 
         return TextSerializers.FORMATTING_CODE.deserializeUnchecked(msg);

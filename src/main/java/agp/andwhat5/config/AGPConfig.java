@@ -20,41 +20,44 @@ public class AGPConfig {
         @Setting(comment = "Whether or not the AGP announcement message is enabled.")
         public static boolean announcementEnabled = true;
 
+        @Setting(comment = "The prefix AGP will use in all chat messages.")
+        public static String agpPrefix = "&f[&dAGP-R&f] ";
+        
         @Setting(comment = "The time in ticks between each AGP announcement message.")
         public static int announcementTimer = 16_800;
 
         @Setting(comment = "The AGP announcement message. (Supports color formatting codes)")
-        public static String announcementMessage = "&f[&dAGP&f] &7This server is running &bAGP &7created by &bAnDwHaT5! &7Use &b/GymList &7to see what Gyms the server has to offer!";
+        public static String announcementMessage = "&7This server is running &bAGP &7created by &bAnDwHaT5! &7Use &b/GymList &7to see what Gyms the server has to offer!";
 
         @Setting(comment = "Whether or not to announce leaders joining the server")
         public static boolean announceLeaderJoin = true;
 
         @Setting(comment = "The announcement for leaders joining the server. {leader} = Gym Leader. (Supports color formatting codes).")
-        public static String leaderJoinMessage = "&f[&dAGP&f] &7Gym Leader &b{leader} &7has joined the server!";
+        public static String leaderJoinMessage = "&7Gym Leader &b{leader} &7has joined the server!";
 
         @Setting(comment = "Whether or not to announce leaders quiting the server")
         public static boolean announceLeaderQuit = true;
 
         @Setting(comment = "The announcement for leaders joining the server. {leader} = Gym Leader. (Supports color formatting codes).")
-        public static String leaderQuitMessage = "&f[&dAGP&f] &7Gym Leader &b{leader} &7has left the server!";
+        public static String leaderQuitMessage = "&7Gym Leader &b{leader} &7has left the server!";
 
         @Setting(comment = "Whether or not to announce leaders opening a Gym")
         public static boolean openAnnouncement = true;
 
         @Setting(comment = "The announcement for opening a gym. {leader} = Gym Leader, {gym} = gym opened. (Supports color formatting codes).")
-        public static String openMessage = "&f[&dAGP&f] &7Gym Leader &b{leader} &7has opened the &b{gym} &7Gym!";
+        public static String openMessage = "&7Gym Leader &b{leader} &7has opened the &b{gym} &7Gym!";
 
         @Setting(comment = "Whether or not to announce leaders closing a gym")
         public static boolean closeAnnouncement = true;
 
         @Setting(comment = "The announcement for closing a gym. {leader} = Gym Leader, {gym} = gym opened. (Supports color formatting codes).")
-        public static String closeMessage = "&f[&dAGP&f] &7Gym Leader &b{leader} &7has closed the &b{gym} &7Gym!";
+        public static String closeMessage = "&7Gym Leader &b{leader} &7has closed the &b{gym} &7Gym!";
 
         @Setting(comment = "Whether or not to announce players beating a gym")
         public static boolean winAnnouncement = true;
 
         @Setting(comment = "The announcement for defeating a gym. {challenger} = player, {leader} = Gym Leader, {gym} = gym defeated. (Supports color formatting codes).")
-        public static String winMessage = "&f[&dAGP&f] &7Challenger &b{challenger} &7has beat the &b{gym} &7Gym!";
+        public static String winMessage = "&7Challenger &b{challenger} &7has beat the &b{gym} &7Gym!";
     }
 
     @ConfigSerializable

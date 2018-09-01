@@ -19,7 +19,7 @@ import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord
 public class SetGymWarp extends Command {
 
     public SetGymWarp() {
-        super("/setgymwarp <gym> <lobby|home|arena> [(if arena) <name> <stands|challenger|leader> <opt-(-delete)>]");
+        super("Sets a warp for the gym where you stand.");
     }
 
     @Override
@@ -85,7 +85,7 @@ public class SetGymWarp extends Command {
                 sender.sendMessage(Utils.toText("&7The &b" + args[0] + " &7Gym does not exist!", true));
             }
         } else {
-            super.sendUsage(sender);
+            sender.sendMessage(Utils.toText("&7Incorrect usage: &b/SetGymWarp <gym> <lobby|home|arena> [(if arena) <name> <stands|challenger|leader> <opt-(-delete)>]&7.", true));
         }
     }
 

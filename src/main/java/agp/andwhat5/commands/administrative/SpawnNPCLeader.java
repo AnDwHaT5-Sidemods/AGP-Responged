@@ -26,14 +26,14 @@ import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord
 public class SpawnNPCLeader extends Command {
 
     public SpawnNPCLeader() {
-        super("/spawnnpcleader <gym>");
+        super("Spawns an NPC Leader of the specified gym where you are standing.");
     }
 
     @Override
     public void execute(MinecraftServer server, CommandSource sender, String[] args) throws CommandException {
         Player user = requireEntityPlayer(sender);
         if (args.length != 1) {
-            super.sendUsage(sender);
+            sender.sendMessage(Utils.toText("&7Incorrect usage: /SpawnNPCLeader <gym>&7.", true));
             return;
         }
 

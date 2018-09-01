@@ -18,7 +18,7 @@ import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord
 
 public class DelBadge extends Command {
     public DelBadge() {
-        super("/delbadge <player> <gym>");
+        super("Deletes a badge from a players userfiles.");
     }
 
     @Override
@@ -53,7 +53,7 @@ public class DelBadge extends Command {
             player.sendMessage(Utils.toText("&b" + sender.getName() + " &7has taken away your &b" + gs.Name + " &7badge!", true));
 
         } else {
-            super.sendUsage(sender);
+            sender.sendMessage(Utils.toText("&7Incorrect Usage: &b/DelBadge <player> <gym>&7.", true));
         }
     }
 

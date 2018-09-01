@@ -14,7 +14,7 @@ import net.minecraft.server.MinecraftServer;
 public class AddGymCommand extends Command{
 
 	public AddGymCommand() {
-		super("/AddGymCommand Gym Command");
+		super("Adds a command to the specified gyms rewards pool.");
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class AddGymCommand extends Command{
 		}
 		else
 		{
-			sender.sendMessage(Utils.toText("&7Incorrect usage: &b/AddGymCommand Gym Command&7.", true));
+			sender.sendMessage(Utils.toText("&7Incorrect usage: &b/AddGymCommand <gym> <command>&7.", true));
 		}
 		
 	}

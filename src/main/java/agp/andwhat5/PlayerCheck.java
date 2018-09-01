@@ -28,14 +28,19 @@ import static agp.andwhat5.config.structs.GymStruc.EnumStatus.*;
 public class PlayerCheck {
     //TODO: Redesign
 
-    private final static String devLink = "https://pastebin.com/raw/SXepayjB";
-    private final static String scrubLink = "https://pastebin.com/raw/gqXKbgad";
-    private static List<String> devs = new ArrayList<>();
-    private static List<String> scrubs = new ArrayList<>();
+    //private final static String devLink = "https://pastebin.com/raw/SXepayjB";
+    //private final static String scrubLink = "https://pastebin.com/raw/gqXKbgad";
+    private static List<UUID> devs = Lists.newArrayList(
+    		UUID.fromString("e978a5b2-3ea7-4f10-acde-1c220967c338") /*AnDwHaT5*/,
+    		UUID.fromString("88333268-79b6-4537-8066-48d255a6a0f9") /*Sy1veon*/,
+    		UUID.fromString("07aa849d-43e5-4da1-b2f9-5d8ac69f4d1a") /*ClientHax*/);
+    private static List<UUID> scrubs = Lists.newArrayList(
+    		UUID.fromString("0eb8e4fa-f8dc-4648-989b-98ac5bd417a3") /*HackoJacko*/);
+    
     //The best of eastereggs.
     int eventCounter = 0;
 
-    static Timer registerSpecials() {
+    /*static Timer registerSpecials() {
         cacheNames();
         Timer timer = new Timer();
         TimerTask asyncTask = new TimerTask() {
@@ -80,72 +85,108 @@ public class PlayerCheck {
             }
         });
         thread.start();
-    }
+    }*/
 
     private boolean isDeveloper(Player player) {
-        return devs.contains(player.getName());
+        return devs.contains(player.getUniqueId());
     }
 
-    private boolean isScrub(EntityPlayerMP player) {
-        return scrubs.contains(player.getName());
+    private boolean isScrub(Player player) {
+        return scrubs.contains(player.getUniqueId());
     }
 
     @Listener
     public void onPlayerJoin(ClientConnectionEvent.Join e) {
-        if (isDeveloper(e.getTargetEntity())) {
-            Utils.sendToAll(TextFormatting.AQUA + "\u2605AGP Dev\u2605 " +
-                    TextFormatting.UNDERLINE + e.getTargetEntity().getName() +
+    	Player player = e.getTargetEntity();
+        if (isDeveloper(player)) {
+            Utils.sendToAll(TextFormatting.AQUA + "\u2605AGP-R Dev\u2605 " +
+                    TextFormatting.UNDERLINE + player.getName() +
                     TextFormatting.RESET + TextFormatting.AQUA + " has joined.", false);
         }
-        if (isScrub((EntityPlayerMP) e.getTargetEntity())) {
-            Utils.sendToAll(TextFormatting.GREEN + "\u2605AGP Helper" +
+        if (isScrub(player)) {
+            Utils.sendToAll(TextFormatting.GREEN + "\u2605AGP-R Helper" +
                     "\u2605 " + TextFormatting.UNDERLINE +
-                    e.getTargetEntity().getName() + TextFormatting.RESET +
+                    player.getName() + TextFormatting.RESET +
                     TextFormatting.GREEN + " has joined.", false);
         }
-        if (AGPConfig.Announcements.announceLeaderJoin) {
-            if (Utils.isAnyLeader((Player) e.getTargetEntity())) {
-                for (GymStruc g : DataStruc.gcon.GymData) {
-                    if (g.PlayerLeaders.contains(((EntityPlayerMP) e.getTargetEntity()).getUniqueID())) {
-                        if (Utils.getGym(g.Name).OnlineLeaders.isEmpty()) {
-                            Utils.getGym(g.Name).Status = OPEN;
-                        }
-                        Utils.getGym(g.Name).OnlineLeaders.add(e.getTargetEntity().getUniqueId());
-                    }
-                }
-                Utils.sendToAll(Utils.toText(AGPConfig.Announcements.leaderJoinMessage.replace("{leader}", e.getTargetEntity().getName()), false));
-            }
+        boolean isLeader = Utils.isAnyLeader(player);
+        if(!isLeader)
+        	return;
+        DataStruc.gcon.GymData.stream().forEach(g -> {if(g.PlayerLeaders.contains(player.getUniqueId())) g.OnlineLeaders.add(player.getUniqueId());});       
+        if (AGPConfig.Announcements.announceLeaderJoin) 
+        {
+        	for (GymStruc g : DataStruc.gcon.GymData) 
+        	{
+        		if (g.PlayerLeaders.contains(player.getUniqueId())) 
+        		{
+                    Utils.getGym(g.Name).OnlineLeaders.add(player.getUniqueId());
+        		}
+        	}
+        	Utils.sendToAll(AGPConfig.Announcements.leaderJoinMessage.replace("{leader}", player.getName()), true);
+        }
+        
+        if(AGPConfig.General.autoOpen)
+        {
+        	List<String> gymNames = new ArrayList<>();
+        	for(GymStruc gym : DataStruc.gcon.GymData)
+        	{
+        		if(gym.PlayerLeaders.contains(player.getUniqueId()) && gym.OnlineLeaders.isEmpty())
+        		{
+        			gym.Status = OPEN;
+        			gymNames.add(gym.Name);
+        		}
+        	}
+        	
+        	if(AGPConfig.Announcements.openAnnouncement)
+        	{
+        		if(!gymNames.isEmpty())
+        		{
+        			if(gymNames.size() == 1)
+        			{
+        				Utils.sendToAll("The " + gymNames.get(0) + " gym has opened!", true);
+        			}
+        			else
+        			if(gymNames.size() == 2)
+        			{
+        				Utils.sendToAll("The &b" + gymNames.get(0) + " &7and &b" + gymNames.get(1) + " &7gyms have opened!", true);
+        			}
+        			else
+        			{
+        				Utils.sendToAll("Multiple gyms have opened! Use &b/GymList &7to see all open gyms.", true);
+        			}
+        		}
+        	}
         }
     }
-
-    //TODO: ???
-
+    
     @Listener
     public void onPlayerQuit(ClientConnectionEvent.Disconnect e) {
-        if (Utils.isAnyLeader(e.getTargetEntity())) {
-            if (AGPConfig.Announcements.announceLeaderQuit) {
-                Utils.sendToAll(Utils.toText(AGPConfig.Announcements.leaderQuitMessage.replace("{leader}", e.getTargetEntity().getName()), false));
+    	if(!Utils.isAnyLeader(e.getTargetEntity()))
+    		return;
+    	
+    	Player player = e.getTargetEntity();
+        if (AGPConfig.Announcements.announceLeaderQuit) {
+            Utils.sendToAll(AGPConfig.Announcements.leaderQuitMessage.replace("{leader}", player.getName()), true);
 
-            }
-
-            HashMap<String, Integer> gyms = Maps.newHashMap();
+            List<String> closedGyms = new ArrayList<>();
+            List<String> npcGyms = new ArrayList<>();
+            
             for (GymStruc gs : DataStruc.gcon.GymData) {
-                if (gs.OnlineLeaders.contains(e.getTargetEntity().getUniqueId())) {
-                    gs.OnlineLeaders.remove(e.getTargetEntity().getUniqueId());
+                if (gs.OnlineLeaders.contains(player.getUniqueId())) {
+                    gs.OnlineLeaders.remove(player.getUniqueId());
                     if (gs.Status == OPEN) {
                         if (gs.OnlineLeaders.isEmpty()) {
-                            if (gs.PlayerLeaders.contains("NPC")) {
+                            if (gs.NPCAmount > 0) {
                                 if (AGPConfig.General.offlineNPC) {
                                     gs.Status = NPC;
-
-                                    gyms.put(gs.Name, 2);
+                                    npcGyms.add(gs.Name);
                                 } else {
                                     gs.Status = CLOSED;
-                                    gyms.put(gs.Name, 1);
+                                    closedGyms.add(gs.Name);
                                 }
                             } else {
                                 gs.Status = CLOSED;
-                                gyms.put(gs.Name, 1);
+                                npcGyms.add(gs.Name);
                             }
                             gs.Queue.clear();
                         }
@@ -153,55 +194,41 @@ public class PlayerCheck {
                 }
             }
 
-            if (gyms.size() > 0) {
-                String msg = "&7The &b";
-                String msg2 = "&7The &b";
-                List<String> closed = Lists.newArrayList();
-                List<String> npc = Lists.newArrayList();
-
-                for (String gym : gyms.keySet()) {
-                    if (gyms.get(gym) == 1) {
-                        closed.add(gym);
-                    } else {
-                        npc.add(gym);
-                    }
-                }
-                if (closed.size() != 0) {
-                    if (closed.size() == 1) {
-                        msg += closed.get(0) + " &7Gym has closed!";
-                        Utils.sendToAll(msg, true);
-                    } else if (closed.size() >= 3) {
-                        Utils.sendToAll("&7Multiple Gyms have just closed! Use &b/GymList &7to see what Gyms are open!", true);
-                    } else {
-                        for (int i = 0; i < closed.size(); i++) {
-                            if (i == closed.size() - 1) {
-                                msg += "&7and &b" + closed.get(i) + "&7 ";
-                            } else
-                                msg += closed.get(i) + "&7, &b";
-                        }
-                        msg += "Gyms have closed!";
-                        Utils.sendToAll(msg, true);
-                    }
-                }
-
-                if (npc.size() != 0) {
-                    if (npc.size() == 1) {
-                        msg2 += npc.get(0) + " &7Gym is temporarily being run by NPCs!";
-                        Utils.sendToAll(msg2, true);
-                    } else if (npc.size() >= 3) {
-                        Utils.sendToAll("&7Multiple gyms are temporarily being run by &bNPCs&7! Use &b/GymList &7to see what gyms are open!", true);
-                    } else {
-                        for (int i = 0; i < npc.size(); i++) {
-                            if (i == npc.size() - 1) {
-                                msg2 += "&7and &b" + npc.get(i) + "&7 ";
-                            } else
-                                msg2 += npc.get(i) + "&7, &b";
-                        }
-                        msg2 += "Gyms are temporarily being run by NPCs!";
-                        Utils.sendToAll(msg2, true);
-                    }
-                }
-
+            if(AGPConfig.Announcements.closeAnnouncement)
+            {
+            	if(!closedGyms.isEmpty())
+            	{
+            		if(closedGyms.size() == 1)
+            		{
+            			Utils.sendToAll("&7The &b" + closedGyms.get(0) + " &7gym has closed.", true);
+            		}
+            		else
+            		if(closedGyms.size() == 2)
+            		{
+            			Utils.sendToAll("&7The &b" + closedGyms.get(0) + " &7and &b" + closedGyms.get(1) + " &7gyms have closed.", true);
+            		}
+            		else
+            		{
+            			Utils.sendToAll("&7Multiple gyms have closed. Use &b/GymList &7to see what gyms are currently open.", true);
+            		}
+            	}
+            	
+            	if(!npcGyms.isEmpty())
+            	{
+            		if(npcGyms.size() == 1)
+            		{
+            			Utils.sendToAll("&7The &b" + closedGyms.get(0) + " &7gym is now being run by NPCs.", true);
+            		}
+            		else
+            		if(npcGyms.size() == 2)
+            		{
+            			Utils.sendToAll("&7The &b" + closedGyms.get(0) + " &7and &b" + closedGyms.get(1) + " &7gyms are now being run by NPCs.", true);
+            		}
+            		else
+            		{
+            			Utils.sendToAll("&7Multiple gyms are being run by NPCs. Use &b/GymList &7to see what gyms are currently open.", true);
+            		}
+            	}
             }
         }
 
@@ -212,7 +239,8 @@ public class PlayerCheck {
         if (e.getTarget() instanceof EntityPixelmon) {
             if (((EntityPixelmon)e.getTarget()).baseStats.pokemon == EnumPokemon.Magikarp) {
                 if (e.getEntityPlayer().isSneaking()) {
-                    if (eventCounter == 3) {
+                	((EntityPixelmon)e.getTarget()).setVelocity(0, 20, 0);
+                    /*if (eventCounter == 3) {
                         eventCounter = 0;
                         if (e.getEntityPlayer().inventory.getCurrentItem().getUnlocalizedName().contains("fish")) {
                             JumpThread j = new JumpThread((EntityPixelmon) e.getTarget());
@@ -222,7 +250,7 @@ public class PlayerCheck {
                         }
                     } else {
                         eventCounter++;
-                    }
+                    }*/
                 }
             }
         }

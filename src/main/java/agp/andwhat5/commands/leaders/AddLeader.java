@@ -19,26 +19,40 @@ import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord
 
 public class AddLeader extends Command {
     public AddLeader() {
-        super("/addleader <player> <gym|all>");
+        super("Adds the specified player to the specified gym.");
     }
 
     @Override
     public void execute(MinecraftServer server, CommandSource sender, String[] args) throws CommandException {
         if (args.length != 2) {
-            super.sendUsage(sender);
+            sender.sendMessage(Utils.toText("&7Incorrect usage: &b/AddLeader <player:npc> <gym>&7.", true));
             return;
         }
 
         String leaderName = args[0];
         String gymName = args[1];
 
-        Player player;
-        try {
-            player = requireEntityPlayer(leaderName);
-        } catch (CommandException e) {
-            player = null;
+        if(leaderName.equalsIgnoreCase("npc"))
+        {
+            if (!Utils.gymExists(gymName)) {
+            	sender.sendMessage(Utils.toText("&7The specified gym does not exist.", true));
+            	return;
+            }
+            GymStruc gs = Utils.getGym(gymName);
+            gs.NPCAmount += 1;
+            Utils.editGym(gs);
+            Utils.saveAGPData();
+            sender.sendMessage(Utils.toText("&7Successfully added an NPC to the list of leaders.", true));
+            return;
+
         }
-        UUID pUUID = player != null ? player.getUniqueId() : Sponge.getServer().getPlayer(leaderName).get().getUniqueId();
+        Player player = requireEntityPlayer(leaderName);
+        if(player == null)
+        {
+        	sender.sendMessage(Utils.toText("&7The player you specified is not currently online.", true));
+        	return;
+        }
+        UUID pUUID = player.getUniqueId();
 
         if (Utils.gymExists(gymName)) {
             GymStruc gs = Utils.getGym(gymName);

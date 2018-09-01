@@ -11,7 +11,7 @@ import org.spongepowered.api.entity.living.player.Player;
 public class CancelChallenge extends Command {
 
     public CancelChallenge() {
-        super("/cancelchallenge");
+        super("Cancels a challenge issues to a gym.");
     }
 
     @Override

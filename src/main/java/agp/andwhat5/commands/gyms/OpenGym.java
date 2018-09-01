@@ -17,14 +17,14 @@ import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord
 public class OpenGym extends Command {
 
     public OpenGym() {
-        super("/opengym <gym>");
+        super("Opens the specified gym.");
     }
 
     @Override
     public void execute(MinecraftServer server, CommandSource sender, String[] args) throws CommandException {
         if (args.length != 1) {
-            super.sendUsage(sender);
-            return;
+        	sender.sendMessage(Utils.toText("&7Incorrect usage: &b/OpenGym <gym>&7.", true));
+        	return;
         }
 
         String gymName = args[0];

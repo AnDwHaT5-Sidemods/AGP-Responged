@@ -21,13 +21,13 @@ import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord
  */
 public class EditGym extends Command {
     public EditGym() {
-        super("/editgym <gym> <name:(name) | badge:(badge) | require:(gym) | rules:(rules) | level:(level) | money:(money)>");
+        super("Edits the specified gym with the specified parameters.");
     }
 
     @Override
     public void execute(MinecraftServer server, CommandSource sender, String[] args) throws CommandException {
         if (args.length < 2) {
-            super.sendUsage(sender);
+            sender.sendMessage(Utils.toText("&7Incorrect usage: /EditGym <gym> <name:(name) | badge:(badge) | require:(gym) | rules:(rules) | level:(level) | money:(money)>&7.", true));
             return;
         }
 

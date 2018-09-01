@@ -17,13 +17,13 @@ import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord
 public class DenyChallenge extends Command {
 
     public DenyChallenge() {
-        super("/denychallenge <gym> <opt-challenger>");
+        super("Denys a challenge from the next player in the spepcified gyms queue.");
     }
 
     @Override
     public void execute(MinecraftServer server, CommandSource sender, String[] args) throws CommandException {
         if (args.length != 1 && args.length != 2) {
-            super.sendUsage(sender);
+            sender.sendMessage(Utils.toText("Incorrect usage: &b/DenyChallenge <gym> <opt-challenger>&7.", true));
             return;
         }
 

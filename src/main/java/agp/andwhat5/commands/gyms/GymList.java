@@ -19,7 +19,7 @@ import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord
 public class GymList extends Command {
 
     public GymList() {
-        super("/gymlist <opt-(-nogui)");
+        super("Shows all of the gyms the server has.");
     }
 
     @Override
@@ -58,7 +58,8 @@ public class GymList extends Command {
         } 
         else 
         {
-            super.sendUsage(sender);
+            sender.sendMessage(Utils.toText("&7Incorrect usage: /GymList <opt-(-nogui)&7.", true));
+            return;
         }
     }
 

@@ -11,7 +11,7 @@ import net.minecraft.server.MinecraftServer;
 public class ListGymCommands extends Command{
 
 	public ListGymCommands() {
-		super("/ListGymCommands Gym");
+		super("Displays all of the commands in the gyms rewards pool.");
 	}
 	
 	@Override
@@ -33,7 +33,7 @@ public class ListGymCommands extends Command{
 		}
 		else
 		{
-			sender.sendMessage(Utils.toText("&7Incorrect usage: &b/ListGymCommands Gym&7.", true));
+			sender.sendMessage(Utils.toText("&7Incorrect usage: &b/ListGymCommands <gym>&7.", true));
 			return;
 		}
 	}

@@ -21,14 +21,14 @@ import java.util.UUID;
 public class StorageConverter extends Command {
 
     public StorageConverter() {
-        super("/stc <flatfile|h2|mysql> <confirm>");
+        super("Converts AGP's data between supported storage types.");
     }
 
     @Override
     public void execute(MinecraftServer server, CommandSource sender, String[] args) throws CommandException {
         if (args.length != 2) {
-            super.sendUsage(sender);
-            return;
+        	sender.sendMessage(Utils.toText("&7Incorrect usage: &b/STC <flatfile|h2|mysql> <confirm>&7.", true));
+        	return;
         }
 
         if (args[1].equalsIgnoreCase("confirm")) {

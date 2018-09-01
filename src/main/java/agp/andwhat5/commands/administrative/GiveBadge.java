@@ -23,7 +23,7 @@ import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord
 public class GiveBadge extends Command {
 
     public GiveBadge() {
-        super("/givebadge <player> <gym>");
+        super("Gives a player the specified gyms badge.");
     }
 
     @Override
@@ -73,7 +73,7 @@ public class GiveBadge extends Command {
 
 
         } else {
-            super.sendUsage(sender);
+            sender.sendMessage(Utils.toText("&7Incorrect usage: &b/GiveBadge <player> <gym>&7.", true));
 
         }
     }

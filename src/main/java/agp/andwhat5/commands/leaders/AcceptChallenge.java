@@ -29,15 +29,15 @@ import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord
 
 public class AcceptChallenge extends Command {
     public AcceptChallenge() {
-        super("/acceptchallenge <gym> <opt-arena>");
+        super("Accepts a challenge from a player in the specififed gym queue.");
     }
 
     @Override
     public void execute(MinecraftServer server, CommandSource sender, String[] args) throws CommandException {
         Player user = requireEntityPlayer(sender);
         if (args.length != 1 && args.length != 2) {
-            super.sendUsage(sender);
-            return;
+        	sender.sendMessage(Utils.toText("&7Incorrect usage: &b/AcceptChallenge <gym> <opt-arena>&7.", true));
+        	return;
         }
         if (!Utils.gymExists(args[0])) {
             sender.sendMessage(Utils.toText("&7The &b" + args[0] + " &7Gym does not exist!", true));
@@ -63,12 +63,12 @@ public class AcceptChallenge extends Command {
         UUID cUUID = gs.Queue.poll();
         Player challenger = getEntityPlayer(cUUID);
         if (challenger == null) {
-            sender.sendMessage(Utils.toText("&7Player &b" + cUUID + " &7was not found on the server!", true));
+            sender.sendMessage(Utils.toText("&7Player &b" + Utils.getNameFromUUID(cUUID) + " &7was not found on the server!", true));
             return;
         }
 
         if (!Utils.checkLevels(challenger, gs.LevelCap)) {
-            sender.sendMessage(Utils.toText("&7Player &b" + cUUID + "&7's team is above the level cap for the &b" + gs.Name + " &7Gym!", true));
+            sender.sendMessage(Utils.toText("&7Player &b" + Utils.getNameFromUUID(cUUID) + "&7's team is above the level cap for the &b" + gs.Name + " &7Gym!", true));
             challenger.sendMessage(Utils.toText("&7Your team is above the level cap for the &b" + gs.Name + " &7Gym!", true));
             return;
         }
@@ -100,7 +100,7 @@ public class AcceptChallenge extends Command {
 
             BattleStruc bs = new BattleStruc(gs, user.getUniqueId(), challenger.getUniqueId());
             DataStruc.gcon.GymBattlers.add(bs);
-            user.sendMessage(Utils.toText("&7Initiating battle against &b" + cUUID +
+            user.sendMessage(Utils.toText("&7Initiating battle against &b" + Utils.getNameFromUUID(cUUID) +
                     "&7!", true));
             challenger.sendMessage(Utils.toText("&7Gym Leader &b" + user.getName() + " &7has " +
                     "accepted your challenge against the &b" + gs.Name + " &bGym!", true));

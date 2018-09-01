@@ -17,7 +17,7 @@ import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord
 public class GymWarp extends Command {
 
     public GymWarp() {
-        super("/gymwarp <gym> <lobby|home|arena> [(if arena) <name> <stands|challenger|leader>]");
+        super("Warps you to the specified gym location.");
     }
 
     @Override
@@ -25,7 +25,7 @@ public class GymWarp extends Command {
         Player user = requireEntityPlayer(sender);
         String loc = args.length >= 2 ? args[1] : "lobby";
         if (args.length != 1 && args.length != 2 && args.length != 4) {
-            super.sendUsage(sender);
+            sender.sendMessage(Utils.toText("&7Incorrect usage: &b/GymWarp <gym> <lobby|home|arena> [(if arena) <name> <stands|challenger|leader>]&7.", true));
             return;
         }
 

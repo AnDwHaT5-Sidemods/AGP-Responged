@@ -15,13 +15,13 @@ import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord
 public class DeleteGym extends Command {
 
     public DeleteGym() {
-        super("/delgym <gym>");
+        super("Deletes the specified gym.");
     }
 
     @Override
     public void execute(MinecraftServer server, CommandSource sender, String[] args) throws CommandException {
         if (args.length != 1) {
-            super.sendUsage(sender);
+        	sender.sendMessage(Utils.toText("&7Incorrect usage: &b/DelGym <gym>&7.", true));
             return;
         }
         if (!Utils.gymExists(args[0])) {

@@ -1,10 +1,14 @@
 package agp.andwhat5.commands;
 
-import agp.andwhat5.Utils;
-import net.minecraft.command.CommandException;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.text.TextFormatting;
-import scala.Array;
+import static org.spongepowered.api.text.format.TextColors.RED;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import javax.annotation.Nullable;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandCallable;
@@ -15,13 +19,12 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import com.google.common.collect.Lists;
 
-import static org.spongepowered.api.text.format.TextColors.RED;
+import agp.andwhat5.Utils;
+import net.minecraft.command.CommandException;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.TextFormatting;
 
 /**
  * This is currently acting as a sponge -> forge style command wrapper :(
@@ -54,7 +57,7 @@ public abstract class Command implements /*CommandExecutor*/ CommandCallable {
      * If not, it throws a CommandException stating the player can not be found.
      *
      * @param username The username or uuid string to check.
-     * @return the EntityPlayerMP
+     * @return the {@link Player}
      * @throws CommandException
      */
     public static Player requireEntityPlayer(String username) throws CommandException {
@@ -100,7 +103,7 @@ public abstract class Command implements /*CommandExecutor*/ CommandCallable {
 
     @Override
     public Text getUsage(CommandSource source) {
-        return Utils.toText("&7Incorrect Usage: &b" + usage, true);
+        return Utils.toText("&7" + usage, true);
     }
 
     @Override
@@ -115,7 +118,25 @@ public abstract class Command implements /*CommandExecutor*/ CommandCallable {
 
     @Override
     public List<String> getSuggestions(CommandSource source, String arguments, @Nullable Location<World> targetPosition) throws org.spongepowered.api.command.CommandException {
-        return getTabCompletions((MinecraftServer) Sponge.getServer(), source, arguments.split(" "));
+        List<String> ar;
+        if(arguments.trim().isEmpty())
+        {
+        	ar = new ArrayList<>();
+        }
+        else
+        {
+        	if(arguments.trim().contains(" "))
+        	{
+        		ar = Lists.newArrayList(arguments.trim().split(" "));
+        	}
+        	else
+        	{
+        		ar = new ArrayList<>();
+        		ar.add(arguments);
+        	}
+        }
+        ar.add("");
+    	return getTabCompletions((MinecraftServer) Sponge.getServer(), source, ar.toArray(new String[ar.size()]));
     }
 
     public List<String> getTabCompletions(MinecraftServer server, CommandSource sender, String[] args) {

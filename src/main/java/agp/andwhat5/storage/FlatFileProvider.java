@@ -109,54 +109,7 @@ public class FlatFileProvider implements Storage {
             gyms = response;
         }
 
-        //Do conversion from old type player list
-        for (GymStruc gym : gyms) {
-            if (gym.Leaders.isEmpty()) {
-                //Skip if the list is empty
-                continue;
-            }
 
-            gym.PlayerLeaders = new ArrayList<>(gym.Leaders.size());
-            for (String leader : new ArrayList<>(gym.Leaders)) {//Clone list to avoid issues when removing entrys
-                //Convert name to uuid
-                if (leader.length() == 36) {
-                    //Assume uuid
-                    gym.PlayerLeaders.add(UUID.fromString(leader));
-                    gym.Leaders.remove(leader);
-                    System.out.println("Converting uuid to new format " + leader);
-                } else if (leader.equalsIgnoreCase("npc")) {
-                    gym.NPCAmount++;
-                    gym.Leaders.remove(leader);
-                    System.out.println("Converting npc to new format");
-                } else {
-                    //Assume player name
-                    UserStorageService userStorageService = Sponge.getServiceManager().provide(UserStorageService.class).get();
-                    Optional<User> user = userStorageService.get(leader);
-                    if (!user.isPresent()) {
-                        //Attempt 2, grab from the cache file incase the player files were wiped
-                        
-                        User user1 = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(leader).orElse(null);
-                        if(user1 != null)
-                        {
-                        	UUID lastKnownUUID = user1.getUniqueId();
-	                        if (lastKnownUUID == null) {
-	                            System.out.println("Error while looking up user for leader " + leader + " in gym " + gym.Name);
-	                        } else {
-	                            gym.PlayerLeaders.add(lastKnownUUID);
-	                            System.out.println("Converting username to new format " + leader + " " + lastKnownUUID);
-	                            gym.Leaders.remove(leader);
-	                        }
-                        }
-                    } else {
-                        gym.PlayerLeaders.add(user.get().getUniqueId());
-                        System.out.println("Converting username to new format " + user.get().getName() + " " + user.get().getUniqueId());
-                        gym.Leaders.remove(leader);
-                    }
-                }
-
-            }
-
-        }
 
         return gyms;
     }

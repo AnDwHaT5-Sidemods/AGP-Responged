@@ -18,13 +18,13 @@ import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord
 public class QueueList extends Command {
 
     public QueueList() {
-        super("/queuelist <gym> <opt-player>");
+        super("Shows the players waiting in the specified gyms queue.");
     }
 
     @Override
     public void execute(MinecraftServer server, CommandSource sender, String[] args) throws CommandException {
         if (args.length != 1 && args.length != 2) {
-            super.sendUsage(sender);
+            sender.sendMessage(Utils.toText("&7Incorrect usage: /QueueList <gym> <opt-player>&7.", true));
             return;
         }
 

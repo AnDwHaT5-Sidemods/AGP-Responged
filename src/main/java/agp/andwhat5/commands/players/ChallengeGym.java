@@ -18,7 +18,7 @@ import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord
 public class ChallengeGym extends Command {
 
     public ChallengeGym() {
-        super("/challengegym <gym>");
+        super("Challenges the specified gym to a battle.");
     }
 
     @Override
@@ -26,7 +26,7 @@ public class ChallengeGym extends Command {
         Player user = Command.requireEntityPlayer(sender);
 
         if (args.length != 1) {
-            super.sendUsage(sender);
+            sender.sendMessage(Utils.toText("&7Incorrect usage: &b/ChallengeGym <gym>&7.", true));
             return;
         }
 
