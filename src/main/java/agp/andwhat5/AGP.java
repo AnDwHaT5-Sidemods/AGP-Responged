@@ -60,18 +60,23 @@ import com.pixelmonmod.pixelmon.Pixelmon;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import org.spongepowered.api.CatalogTypes;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
+import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
+import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.service.user.UserStorageService;
+import org.spongepowered.api.text.Text;
 
 import static agp.andwhat5.config.structs.GymStruc.EnumStatus.*;
 
@@ -235,7 +240,6 @@ public class AGP {
 
         CommandManager commandManager = Sponge.getCommandManager();
         commandManager.register(this, new AcceptChallenge(), "acceptchallenge", "ac");
-        commandManager.register(this, new AddGym(), "addgym");
         commandManager.register(this, new AddLeader(), "addleader");
         commandManager.register(this, new AGPReload(), "agpreload");
         commandManager.register(this, new CancelChallenge(), "cancelchallenge", "cc");
@@ -259,6 +263,17 @@ public class AGP {
         commandManager.register(this, new AddGymCommand() , "addgymcommand");
         commandManager.register(this, new DelGymCommand(), "delgymcommand");
         commandManager.register(this, new ListGymCommands(), "listgymcommands");
+
+        CommandSpec addGymSpec = CommandSpec.builder()
+                .description(Text.of("Adds a gym with the specified badge."))
+                .permission("agp.command.addgym")
+                .executor(new AddGym())
+                .arguments(
+                        GenericArguments.onlyOne(GenericArguments.string(Text.of("GymName"))),
+                        GenericArguments.onlyOne(GenericArguments.catalogedElement(Text.of("BadgeItem"), CatalogTypes.ITEM_TYPE))
+                )
+                .build();
+        commandManager.register(this, addGymSpec, "addgym");
     }
 
     @Listener
