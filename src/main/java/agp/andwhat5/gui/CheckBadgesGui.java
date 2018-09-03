@@ -1,9 +1,7 @@
 package agp.andwhat5.gui;
 
 import agp.andwhat5.AGP;
-import agp.andwhat5.Utils;
-import agp.andwhat5.config.structs.DataStruc;
-import agp.andwhat5.config.structs.GymStruc;
+import agp.andwhat5.config.structs.BadgeStruc;
 import com.mcsimonflash.sponge.teslalibs.inventory.Action;
 import com.mcsimonflash.sponge.teslalibs.inventory.Element;
 import com.mcsimonflash.sponge.teslalibs.inventory.Layout;
@@ -23,46 +21,47 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static agp.andwhat5.Utils.getNameFromUUID;
-import static agp.andwhat5.Utils.setPosition;
+import static agp.andwhat5.Utils.getPlayerData;
 import static agp.andwhat5.Utils.toText;
-import static org.spongepowered.api.data.type.DyeColors.BLACK;
-import static org.spongepowered.api.data.type.DyeColors.RED;
-import static org.spongepowered.api.data.type.DyeColors.WHITE;
+import static org.spongepowered.api.data.type.DyeColors.*;
 
-public class GymListGui {
+@SuppressWarnings("Duplicates")
+public class CheckBadgesGui
+{
 
     private static final Element redGlassElement = Element.of(ItemStack.builder().itemType(ItemTypes.STAINED_GLASS_PANE).add(Keys.DISPLAY_NAME, Text.EMPTY).add(Keys.DYE_COLOR, RED).build());
     private static final Element blackGlassElement = Element.of(ItemStack.builder().itemType(ItemTypes.STAINED_GLASS_PANE).add(Keys.DISPLAY_NAME, Text.EMPTY).add(Keys.DYE_COLOR, BLACK).build());
     private static final Element whiteGlassElement = Element.of(ItemStack.builder().itemType(ItemTypes.STAINED_GLASS_PANE).add(Keys.DISPLAY_NAME, Text.EMPTY).add(Keys.DYE_COLOR, WHITE).build());
 
-    public static void openGymListGUI(Player player) {
+    public static void openCheckBadgesGUI(Player player)
+    {
 
         View view = View.builder()
                 .archetype(InventoryArchetypes.DOUBLE_CHEST)
-                .property(InventoryTitle.of(toText("&8Available Gyms", false)))
+                .property(InventoryTitle.of(toText("&8" + player.getName() + "'s Badges", false)))
                 .build(AGP.getInstance().container);
+
         view.open(player);
 
-        constructGymListPage(player, view, 0);
+        constructCheckBadgesPage(player, view, 0);
     }
 
-    private static void constructGymListPage(Player player, View view, int page)
+    private static void constructCheckBadgesPage(Player player, View view, int page)
     {
 
         int startOnLine = 1;
         int rowStart = 1;
         int itemsPerRow = 7;
         int itemRows = 4;
-        int itemsPerPage = itemsPerRow * itemRows;
+        int itemsPerPage = itemsPerRow * itemRows;//28
 
-        List<GymStruc> gymData = DataStruc.gcon.GymData;
+        List<BadgeStruc> badgeData = getPlayerData(player).Badges;//56
 
         //Sanity checks
-        int maxPages = (int) (Math.ceil((double)gymData.size() / (double)itemsPerPage) - 1);
-        if(page < 0)
+        int maxPages = (int) (Math.ceil((double)badgeData.size() / (double)itemsPerPage) - 1);
+        if (page < 0)
             page = 0;
-        if(page >= maxPages)
+        if (page >= maxPages)
             page = maxPages;
 
         //Clear out previous layout / items
@@ -77,16 +76,18 @@ public class GymListGui {
         view.define(newLayout);
 
         int slotsDone = 0;
-        for(int i = page * itemsPerPage; i < gymData.size(); i++) {
-            if(slotsDone == itemsPerPage) {
+        for (int i = page * itemsPerPage; i < badgeData.size(); i++)
+        {
+            if (slotsDone == itemsPerPage)
+            {
                 break;
             }
 
             int currentRow = slotsDone / itemsPerRow;
             int currentSlot = slotsDone % itemsPerRow;
-            int slot = (startOnLine*9) + (currentRow*9) + rowStart + currentSlot;
+            int slot = (startOnLine * 9) + (currentRow * 9) + rowStart + currentSlot;
 
-            view.setElement(slot, getGymElement(player, gymData.get(i)));
+            view.setElement(slot, getBadgeElement(player, badgeData.get(i)));
             slotsDone++;
         }
 
@@ -94,11 +95,11 @@ public class GymListGui {
         int finalPage = page;
         ItemStack nextStack = ItemStack.of(Sponge.getRegistry().getType(ItemType.class, "pixelmon:trade_holder_right").get(), 1);
         nextStack.offer(Keys.DISPLAY_NAME, Text.of("Next"));
-        Consumer<Action.Click> nextAction = click -> Task.builder().execute(task -> constructGymListPage(player, view, finalPage + 1)).submit(AGP.getInstance());
+        Consumer<Action.Click> nextAction = click -> Task.builder().execute(task -> constructCheckBadgesPage(player, view, finalPage + 1)).submit(AGP.getInstance());
 
         ItemStack prevStack = ItemStack.of(Sponge.getRegistry().getType(ItemType.class, "pixelmon:trade_holder_left").get(), 1);
         prevStack.offer(Keys.DISPLAY_NAME, Text.of("Previous"));
-        Consumer<Action.Click> prevAction = click -> Task.builder().execute(task -> constructGymListPage(player, view, finalPage - 1)).submit(AGP.getInstance());
+        Consumer<Action.Click> prevAction = click -> Task.builder().execute(task -> constructCheckBadgesPage(player, view, finalPage - 1)).submit(AGP.getInstance());
 
         ItemStack backStack = ItemStack.of(Sponge.getRegistry().getType(ItemType.class, "pixelmon:trade_monitor").get(), 1);
         backStack.offer(Keys.DISPLAY_NAME, Text.EMPTY);
@@ -112,38 +113,32 @@ public class GymListGui {
         view.setElement(50, next);
     }
 
-    private static Element getGymElement(Player player, GymStruc gym) {
+    private static Element getBadgeElement(Player player, BadgeStruc badge)
+    {
 
-        ItemStack itemStack = ItemStack.builder().itemType(Sponge.getRegistry().getType(ItemType.class, gym.Badge).orElse(ItemTypes.BAKED_POTATO)).build();
-        itemStack.offer(Keys.DISPLAY_NAME, toText("&d\u2605 &b" + gym.Name + "&d \u2605", false));
+        ItemStack itemStack = ItemStack.builder().itemType(Sponge.getRegistry().getType(ItemType.class, badge.Badge).orElse(ItemTypes.BAKED_POTATO)).build();
+        itemStack.offer(Keys.DISPLAY_NAME, toText("&d\u2605 &b" + badge.Gym + "&d \u2605", false));
 
         ArrayList<Text> lore = new ArrayList<>();
-        lore.add(toText("&7Gym Status: &b" + (gym.Status.equals(GymStruc.EnumStatus.CLOSED) ? "&4Closed" : gym.Status.equals(GymStruc.EnumStatus.OPEN) ? "&2Open" : "&eNPC Mode"), false));
-        lore.add(toText("&7Requires: &b" + (gym.Requirement.equals("null") ? "None" : gym.Requirement), false));
-        lore.add(toText("&7Level Cap: &b" + (gym.LevelCap == 0 ? "None" : ""+gym.LevelCap), false));
-        lore.add(toText("&7Leaders:", false));
+        lore.add(toText("&7Leader: &b" + badge.Leader, false));
+        lore.add(toText("&7Date Obtained: &b" + badge.Obtained, false));
+        lore.add(toText("&7Pokemon:", false));
 
-        if(gym.NPCAmount > 0) {
-            lore.add(toText("  &2NPC " + (gym.NPCAmount > 1 ? "(" + gym.NPCAmount + ")" : "") , false));
-        }
-
-        if(!gym.PlayerLeaders.isEmpty())
+        if (badge.Pokemon.isEmpty())
         {
-            for (int i = 0; i < gym.PlayerLeaders.size(); i++) {
-                lore.add(toText("  " + (gym.OnlineLeaders.contains(gym.PlayerLeaders.get(i)) ? "&2" : "&4") + getNameFromUUID(gym.PlayerLeaders.get(i)), false));
+            lore.add(toText("  &4" + "Unknown", false));
+        }
+        else
+        {
+            for (int i = 0; i < badge.Pokemon.size(); i++)
+            {
+                lore.add(toText("  &b" + badge.Pokemon.get(i), false));
             }
         }
 
         itemStack.offer(Keys.ITEM_LORE, lore);
 
-        Consumer<Action.Click> clickConsumer = click -> Task.builder().execute(task -> {
-            if(gym.Lobby != null) {
-                setPosition(player, gym.Lobby);
-                player.sendMessage(toText("&7Teleported to the &b" + gym.Name + " &7Gym lobby!", true));
-            }
-        }).submit(AGP.getInstance());
-
-        return Element.of(itemStack, clickConsumer);
+        return Element.of(itemStack);
     }
 
 }

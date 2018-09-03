@@ -3,6 +3,7 @@ package agp.andwhat5.commands.gyms;
 import agp.andwhat5.Utils;
 import agp.andwhat5.commands.Command;
 import agp.andwhat5.config.structs.GymStruc;
+import agp.andwhat5.gui.GymListGui;
 import agp.andwhat5.ui.EnumGUIType;
 import net.minecraft.command.CommandException;
 import net.minecraft.server.MinecraftServer;
@@ -27,7 +28,7 @@ public class GymList extends Command {
     	Arrays.asList(args).stream().forEach(e -> sender.sendMessage(Text.of(e)));
         if (args.length == 0) 
         {
-            Utils.openGUI(requireEntityPlayer(sender), EnumGUIType.GymList);
+            GymListGui.openGymListGUI(requireEntityPlayer(sender));
         } 
         else 
         if (args.length == 1 && args[0].equalsIgnoreCase("-nogui")) 
