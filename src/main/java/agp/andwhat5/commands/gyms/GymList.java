@@ -27,7 +27,7 @@ public class GymList extends Command {
     	Arrays.asList(args).stream().forEach(e -> sender.sendMessage(Text.of(e)));
         if (args.length == 0) 
         {
-            Utils.openGUI(requireEntityPlayer(sender), requireEntityPlayer(sender), EnumGUIType.GymList);
+            Utils.openGUI(requireEntityPlayer(sender), EnumGUIType.GymList);
         } 
         else 
         if (args.length == 1 && args[0].equalsIgnoreCase("-nogui")) 

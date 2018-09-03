@@ -21,11 +21,11 @@ public class CheckBadges extends Command {
     public void execute(MinecraftServer server, CommandSource sender, String[] args) throws CommandException {
         Player user = requireEntityPlayer(sender);
         if (args.length == 0) {
-            Utils.openGUI(user, user, EnumGUIType.CheckBadges);
+            Utils.openGUI(user, EnumGUIType.CheckBadges);
         } else if (args.length == 1) {
             if (sender.hasPermission("agp.checkbadges.other") || Utils.isAnyLeader(user) || sender.hasPermission("agp.headleader")) {
                 Player player = requireEntityPlayer(args[0]);
-                Utils.openGUI(player, user, EnumGUIType.CheckBadges);
+                Utils.openGUI(player, EnumGUIType.CheckBadges);
             } else {
                 sender.sendMessage(Utils.toText("&7You don't have permission to access another player's badges!", true));
             }
