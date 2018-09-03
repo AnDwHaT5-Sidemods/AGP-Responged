@@ -40,7 +40,7 @@ public class GymStruc {
      * A {@link Vec3dStruc} of the location of the lobby for the gym.
      */
     @Expose
-    public Vec3dStruc Lobby;
+    public Vec3dStruc Lobby;//TODO this is retarded and needs to be moved to a world specific var, otherwise people in multiworld are going to have a GREAAATTTTT time.
 
     //Only here for legacy reasons. Remove later.
     @SuppressWarnings("DeprecatedIsStillUsed")

@@ -34,7 +34,7 @@ repositories {
 }
 
 dependencies {
-    shadow "org.spongepowered:spongeapi:${spongeversion}"
+    shadow "org.spongepowered:spongecommon:${spongeversion}:dev"
     implementation "com.github.SimonFlash.TeslaPowered:TeslaLibs:v${teslaversion}"
     shadow fileTree(dir: 'libs-', include: "Pixelmon-1.12.2-${pixelmonversion}-server-deobf.jar")
 	compile group: 'com.zaxxer', name: 'HikariCP', version: '2.5.1'

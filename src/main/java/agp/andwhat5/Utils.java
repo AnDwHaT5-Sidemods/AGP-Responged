@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import agp.andwhat5.gui.GymListGui;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.item.LoreData;
@@ -56,6 +57,9 @@ import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
+import javax.xml.crypto.Data;
+
+@SuppressWarnings("Duplicates")
 public class Utils {
     //TODO: Utility methods for Player <-> EntityPlayerMP
 
@@ -109,11 +113,7 @@ public class Utils {
     {
     	UserStorageService userStorage = Sponge.getServiceManager().provide(UserStorageService.class).get();
         Optional<User> userop = userStorage.get(uuid);
-        if(userop.isPresent())
-        {
-        	return userop.get().getName();
-        }
-    	return "INVALID USER";
+        return userop.map(User::getName).orElse("INVALID USER");
     }
     
     public static UUID getUUIDFromName(String name)
@@ -141,105 +141,60 @@ public class Utils {
      * UI main calling function, setups the UI parameters based on {@link EnumGUIType} type
      * and proceeds to open the UI to the player
      *
-     * @param player A possibly-differing source other than actor (e.g. Used with Check Badges UI)
-     * @param actor  The source of the UI creation
+     * @param player The source of the UI creation
      * @param type   The type of UI to open
      */
-    public static void openGUI(Player player, Player actor, EnumGUIType type) 
+    public static void openGUI(Player player, EnumGUIType type)
     {
     	if(type.equals(EnumGUIType.CheckBadges))
     	{
-    		PlayerStruc playerData = getPlayerData(player);
-    		int slot = 0;
-    		Builder builder = Layout.builder();
-    		for(BadgeStruc badge : playerData.Badges)
-    		{
-    			ItemStack itemStack = ItemStack.builder().itemType(Sponge.getRegistry().getType(ItemType.class, badge.Badge).orElse(ItemTypes.BAKED_POTATO)).build();
-    			itemStack.offer(Keys.DISPLAY_NAME, toText("&d\u2605 &b" + badge.Gym + "&d \u2605", false));
-    		    Text lore1 = toText("&7Leader: &b" + badge.Leader, false);
-    		    Text lore2 = toText("&7Date Obtained: &b" + badge.Obtained, false);
-    		    Text lore3 = toText("&7Pokemon:", false);
-    		    LoreData loreData = Sponge.getDataManager().getManipulatorBuilder(LoreData.class).get().create();
-    		    ListValue<Text> loreInfo = loreData.lore();
-    		    List<Text> loreList = Lists.newArrayList(lore1, lore2, lore3);
-    		    if (badge.Pokemon.isEmpty()) 
-    		    {
-                    loreList.add(toText("  &4" + "Unknown", false));
-                }
-    		    else
-    		    {
-    		    	for (int i = 0; i < badge.Pokemon.size(); i++) 
-    		    	{
-    		    		loreList.add(toText("  &b" + badge.Pokemon.get(i), false));
-    		    	}
-    		    }
-    	        loreInfo.addAll(loreList);
-    	        loreData.set(loreInfo);
-    	        itemStack.offer(loreData);
-    	        Element e = Element.of(itemStack);
-    			builder.set(e, slot);
-    			slot += 1;
-    		}
-    		Layout layout = builder.dimension(InventoryDimension.of(9, 6)).build();
-    		View view = View.builder().archetype(InventoryArchetypes.DOUBLE_CHEST).property(InventoryTitle.of(toText("&8"+player.getName()+"'s Badges", false))).build(AGP.getInstance().container);
-    		view.define(layout);
-    		view.open(player);
+    		openCheckBadgeGUI(player);
     	}
     	else
         if(type.equals(EnumGUIType.GymList))
        	{
-        	
-    		Builder builder = Layout.builder();
-
-    		int slot = 0;
-    		
-       		for(GymStruc gym : DataStruc.gcon.GymData)
-       		{
-    			ItemStack itemStack = ItemStack.builder().itemType(Sponge.getRegistry().getType(ItemType.class, gym.Badge).orElse(ItemTypes.BAKED_POTATO)).build();
-                itemStack.offer(Keys.DISPLAY_NAME, toText("&d\u2605 &b" + gym.Name + "&d \u2605", false));
-        	    Text lore1 = toText("&7Gym Status: &b" + (gym.Status.equals(EnumStatus.CLOSED) ? "&4Closed" : 
-       		    	gym.Status.equals(EnumStatus.OPEN) ? "&2Open" : "&eNPC Mode"), false);
-       		    
-       		    Text lore2 = toText("&7Requires: &b" + (gym.Requirement.equals("null") ? "None" : gym.Requirement), false);
-       		    Text lore3 = toText("&7Level Cap: &b" + (gym.LevelCap == 0 ? "None" : ""+gym.LevelCap), false);
-       		    Text lore4 = toText("&7Leaders:", false);
-       		    final LoreData loreData = Sponge.getDataManager().getManipulatorBuilder(LoreData.class).get().create();
-       	        final ListValue<Text> loreInfo = loreData.lore();
-       	        List<Text> loreList = Lists.newArrayList(lore1, lore2, lore3, lore4);
-       	        if(gym.NPCAmount > 0)
-       	        {
-       	        	loreList.add(Utils.toText("  &2NPC " + (gym.NPCAmount > 1 ? "(" + gym.NPCAmount + ")" : "") , false));
-       	        }
-       		    if(!gym.PlayerLeaders.isEmpty())
-       		    {
-        	    	for (int i = 0; i < gym.PlayerLeaders.size(); i++) {
-        	    		loreList.add(toText("  " + (gym.OnlineLeaders.contains(gym.PlayerLeaders.get(i)) ? "&2" : "&4") + getNameFromUUID(gym.PlayerLeaders.get(i)), false));
-       		    	}
-       		    }
-       	        loreInfo.addAll(loreList);
-       	        loreData.set(loreInfo);
-       	        
-       	        itemStack.offer(loreData);
-       	        
-       	        Consumer<Action.Click> action = a ->
-       	        {
-       	        	if(gym.Lobby != null)
-       	        	{
-       	        		setPosition(player, gym.Lobby);
-       	                player.sendMessage(Utils.toText("&7Teleported to the &b" + gym.Name + " &7Gym lobby!", true));
-       	        	}
-       	        };
-       	        		
-       	        Element e = Element.of(itemStack, action);
-       			builder.set(e, slot);
-       			slot += 1;
-       		}
-       		Layout layout = builder.dimension(InventoryDimension.of(9, 6)).build();
-    		View view = View.builder().archetype(InventoryArchetypes.DOUBLE_CHEST).property(InventoryTitle.of(toText("&8Available Gyms", false))).build(AGP.getInstance().container);
-    		view.define(layout);
-    		view.open(player);
+    		GymListGui.openGymListGUI(player);
        	}
     }
+
+    private static void openCheckBadgeGUI(Player player) {
+        PlayerStruc playerData = getPlayerData(player);
+        int slot = 0;
+        Builder builder = Layout.builder();
+        for(BadgeStruc badge : playerData.Badges)
+        {
+            ItemStack itemStack = ItemStack.builder().itemType(Sponge.getRegistry().getType(ItemType.class, badge.Badge).orElse(ItemTypes.BAKED_POTATO)).build();
+            itemStack.offer(Keys.DISPLAY_NAME, toText("&d\u2605 &b" + badge.Gym + "&d \u2605", false));
+            Text lore1 = toText("&7Leader: &b" + badge.Leader, false);
+            Text lore2 = toText("&7Date Obtained: &b" + badge.Obtained, false);
+            Text lore3 = toText("&7Pokemon:", false);
+            LoreData loreData = Sponge.getDataManager().getManipulatorBuilder(LoreData.class).get().create();
+            ListValue<Text> loreInfo = loreData.lore();
+            List<Text> loreList = Lists.newArrayList(lore1, lore2, lore3);
+            if (badge.Pokemon.isEmpty())
+            {
+                loreList.add(toText("  &4" + "Unknown", false));
+            }
+            else
+            {
+                for (int i = 0; i < badge.Pokemon.size(); i++)
+                {
+                    loreList.add(toText("  &b" + badge.Pokemon.get(i), false));
+                }
+            }
+            loreInfo.addAll(loreList);
+            loreData.set(loreInfo);
+            itemStack.offer(loreData);
+            Element e = Element.of(itemStack);
+            builder.set(e, slot);
+            slot += 1;
+        }
+        Layout layout = builder.dimension(InventoryDimension.of(9, 6)).build();
+        View view = View.builder().archetype(InventoryArchetypes.DOUBLE_CHEST).property(InventoryTitle.of(toText("&8"+player.getName()+"'s Badges", false))).build(AGP.getInstance().container);
+        view.define(layout);
+        view.open(player);
+    }
+
 
     /**
      * Broadcasts a message to all players
