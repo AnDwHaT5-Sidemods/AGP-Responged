@@ -38,7 +38,7 @@ public class GiveBadge extends Command {
             }
 
             GymStruc gs = Utils.getGym(gymName);
-            if (!Utils.isGymLeader((Player) sender, gs) || !sender.hasPermission("agp.headleader")) {
+            if (!Utils.isGymLeader((Player) sender, gs) && !sender.hasPermission("agp.headleader")) {
                 sender.sendMessage(Utils.toText("&7You must be a leader of the &b" + gs.Name + " &7Gym to give its badge!", true));
                 return;
             }

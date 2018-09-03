@@ -138,65 +138,6 @@ public class Utils {
     }
 
     /**
-     * UI main calling function, setups the UI parameters based on {@link EnumGUIType} type
-     * and proceeds to open the UI to the player
-     *
-     * @param player The source of the UI creation
-     * @param type   The type of UI to open
-     */
-    public static void openGUI(Player player, EnumGUIType type)
-    {
-    	if(type.equals(EnumGUIType.CheckBadges))
-    	{
-    		openCheckBadgeGUI(player);
-    	}
-    	else
-        if(type.equals(EnumGUIType.GymList))
-       	{
-    		GymListGui.openGymListGUI(player);
-       	}
-    }
-
-    private static void openCheckBadgeGUI(Player player) {
-        PlayerStruc playerData = getPlayerData(player);
-        int slot = 0;
-        Builder builder = Layout.builder();
-        for(BadgeStruc badge : playerData.Badges)
-        {
-            ItemStack itemStack = ItemStack.builder().itemType(Sponge.getRegistry().getType(ItemType.class, badge.Badge).orElse(ItemTypes.BAKED_POTATO)).build();
-            itemStack.offer(Keys.DISPLAY_NAME, toText("&d\u2605 &b" + badge.Gym + "&d \u2605", false));
-            Text lore1 = toText("&7Leader: &b" + badge.Leader, false);
-            Text lore2 = toText("&7Date Obtained: &b" + badge.Obtained, false);
-            Text lore3 = toText("&7Pokemon:", false);
-            LoreData loreData = Sponge.getDataManager().getManipulatorBuilder(LoreData.class).get().create();
-            ListValue<Text> loreInfo = loreData.lore();
-            List<Text> loreList = Lists.newArrayList(lore1, lore2, lore3);
-            if (badge.Pokemon.isEmpty())
-            {
-                loreList.add(toText("  &4" + "Unknown", false));
-            }
-            else
-            {
-                for (int i = 0; i < badge.Pokemon.size(); i++)
-                {
-                    loreList.add(toText("  &b" + badge.Pokemon.get(i), false));
-                }
-            }
-            loreInfo.addAll(loreList);
-            loreData.set(loreInfo);
-            itemStack.offer(loreData);
-            Element e = Element.of(itemStack);
-            builder.set(e, slot);
-            slot += 1;
-        }
-        Layout layout = builder.dimension(InventoryDimension.of(9, 6)).build();
-        View view = View.builder().archetype(InventoryArchetypes.DOUBLE_CHEST).property(InventoryTitle.of(toText("&8"+player.getName()+"'s Badges", false))).build(AGP.getInstance().container);
-        view.define(layout);
-        view.open(player);
-    }
-
-
-    /**
      * Broadcasts a message to all players
      *
      * @param message The message you wish to be broadcasted.

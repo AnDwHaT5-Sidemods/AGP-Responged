@@ -2,6 +2,7 @@ package agp.andwhat5.commands.players;
 
 import agp.andwhat5.Utils;
 import agp.andwhat5.commands.Command;
+import agp.andwhat5.gui.CheckBadgesGui;
 import agp.andwhat5.ui.EnumGUIType;
 import net.minecraft.command.CommandException;
 import net.minecraft.server.MinecraftServer;
@@ -21,11 +22,11 @@ public class CheckBadges extends Command {
     public void execute(MinecraftServer server, CommandSource sender, String[] args) throws CommandException {
         Player user = requireEntityPlayer(sender);
         if (args.length == 0) {
-            Utils.openGUI(user, EnumGUIType.CheckBadges);
+            CheckBadgesGui.openCheckBadgesGUI(user);
         } else if (args.length == 1) {
             if (sender.hasPermission("agp.checkbadges.other") || Utils.isAnyLeader(user) || sender.hasPermission("agp.headleader")) {
                 Player player = requireEntityPlayer(args[0]);
-                Utils.openGUI(player, EnumGUIType.CheckBadges);
+                CheckBadgesGui.openCheckBadgesGUI(player);
             } else {
                 sender.sendMessage(Utils.toText("&7You don't have permission to access another player's badges!", true));
             }
