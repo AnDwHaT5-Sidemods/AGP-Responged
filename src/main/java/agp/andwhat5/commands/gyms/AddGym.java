@@ -1,7 +1,6 @@
 package agp.andwhat5.commands.gyms;
 
 import agp.andwhat5.Utils;
-import agp.andwhat5.config.structs.DataStruc;
 import agp.andwhat5.config.structs.GymStruc;
 import com.google.common.collect.Lists;
 import org.spongepowered.api.command.CommandException;
@@ -24,11 +23,6 @@ public class AddGym implements CommandExecutor {
 
         if (Utils.gymExists(gymName)) {
             src.sendMessage(Utils.toText("&7The &b" + Utils.getGym(gymName).Name + " &7Gym already exists!", true));
-            return CommandResult.success();
-        }
-        if(DataStruc.gcon.GymData.size() >= 54)
-        {
-            src.sendMessage(Utils.toText("&7AGP already has the max supported gyms of 54 gyms. You can not add another.", true));
             return CommandResult.success();
         }
 

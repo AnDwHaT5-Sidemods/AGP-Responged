@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import agp.andwhat5.gui.GymListGui;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.item.LoreData;
@@ -55,6 +56,8 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+
+import javax.xml.crypto.Data;
 
 @SuppressWarnings("Duplicates")
 public class Utils {
@@ -150,7 +153,7 @@ public class Utils {
     	else
         if(type.equals(EnumGUIType.GymList))
        	{
-    		openGymListGUI(player);
+    		GymListGui.openGymListGUI(player);
        	}
     }
 
@@ -192,55 +195,6 @@ public class Utils {
         view.open(player);
     }
 
-    private static void openGymListGUI(Player player) {
-        Builder builder = Layout.builder();
-
-        int slot = 0;
-
-        for(GymStruc gym : DataStruc.gcon.GymData)
-        {
-            ItemStack itemStack = ItemStack.builder().itemType(Sponge.getRegistry().getType(ItemType.class, gym.Badge).orElse(ItemTypes.BAKED_POTATO)).build();
-            itemStack.offer(Keys.DISPLAY_NAME, toText("&d\u2605 &b" + gym.Name + "&d \u2605", false));
-            Text lore1 = toText("&7Gym Status: &b" + (gym.Status.equals(EnumStatus.CLOSED) ? "&4Closed" : gym.Status.equals(EnumStatus.OPEN) ? "&2Open" : "&eNPC Mode"), false);
-            Text lore2 = toText("&7Requires: &b" + (gym.Requirement.equals("null") ? "None" : gym.Requirement), false);
-            Text lore3 = toText("&7Level Cap: &b" + (gym.LevelCap == 0 ? "None" : ""+gym.LevelCap), false);
-            Text lore4 = toText("&7Leaders:", false);
-            final LoreData loreData = Sponge.getDataManager().getManipulatorBuilder(LoreData.class).get().create();
-            final ListValue<Text> loreInfo = loreData.lore();
-            List<Text> loreList = Lists.newArrayList(lore1, lore2, lore3, lore4);
-            if(gym.NPCAmount > 0)
-            {
-                loreList.add(Utils.toText("  &2NPC " + (gym.NPCAmount > 1 ? "(" + gym.NPCAmount + ")" : "") , false));
-            }
-            if(!gym.PlayerLeaders.isEmpty())
-            {
-                for (int i = 0; i < gym.PlayerLeaders.size(); i++) {
-                    loreList.add(toText("  " + (gym.OnlineLeaders.contains(gym.PlayerLeaders.get(i)) ? "&2" : "&4") + getNameFromUUID(gym.PlayerLeaders.get(i)), false));
-                }
-            }
-            loreInfo.addAll(loreList);
-            loreData.set(loreInfo);
-
-            itemStack.offer(loreData);
-
-            Consumer<Action.Click> action = a ->
-            {
-                if(gym.Lobby != null)
-                {
-                    setPosition(player, gym.Lobby);
-                    player.sendMessage(Utils.toText("&7Teleported to the &b" + gym.Name + " &7Gym lobby!", true));
-                }
-            };
-
-            Element e = Element.of(itemStack, action);
-            builder.set(e, slot);
-            slot += 1;
-        }
-        Layout layout = builder.dimension(InventoryDimension.of(9, 6)).build();
-        View view = View.builder().archetype(InventoryArchetypes.DOUBLE_CHEST).property(InventoryTitle.of(toText("&8Available Gyms", false))).build(AGP.getInstance().container);
-        view.define(layout);
-        view.open(player);
-    }
 
     /**
      * Broadcasts a message to all players
