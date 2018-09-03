@@ -27,7 +27,7 @@ public class AGPConfig {
         public static int announcementTimer = 16_800;
 
         @Setting(comment = "The AGP announcement message. (Supports color formatting codes)")
-        public static String announcementMessage = "&7This server is running &bAGP &7created by &bAnDwHaT5! &7Use &b/GymList &7to see what Gyms the server has to offer!";
+        public static String announcementMessage = "&7This server is running &bAGP Responged &7created by &bAnDwHaT5! &7Use &b/GymList &7to see what Gyms the server has to offer!";
 
         @Setting(comment = "Whether or not to announce leaders joining the server")
         public static boolean announceLeaderJoin = true;
