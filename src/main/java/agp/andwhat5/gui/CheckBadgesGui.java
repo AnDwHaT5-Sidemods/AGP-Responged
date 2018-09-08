@@ -7,6 +7,7 @@ import com.mcsimonflash.sponge.teslalibs.inventory.Element;
 import com.mcsimonflash.sponge.teslalibs.inventory.Layout;
 import com.mcsimonflash.sponge.teslalibs.inventory.View;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemType;
@@ -35,15 +36,19 @@ public class CheckBadgesGui
 
     public static void openCheckBadgesGUI(Player player)
     {
+        openCheckBadgesGUIOther(player, player);
+    }
 
+
+    public static void openCheckBadgesGUIOther(Player viewer, Player target) {
         View view = View.builder()
                 .archetype(InventoryArchetypes.DOUBLE_CHEST)
-                .property(InventoryTitle.of(toText("&8" + player.getName() + "'s Badges", false)))
+                .property(InventoryTitle.of(toText("&8" + target.getName() + "'s Badges", false)))
                 .build(AGP.getInstance().container);
 
-        view.open(player);
+        view.open(viewer);
 
-        constructCheckBadgesPage(player, view, 0);
+        constructCheckBadgesPage(target, view, 0);
     }
 
     private static void constructCheckBadgesPage(Player player, View view, int page)
@@ -57,6 +62,7 @@ public class CheckBadgesGui
 
         List<BadgeStruc> badgeData = getPlayerData(player).Badges;//56
 
+        //TODO verify this all works properly when the player has no badges, seems to error in console
         //Sanity checks
         int maxPages = (int) (Math.ceil((double)badgeData.size() / (double)itemsPerPage) - 1);
         if (page < 0)

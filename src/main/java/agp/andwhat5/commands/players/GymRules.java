@@ -1,35 +1,29 @@
 package agp.andwhat5.commands.players;
 
 import agp.andwhat5.Utils;
-import agp.andwhat5.commands.Command;
-import net.minecraft.command.CommandException;
-import net.minecraft.server.MinecraftServer;
+import agp.andwhat5.config.structs.GymStruc;
+import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.spec.CommandExecutor;
 
-public class GymRules extends Command {
-
-    public GymRules() {
-        super("Shows the rules for the specified gym.");
-    }
+public class GymRules implements CommandExecutor {
 
     @Override
-    public void execute(MinecraftServer server, CommandSource sender, String[] args) throws CommandException {
-        if (args.length != 1) {
-            sender.sendMessage(Utils.toText("&7Incorrect Usage: &b/GymRules <gym>&7.", true));
-            return;
+    public CommandResult execute(CommandSource src, CommandContext args) throws org.spongepowered.api.command.CommandException {
+        String gymName = args.<String>getOne("GymName").get();
+
+        GymStruc gym = Utils.getGym(gymName);
+        if (gym.Rules.isEmpty()) {
+            src.sendMessage(Utils.toText("&7This gym does not have any rules!", true));
+            return CommandResult.success();
         }
-        if (!Utils.gymExists(args[0])) {
-            sender.sendMessage(Utils.toText("&7This gym does not exist!", true));
-            return;
-        }
-        if (Utils.getGym(args[0]).Rules == "") {
-            sender.sendMessage(Utils.toText("&7This gym does not have any rules!", true));
-            return;
-        }
-        String[] msg = Utils.getGym(args[0]).Rules.split("/n");
+        String[] msg = gym.Rules.split("/n");
         for (String s : msg) {
-            sender.sendMessage(Utils.toText("&7" + s, true));
+            src.sendMessage(Utils.toText("&7" + s, true));
         }
+
+        return CommandResult.success();
     }
 
 }
