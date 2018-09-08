@@ -42,6 +42,7 @@ j       | ,-"'    `    .'         `. `        `.
  */
 
 import agp.andwhat5.commands.administrative.*;
+import agp.andwhat5.commands.commandelements.GymNameCommandElement;
 import agp.andwhat5.commands.gyms.*;
 import agp.andwhat5.commands.leaders.*;
 import agp.andwhat5.commands.players.*;
@@ -242,27 +243,123 @@ public class AGP {
         commandManager.register(this, new AcceptChallenge(), "acceptchallenge", "ac");
         commandManager.register(this, new AddLeader(), "addleader");
         commandManager.register(this, new AGPReload(), "agpreload");
-        commandManager.register(this, new CancelChallenge(), "cancelchallenge", "cc");
-        commandManager.register(this, new ChallengeGym(), "chalgym", "challengegym");
-        commandManager.register(this, new CheckBadges(), "checkbadges", "cb", "badges");
-        commandManager.register(this, new CloseGym(), "closegym");
         commandManager.register(this, new DelBadge(), "delbadge");
-        commandManager.register(this, new DeleteGym(), "delgym");
-        commandManager.register(this, new GymRules(), "gymrules");
         commandManager.register(this, new DeleteLeader(), "delleader");
         commandManager.register(this, new DenyChallenge(), "denychallenge", "dc");
-        commandManager.register(this, new EditGym(), "editgym");
+        commandManager.register(this, new EditGym(), "editgym");//This command makes we want to kill myself.
         commandManager.register(this, new GiveBadge(), "givebadge");
-        commandManager.register(this, new GymList(), "gl", "gyms", "gymlist");
-        commandManager.register(this, new GymWarp(), "gymwarp");
-        commandManager.register(this, new OpenGym(), "opengym");
+        commandManager.register(this, new GymWarp(), "gymwarp");//This command makes me want to kill myself.
         commandManager.register(this, new QueueList(), "queuelist", "ql");
-        commandManager.register(this, new SetGymWarp(), "setgymwarp", "sgw", "setgwarp");
+        commandManager.register(this, new SetGymWarp(), "setgymwarp", "sgw", "setgwarp");//This command also makes me want to kill myself
         commandManager.register(this, new SpawnNPCLeader(), "spawnnpcleader", "snl", "spawnleader");
         commandManager.register(this, new StorageConverter(), "stc");
-        commandManager.register(this, new AddGymCommand() , "addgymcommand");
-        commandManager.register(this, new DelGymCommand(), "delgymcommand");
-        commandManager.register(this, new ListGymCommands(), "listgymcommands");
+
+        CommandSpec gymRulesSpec = CommandSpec.builder()
+                .description(Text.of("Shows the rules for the specified gym."))
+                .permission("agp.command.gymrules")
+                .executor(new GymRules())
+                .arguments(
+                        GenericArguments.onlyOne(GymNameCommandElement.gymNames(Text.of("GymName")))
+                )
+                .build();
+        commandManager.register(this, gymRulesSpec, "gymrules");
+
+        CommandSpec checkBadgesSpec = CommandSpec.builder()
+                .description(Text.of("Checks your or another players badges."))
+                .permission("agp.command.checkbadges")
+                .executor(new CheckBadges())
+                .arguments(
+                        GenericArguments.onlyOne(GenericArguments.playerOrSource(Text.of("target")))
+                )
+                .build();
+        commandManager.register(this, checkBadgesSpec, "checkbadges", "cb", "badges");
+
+        CommandSpec challengeGymSpec = CommandSpec.builder()
+                .description(Text.of("Challenges the specified gym to a battle."))
+                .permission("agp.command.challangegym")
+                .executor(new ChallengeGym())
+                .arguments(
+                        GenericArguments.onlyOne(GymNameCommandElement.gymNames(Text.of("GymName")))
+                )
+                .build();
+        commandManager.register(this, challengeGymSpec, "challengegym", "chalgym");
+
+        CommandSpec cancelChallengeSpec = CommandSpec.builder()
+                .description(Text.of("Cancels a challenge issues to a gym."))
+                .permission("agp.command.cancelchallenge")
+                .executor(new CancelChallenge())
+                .build();
+        commandManager.register(this, cancelChallengeSpec, "cancelchallenge", "cc");
+
+        CommandSpec listGymCommandsSpec = CommandSpec.builder()
+                .description(Text.of("Displays all of the commands in the gyms rewards pool."))
+                .permission("agp.command.listgymcommands")
+                .executor(new ListGymCommands())
+                .arguments(
+                        GenericArguments.onlyOne(GymNameCommandElement.gymNames(Text.of("GymName")))
+                )
+                .build();
+        commandManager.register(this, listGymCommandsSpec, "listgymcommands");
+
+        CommandSpec gymListSpec = CommandSpec.builder()
+                .description(Text.of("Shows all of the gyms the server has."))
+                .permission("agp.command.gymlist")
+                .executor(new GymList())
+                .build();
+        commandManager.register(this, gymListSpec, "gymlist", "gl", "gyms");
+
+        CommandSpec deleteGymSpec = CommandSpec.builder()
+                .description(Text.of("Deletes the specified gym."))
+                .permission("agp.command.delgym")
+                .executor(new DeleteGym())
+                .arguments(
+                        GenericArguments.onlyOne(GymNameCommandElement.gymNames(Text.of("GymName")))
+                )
+                .build();
+        commandManager.register(this, deleteGymSpec, "delgym");
+
+        CommandSpec addGymCommandSpec = CommandSpec.builder()
+                .description(Text.of("Adds a command to the specified gyms rewards pool."))
+                .permission("agp.command.addgymcommand")
+                .executor(new AddGymCommand())
+                .arguments(
+                        GenericArguments.onlyOne(GymNameCommandElement.gymNames(Text.of("GymName"))),
+                        GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of("command")))
+                )
+                .build();
+        commandManager.register(this, addGymCommandSpec, "addgymcommand");
+
+        CommandSpec delGymCommandSpec = CommandSpec.builder()
+                .description(Text.of("Deletes a command from the specified gyms rewards pool."))
+                .permission("agp.command.delgymcommand")
+                .executor(new DelGymCommand())
+                .arguments(
+                        GenericArguments.onlyOne(GymNameCommandElement.gymNames(Text.of("GymName"))),
+                        GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of("command")))
+                )
+                .build();
+        commandManager.register(this, delGymCommandSpec, "delgymcommand");
+
+        CommandSpec openGymSpec = CommandSpec.builder()
+                .description(Text.of("Opens the specified gym."))
+                .permission("agp.command.opengym")
+                .executor(new OpenGym())
+                .arguments(
+                        GenericArguments.onlyOne(GymNameCommandElement.gymNames(Text.of("GymName")))
+                )
+                .build();
+        commandManager.register(this, openGymSpec, "opengym");
+
+        CommandSpec closeGymSpec = CommandSpec.builder()
+                .description(Text.of("Closes the specified gym."))
+                .permission("agp.command.closegym")
+                .executor(new CloseGym())
+                .arguments(
+                        GenericArguments.onlyOne(GymNameCommandElement.gymNames(Text.of("GymName"))),
+                        GenericArguments.optional(GenericArguments.string(Text.of("-f")))
+                )
+                .build();
+        commandManager.register(this, closeGymSpec, "closegym");
 
         CommandSpec addGymSpec = CommandSpec.builder()
                 .description(Text.of("Adds a gym with the specified badge."))

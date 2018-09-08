@@ -1,48 +1,38 @@
 package agp.andwhat5.commands.players;
 
 import agp.andwhat5.Utils;
-import agp.andwhat5.commands.Command;
 import agp.andwhat5.gui.CheckBadgesGui;
-import agp.andwhat5.ui.EnumGUIType;
-import net.minecraft.command.CommandException;
-import net.minecraft.server.MinecraftServer;
+import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
-import java.util.List;
-
-import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord;
-
-public class CheckBadges extends Command {
-    public CheckBadges() {
-        super("Checks your or another players badges.");
-    }
+public class CheckBadges implements CommandExecutor {
 
     @Override
-    public void execute(MinecraftServer server, CommandSource sender, String[] args) throws CommandException {
-        Player user = requireEntityPlayer(sender);
-        if (args.length == 0) {
-            CheckBadgesGui.openCheckBadgesGUI(user);
-        } else if (args.length == 1) {
-            if (sender.hasPermission("agp.checkbadges.other") || Utils.isAnyLeader(user) || sender.hasPermission("agp.headleader")) {
-                Player player = requireEntityPlayer(args[0]);
-                CheckBadgesGui.openCheckBadgesGUI(player);
+    public CommandResult execute(CommandSource src, CommandContext args) throws org.spongepowered.api.command.CommandException {
+        if(!(src instanceof Player)) {
+            src.sendMessage(Text.of(TextColors.RED, "This command can only be ran by players"));
+            return CommandResult.success();
+        }
+
+        Player sender = (Player) src;
+        Player target = args.<Player>getOne("target").get();
+
+        if (target == src) {//Target self
+            CheckBadgesGui.openCheckBadgesGUI(sender);
+        } else {
+            if (src.hasPermission("agp.checkbadges.other") || Utils.isAnyLeader(sender) || src.hasPermission("agp.headleader")) {
+                CheckBadgesGui.openCheckBadgesGUIOther(sender, target);
             } else {
                 sender.sendMessage(Utils.toText("&7You don't have permission to access another player's badges!", true));
             }
-        } else {
-            sender.sendMessage(Utils.toText("&7Incorrect usage: &b/CheckBadges <opt-player>&7.", true));
-            
         }
-    }
 
-
-    @Override
-    public List<String> getTabCompletions(MinecraftServer server, CommandSource sender, String[] args) {
-        if (args.length == 1 && (Utils.isAnyLeader((Player) sender) || sender.hasPermission("agp.headleader") || sender.hasPermission("agp.checkbadges.other"))) {
-            return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
-        }
-        return null;
+        return CommandResult.success();
     }
 
 }

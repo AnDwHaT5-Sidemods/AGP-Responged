@@ -1,56 +1,46 @@
 package agp.andwhat5.commands.gyms;
 
 import agp.andwhat5.Utils;
-import agp.andwhat5.commands.Command;
 import agp.andwhat5.config.AGPConfig;
 import agp.andwhat5.config.structs.GymStruc;
-import net.minecraft.command.CommandException;
-import net.minecraft.server.MinecraftServer;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 
-import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static agp.andwhat5.config.structs.GymStruc.EnumStatus.*;
 import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord;
 
-public class CloseGym extends Command {
-
-    public CloseGym() {
-        super("Closes the specified gym.");
-    }
+public class CloseGym implements CommandExecutor {
 
     @Override
-    public void execute(MinecraftServer server, CommandSource sender, String[] args) throws CommandException {
-        if (args.length < 1) {
-        	sender.sendMessage(Utils.toText("&7Incorrect usage: &b/CloseGym [-f] <gym>&7.", true));
-            return;
-        }
-        boolean force = false;
-        int gymArg = 0;
+    public CommandResult execute(CommandSource src, CommandContext args) throws org.spongepowered.api.command.CommandException {
 
-        if (args.length == 2 && args[0].equalsIgnoreCase("-f")) {
-            force = true;
-            gymArg = 1;
-        }
+        String gymName = args.<String>getOne("GymName").get();
 
-        if (!Utils.gymExists(args[gymArg])) {
-            sender.sendMessage(Utils.toText("&7The &b" + args[gymArg] + " &7Gym does not exist!", true));
-            return;
-        }
-        GymStruc gs = Utils.getGym(args[gymArg]);
-        if (!Utils.isGymLeader((Player) sender, gs) && !sender.hasPermission("agp.headleader")) {
-            sender.sendMessage(Utils.toText("&7You must be a leader of the &b" + gs.Name + " &7Gym to close it!", true));
-            return;
+        AtomicBoolean force = new AtomicBoolean(false);
+        args.<String>getOne("-f").ifPresent(consumer -> {
+            if (consumer.equalsIgnoreCase("-f")) {
+                force.set(true);
+            }
+        });
+
+        GymStruc gs = Utils.getGym(gymName);
+        if (!Utils.isGymLeader((Player) src, gs) && !src.hasPermission("agp.headleader")) {
+            src.sendMessage(Utils.toText("&7You must be a leader of the &b" + gs.Name + " &7Gym to close it!", true));
+            return CommandResult.success();
         }
         if (gs.Status != OPEN && gs.Status != NPC) {
-            sender.sendMessage(Utils.toText("&7The &b" + gs.Name + " &7Gym is not open!", true));
-            return;
+            src.sendMessage(Utils.toText("&7The &b" + gs.Name + " &7Gym is not open!", true));
+            return CommandResult.success();
         }
 
-        if (force) {
+        if (force.get()) {
             gs.Status = CLOSED;
         } else {
             if (gs.NPCAmount > 0) {
@@ -66,26 +56,17 @@ public class CloseGym extends Command {
 
         gs.Queue.clear();
         if (AGPConfig.Announcements.closeAnnouncement) {
-            for (Player player : Utils.getAllPlayers())
-                player.sendMessage(Utils.toText(AGPConfig.Announcements.closeMessage
-                        .replace("{gym}", gs.Name)
-                        .replace("{leader}", sender.getName()), false));
+            Sponge.getServer().getBroadcastChannel().send(Utils.toText(AGPConfig.Announcements.closeMessage
+                    .replace("{gym}", gs.Name)
+                    .replace("{leader}", src.getName()), false));
         } else {
             for (UUID leader : Utils.getGymLeaders(gs)) {
-                Sponge.getServer().getPlayer(leader).ifPresent(player -> player.sendMessage(Utils.toText("&7Leader &b" + sender.getName() + " &7has closed the &b" + gs.Name + " &7Gym!", true)));
+                Sponge.getServer().getPlayer(leader).ifPresent(player -> player.sendMessage(Utils.toText("&7Leader &b" + src.getName() + " &7has closed the &b" + gs.Name + " &7Gym!", true)));
             }
         }
-
-
+        return CommandResult.success();
     }
 
 
-    @Override
-    public List<String> getTabCompletions(MinecraftServer server, CommandSource sender, String[] args) {
-        if (args.length == 1) {
-            return getListOfStringsMatchingLastWord(args, Utils.getGymNames(true));
-        }
-        return null;
-    }
 
 }
