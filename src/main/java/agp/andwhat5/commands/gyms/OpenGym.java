@@ -1,66 +1,44 @@
 package agp.andwhat5.commands.gyms;
 
 import agp.andwhat5.Utils;
-import agp.andwhat5.commands.Command;
 import agp.andwhat5.config.AGPConfig;
 import agp.andwhat5.config.structs.GymStruc;
-import net.minecraft.command.CommandException;
-import net.minecraft.server.MinecraftServer;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 
-import java.util.List;
-
 import static agp.andwhat5.config.structs.GymStruc.EnumStatus.OPEN;
-import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord;
 
-public class OpenGym extends Command {
-
-    public OpenGym() {
-        super("Opens the specified gym.");
-    }
+public class OpenGym implements CommandExecutor {
 
     @Override
-    public void execute(MinecraftServer server, CommandSource sender, String[] args) throws CommandException {
-        if (args.length != 1) {
-        	sender.sendMessage(Utils.toText("&7Incorrect usage: &b/OpenGym <gym>&7.", true));
-        	return;
-        }
+    public CommandResult execute(CommandSource src, CommandContext args) throws org.spongepowered.api.command.CommandException {
 
-        String gymName = args[0];
-        if (!Utils.gymExists(gymName)) {
-            sender.sendMessage(Utils.toText("&7The &b" + gymName + " &7Gym does not exist!", true));
-            return;
-        }
+        String gymName = args.<String>getOne("GymName").get();
         GymStruc gs = Utils.getGym(gymName);
-        if (!Utils.isGymLeader((Player) sender, gs) && !sender.hasPermission("agp.headleader")) {
-            sender.sendMessage(Utils.toText("&7You are not a leader of the &b" + gs.Name + " &7Gym!", true));
-            return;
+        if (!Utils.isGymLeader((Player) src, gs) && !src.hasPermission("agp.headleader")) {
+            src.sendMessage(Utils.toText("&7You are not a leader of the &b" + gs.Name + " &7Gym!", true));
+            return CommandResult.success();
         }
 
         if (gs.Status == OPEN) {
-            sender.sendMessage(Utils.toText("&7The &b" + gs.Name + " &7Gym is already open!", true));
-            return;
+            src.sendMessage(Utils.toText("&7The &b" + gs.Name + " &7Gym is already open!", true));
+            return CommandResult.success();
         }
 
         gs.Status = OPEN;
-        sender.sendMessage(Utils.toText("&7Successfully opened the &b" + gs.Name + " &7Gym!", true));
+        src.sendMessage(Utils.toText("&7Successfully opened the &b" + gs.Name + " &7Gym!", true));
         if (AGPConfig.Announcements.openAnnouncement) {
-            for (Player player : Utils.getAllPlayers())
-                player.sendMessage(Utils.toText(AGPConfig.Announcements.openMessage
-                        .replace("{gym}", gs.Name).replace("{leader}", sender.getName()), false));
-
+            Sponge.getServer().getBroadcastChannel().send(Utils.toText(AGPConfig.Announcements.openMessage
+                    .replace("{gym}", gs.Name).replace("{leader}", src.getName()), false));
         }
 
+        return CommandResult.success();
 
     }
 
-    @Override
-    public List<String> getTabCompletions(MinecraftServer server, CommandSource sender, String[] args) {
-        if (args.length == 1) {
-            return getListOfStringsMatchingLastWord(args, Utils.getGymNames(true));
-        }
-        return null;
-    }
 
 }

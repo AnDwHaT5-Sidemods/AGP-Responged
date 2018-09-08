@@ -12,6 +12,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord;
@@ -22,6 +23,7 @@ public class SetGymWarp extends Command {
         super("Sets a warp for the gym where you stand.");
     }
 
+    //TODO spongify
     @Override
     public void execute(MinecraftServer server, CommandSource sender, String[] args) throws CommandException {
         Player user = requireEntityPlayer(sender);
@@ -100,7 +102,7 @@ public class SetGymWarp extends Command {
         } else if (args.length == 4) {
             return getListOfStringsMatchingLastWord(args, Arrays.asList("challenger", "leader", "stands"));
         } else if (args.length == 5) {
-            return getListOfStringsMatchingLastWord(args, Arrays.asList("-delete"));
+            return getListOfStringsMatchingLastWord(args, Collections.singletonList("-delete"));
         }
         return null;
     }

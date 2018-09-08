@@ -1,40 +1,24 @@
 package agp.andwhat5.commands.gyms;
 
-import org.spongepowered.api.command.CommandSource;
-
 import agp.andwhat5.Utils;
-import agp.andwhat5.commands.Command;
 import agp.andwhat5.config.structs.GymStruc;
-import net.minecraft.command.CommandException;
-import net.minecraft.server.MinecraftServer;
+import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.spec.CommandExecutor;
 
-public class ListGymCommands extends Command{
+public class ListGymCommands implements CommandExecutor {
 
-	public ListGymCommands() {
-		super("Displays all of the commands in the gyms rewards pool.");
-	}
-	
-	@Override
-	public void execute(MinecraftServer server, CommandSource sender, String[] args) throws CommandException {
-		if(args.length == 1)
-		{
-			if(Utils.gymExists(args[0]))
-			{
-				GymStruc gym = Utils.getGym(args[0]);
-				sender.sendMessage(Utils.toText("&7This gyms commands are as follows:", true));
-				gym.Commands.stream().forEach(c -> sender.sendMessage(Utils.toText("&b" + c, true)));
-				return;
-			}
-			else
-			{
-				sender.sendMessage(Utils.toText("&7This gym does not exist.", true));
-				return;
-			}
-		}
-		else
-		{
-			sender.sendMessage(Utils.toText("&7Incorrect usage: &b/ListGymCommands <gym>&7.", true));
-			return;
-		}
-	}
+    @Override
+    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+        String gymName = args.<String>getOne("GymName").get();
+
+        GymStruc gym = Utils.getGym(gymName);
+        src.sendMessage(Utils.toText("&7This gyms commands are as follows:", true));
+        gym.Commands.forEach(c -> src.sendMessage(Utils.toText("&b" + c, true)));
+
+        return CommandResult.success();
+    }
+
 }
