@@ -11,9 +11,7 @@ public class GymRules implements CommandExecutor {
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws org.spongepowered.api.command.CommandException {
-        String gymName = args.<String>getOne("GymName").get();
-
-        GymStruc gym = Utils.getGym(gymName);
+        GymStruc gym = args.<GymStruc>getOne("GymName").get();
         if (gym.Rules.isEmpty()) {
             src.sendMessage(Utils.toText("&7This gym does not have any rules!", true));
             return CommandResult.success();

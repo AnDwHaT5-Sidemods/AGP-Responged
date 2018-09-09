@@ -17,8 +17,7 @@ public class OpenGym implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws org.spongepowered.api.command.CommandException {
 
-        String gymName = args.<String>getOne("GymName").get();
-        GymStruc gs = Utils.getGym(gymName);
+        GymStruc gs = args.<GymStruc>getOne("GymName").get();
         if (!Utils.isGymLeader((Player) src, gs) && !src.hasPermission("agp.headleader")) {
             src.sendMessage(Utils.toText("&7You are not a leader of the &b" + gs.Name + " &7Gym!", true));
             return CommandResult.success();

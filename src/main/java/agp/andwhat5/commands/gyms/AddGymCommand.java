@@ -15,10 +15,9 @@ public class AddGymCommand implements CommandExecutor {
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-        String gymName = args.<String>getOne("GymName").get();
         String command = args.<String>getOne("command").get();
 
-        GymStruc gym = Utils.getGym(gymName);
+        GymStruc gym = args.<GymStruc>getOne("GymName").get();
         gym.Commands.add(command);
         if (AGPConfig.Storage.storageType.equalsIgnoreCase("flatfile")) {
             Utils.editGym(gym);

@@ -12,9 +12,7 @@ public class ListGymCommands implements CommandExecutor {
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-        String gymName = args.<String>getOne("GymName").get();
-
-        GymStruc gym = Utils.getGym(gymName);
+        GymStruc gym = args.<GymStruc>getOne("GymName").get();
         src.sendMessage(Utils.toText("&7This gyms commands are as follows:", true));
         gym.Commands.forEach(c -> src.sendMessage(Utils.toText("&b" + c, true)));
 
