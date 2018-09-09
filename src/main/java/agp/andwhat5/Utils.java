@@ -433,6 +433,7 @@ public class Utils {
      * Gets all of the players on the server and returns them as a {@link Collection}
      * @return Returns all of the players as a {@link Collection}.
      */
+    @Deprecated //Marked so i can see all the crap code used for broadcasts
     public static Collection<Player> getAllPlayers() {
         return Sponge.getServer().getOnlinePlayers();
     }
@@ -444,7 +445,7 @@ public class Utils {
      */
     public static List<UUID> getQueuedPlayers(GymStruc gs) {
         List<UUID> toList = Lists.newArrayList();
-        getAllPlayers().stream().forEach(player -> {if(isInGymQueue(player, gs)) toList.add(player.getUniqueId());});
+        getAllPlayers().forEach(player -> {if(isInGymQueue(player, gs)) toList.add(player.getUniqueId());});
         return toList;
     }
 
@@ -455,7 +456,7 @@ public class Utils {
      */
     public static List<UUID> getGymLeaders(GymStruc gs) {
         List<UUID> toList = Lists.newArrayList();
-        getAllPlayers().stream().forEach(player -> {if(isGymLeader(player, gs)) toList.add(player.getUniqueId());});
+        getAllPlayers().forEach(player -> {if(isGymLeader(player, gs)) toList.add(player.getUniqueId());});
         return toList;
     }
     

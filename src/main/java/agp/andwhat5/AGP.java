@@ -84,10 +84,7 @@ import static agp.andwhat5.config.structs.GymStruc.EnumStatus.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Timer;
-import java.util.UUID;
+import java.util.*;
 
 @Plugin(id = "agp", name = "AGP Responged", version = "1.0.0-Beta1", dependencies = @Dependency(id = "pixelmon"), description = "Another gym plugin... but for Sponge!", authors = {"AnDwHaT5", "ClientHax"})
 public class AGP {
@@ -241,18 +238,83 @@ public class AGP {
 
         CommandManager commandManager = Sponge.getCommandManager();
         commandManager.register(this, new AcceptChallenge(), "acceptchallenge", "ac");
-        commandManager.register(this, new AddLeader(), "addleader");
-        commandManager.register(this, new AGPReload(), "agpreload");
-        commandManager.register(this, new DelBadge(), "delbadge");
-        commandManager.register(this, new DeleteLeader(), "delleader");
-        commandManager.register(this, new DenyChallenge(), "denychallenge", "dc");
         commandManager.register(this, new EditGym(), "editgym");//This command makes we want to kill myself.
-        commandManager.register(this, new GiveBadge(), "givebadge");
         commandManager.register(this, new GymWarp(), "gymwarp");//This command makes me want to kill myself.
         commandManager.register(this, new QueueList(), "queuelist", "ql");
         commandManager.register(this, new SetGymWarp(), "setgymwarp", "sgw", "setgwarp");//This command also makes me want to kill myself
         commandManager.register(this, new SpawnNPCLeader(), "spawnnpcleader", "snl", "spawnleader");
-        commandManager.register(this, new StorageConverter(), "stc");
+
+        CommandSpec storageConverterSpec = CommandSpec.builder()
+                .description(Text.of("Converts AGP's data between supported storage types."))
+                .permission("agp.command.stc")
+                .executor(new StorageConverter())
+                .arguments(
+                        GenericArguments.onlyOne(GenericArguments.string(Text.of("type"))),
+                        GenericArguments.optional(GenericArguments.string(Text.of("confirm")))
+                )
+                .build();
+        commandManager.register(this, storageConverterSpec, "stc");
+
+        CommandSpec denyChallengeSpec = CommandSpec.builder()
+                .description(Text.of("Denys a challenge from the next player in the spepcified gyms queue."))
+                .permission("agp.command.denychallenge")
+                .executor(new DenyChallenge())
+                .arguments(
+                        GenericArguments.onlyOne(GymNameCommandElement.gym(Text.of("GymName"))),
+                        GenericArguments.optional(GenericArguments.player(Text.of("player")))
+                )
+                .build();
+        commandManager.register(this, denyChallengeSpec, "denychallenge", "dc");
+
+        CommandSpec addLeaderSpec = CommandSpec.builder()
+                .description(Text.of("Adds the specified player to the specified gym."))
+                .permission("agp.command.addleader")
+                .executor(new AddLeader())
+                .arguments(
+                        GenericArguments.onlyOne(GenericArguments.string(Text.of("player"))),
+                        GenericArguments.onlyOne(GymNameCommandElement.gym(Text.of("GymName")))
+                )
+                .build();
+        commandManager.register(this, addLeaderSpec, "addleader");
+
+        CommandSpec delLeaderSpec = CommandSpec.builder()
+                .description(Text.of("Removes a leader from the specified gym."))
+                .permission("agp.command.delleader")
+                .executor(new DeleteLeader())
+                .arguments(
+                        GenericArguments.onlyOne(GenericArguments.string(Text.of("player"))),
+                        GenericArguments.onlyOne(GymNameCommandElement.gym(Text.of("GymName")))
+                )
+                .build();
+        commandManager.register(this, delLeaderSpec, "delleader");
+
+        CommandSpec giveBadgeSpec = CommandSpec.builder()
+                .description(Text.of("Gives a player the specified gyms badge."))
+                .permission("agp.command.givebadge")
+                .executor(new GiveBadge())
+                .arguments(
+                        GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))),
+                        GenericArguments.onlyOne(GymNameCommandElement.gym(Text.of("GymName")))
+                )
+                .build();
+        commandManager.register(this, giveBadgeSpec, "givebadge");
+
+        CommandSpec delBadgeSpec = CommandSpec.builder()
+                .description(Text.of("Deletes a badge from a players userfiles."))
+                .permission("agp.command.delbadge")
+                .executor(new DelBadge())
+                .arguments(
+                        GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))),
+                        GenericArguments.onlyOne(GymNameCommandElement.gym(Text.of("GymName")))
+                )
+                .build();
+        commandManager.register(this, delBadgeSpec, "delbadge");
+
+        CommandSpec agpReloadSpec = CommandSpec.builder()
+                .permission("agp.command.agpreload")
+                .executor(new AGPReload())
+                .build();
+        commandManager.register(this, agpReloadSpec, "agpreload");
 
         CommandSpec gymRulesSpec = CommandSpec.builder()
                 .description(Text.of("Shows the rules for the specified gym."))

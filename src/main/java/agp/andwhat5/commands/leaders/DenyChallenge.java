@@ -1,81 +1,56 @@
 package agp.andwhat5.commands.leaders;
 
 import agp.andwhat5.Utils;
-import agp.andwhat5.commands.Command;
 import agp.andwhat5.config.structs.GymStruc;
-import net.minecraft.command.CommandException;
-import net.minecraft.server.MinecraftServer;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord;
-
-public class DenyChallenge extends Command {
-
-    public DenyChallenge() {
-        super("Denys a challenge from the next player in the spepcified gyms queue.");
-    }
+public class DenyChallenge implements CommandExecutor {
 
     @Override
-    public void execute(MinecraftServer server, CommandSource sender, String[] args) throws CommandException {
-        if (args.length != 1 && args.length != 2) {
-            sender.sendMessage(Utils.toText("Incorrect usage: &b/DenyChallenge <gym> <opt-challenger>&7.", true));
-            return;
+    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+
+        GymStruc gym = args.<GymStruc>getOne("GymName").get();
+        Optional<Player> target = args.<Player>getOne("player");
+
+        if (!Utils.isGymLeader((Player) src, gym) && !src.hasPermission("agp.headleader")) {
+            src.sendMessage(Utils.toText("&7You are not a leader of the &b" + gym.Name + " &7Gym!", true));
+            return CommandResult.success();
         }
 
-        if (!Utils.gymExists(args[0])) {
-            sender.sendMessage(Utils.toText("&7The &b" + args[1] + " &7Gym does not exist!", true));
-            return;
+        if (Utils.getQueuedPlayers(gym).isEmpty()) {
+            src.sendMessage(Utils.toText("&7The &b" + gym.Name + " &7Gym's queue is empty!", true));
+            return CommandResult.success();
         }
 
-        GymStruc gs = Utils.getGym(args[0]);
-        if (!Utils.isGymLeader((Player) sender, gs) && !sender.hasPermission("agp.headleader")) {
-            sender.sendMessage(Utils.toText("&7You are not a leader of the &b" + gs.Name + " &7Gym!", true));
-            return;
-        }
-
-        if (Utils.getQueuedPlayers(gs).isEmpty()) {
-            sender.sendMessage(Utils.toText("&7The &b" + gs.Name + " &7Gym's queue is empty!", true));
-            return;
-        }
-
-        if (args.length == 1) {
-            UUID pUUID = gs.Queue.poll();
-            sender.sendMessage(Utils.toText("&7Challenger &b" + pUUID + " &7has been removed from the &b" + gs.Name + " &7Gym queue!", true));
-            Player player = Sponge.getServer().getPlayer(pUUID).orElse(null);
-            if (player != null) {
-                player.sendMessage(Utils.toText("&7Your challenge to the &b" + gs.Name + " &7Gym " +
-                        "was denied!", true));
-            }
+        if (!target.isPresent()) {
+            //Target first in the queue
+            UUID pUUID = gym.Queue.poll();
+            src.sendMessage(Utils.toText("&7Challenger &b" + pUUID + " &7has been removed from the &b" + gym.Name + " &7Gym queue!", true));
+            Sponge.getServer().getPlayer(pUUID).ifPresent(player1 -> player1.sendMessage(Utils.toText("&7Your challenge to the &b" + gym.Name + " &7Gym was denied!", true)));
         } else {
-            Player player = Sponge.getServer().getPlayer(args[1]).orElse(null);
+            //Target specific player
+            Player player = target.get();
 
-            UUID pUUID = player != null ? player.getUniqueId() : Sponge.getServer().getPlayer(args[1]).get().getUniqueId();
-            if (!gs.Queue.contains(pUUID)) {
-                sender.sendMessage(Utils.toText("&7Challenger &b" + pUUID + " &7is not in the &b" + gs.Name + " &7Gym queue!", true));
-                return;
+            UUID pUUID = player.getUniqueId();
+            if (!gym.Queue.contains(pUUID)) {
+                src.sendMessage(Utils.toText("&7Challenger &b" + pUUID + " &7is not in the &b" + gym.Name + " &7Gym queue!", true));
+                return CommandResult.success();
             }
-            gs.Queue.remove(pUUID);
-            sender.sendMessage(Utils.toText("&7Challenger &b" + pUUID + " &7has been removed from the &b" + gs.Name + " &7Gym queue!", true));
-            if (player != null) {
-                player.sendMessage(Utils.toText("&7Your challenge to the &b" + gs.Name + " " +
-                        "&7Gym was denied!", true));
-            }
+            gym.Queue.remove(pUUID);
+            src.sendMessage(Utils.toText("&7Challenger &b" + pUUID + " &7has been removed from the &b" + gym.Name + " &7Gym queue!", true));
+            player.sendMessage(Utils.toText("&7Your challenge to the &b" + gym.Name + " &7Gym was denied!", true));
         }
-    }
 
-    @Override
-    public List<String> getTabCompletions(MinecraftServer server, CommandSource sender, String[] args) {
-        if (args.length == 1) {
-            return getListOfStringsMatchingLastWord(args, Utils.getGymNames(true));
-        } else if (args.length == 2 && Utils.gymExists(args[0])) {
-            return getListOfStringsMatchingLastWord(args, Utils.getGym(args[0]).Queue);
-        }
-        return null;
+        return CommandResult.success();
     }
 
 }
