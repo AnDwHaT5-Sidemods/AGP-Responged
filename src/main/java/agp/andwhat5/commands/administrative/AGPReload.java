@@ -1,34 +1,26 @@
 package agp.andwhat5.commands.administrative;
 
 import agp.andwhat5.AGP;
-import agp.andwhat5.PlayerCheck;
 import agp.andwhat5.Utils;
-import agp.andwhat5.commands.Command;
 import agp.andwhat5.config.structs.DataStruc;
 import agp.andwhat5.config.structs.GymStruc;
-import net.minecraft.command.CommandException;
-import net.minecraft.server.MinecraftServer;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.service.user.UserStorageService;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.service.user.UserStorageService;
-
-public class AGPReload extends Command {
-
-    public AGPReload() {
-        super("/agpreload");
-    }
+public class AGPReload implements CommandExecutor {
 
     @SuppressWarnings("deprecation")
 	@Override
-    public void execute(MinecraftServer server, CommandSource sender, String[] args) throws CommandException {
+	public CommandResult execute(CommandSource src, CommandContext args) throws org.spongepowered.api.command.CommandException {
     	try {
 			AGP.getInstance().loadConfig();
 	        AGP.getInstance().getStorage().shutdown();
@@ -87,12 +79,13 @@ public class AGPReload extends Command {
 	            }
 	            Utils.saveAGPData();
             }
-	        sender.sendMessage(Utils.toText("&7AGP reloaded successfully", true));
+			src.sendMessage(Utils.toText("&7AGP reloaded successfully", true));
     	}
 	    catch (Exception e) {
 	        e.printStackTrace();
-	        sender.sendMessage(Utils.toText("&7AGP failed to reload. See console for details.", true));
+			src.sendMessage(Utils.toText("&7AGP failed to reload. See console for details.", true));
 	    }
+	    return CommandResult.success();
     }
 
 }

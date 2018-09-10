@@ -14,10 +14,9 @@ public class DelGymCommand implements CommandExecutor {
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws org.spongepowered.api.command.CommandException {
-        String gymName = args.<String>getOne("GymName").get();
         String command = args.<String>getOne("command").get();
 
-        GymStruc gym = Utils.getGym(gymName);
+        GymStruc gym = args.<GymStruc>getOne("GymName").get();
         if (gym.Commands.contains(command)) {
             gym.Commands.remove(command);
             src.sendMessage(Utils.toText("&7Successfully removed that command.", true));

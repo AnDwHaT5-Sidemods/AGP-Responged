@@ -21,8 +21,6 @@ public class CloseGym implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws org.spongepowered.api.command.CommandException {
 
-        String gymName = args.<String>getOne("GymName").get();
-
         AtomicBoolean force = new AtomicBoolean(false);
         args.<String>getOne("-f").ifPresent(consumer -> {
             if (consumer.equalsIgnoreCase("-f")) {
@@ -30,7 +28,7 @@ public class CloseGym implements CommandExecutor {
             }
         });
 
-        GymStruc gs = Utils.getGym(gymName);
+        GymStruc gs = args.<GymStruc>getOne("GymName").get();
         if (!Utils.isGymLeader((Player) src, gs) && !src.hasPermission("agp.headleader")) {
             src.sendMessage(Utils.toText("&7You must be a leader of the &b" + gs.Name + " &7Gym to close it!", true));
             return CommandResult.success();

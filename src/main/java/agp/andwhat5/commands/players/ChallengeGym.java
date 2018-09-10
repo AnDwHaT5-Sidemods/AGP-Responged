@@ -26,9 +26,7 @@ public class ChallengeGym implements CommandExecutor {
         }
 
         Player user = (Player) src;
-        String gymName = args.<String>getOne("GymName").get();
-
-        GymStruc gs = Utils.getGym(gymName);
+        GymStruc gs = args.<GymStruc>getOne("GymName").get();
         if (Utils.hasBadge(user, gs)) {
             src.sendMessage(Utils.toText("&7You have already beaten the &b" + gs.Name + " &7Gym!", true));
             return CommandResult.success();
