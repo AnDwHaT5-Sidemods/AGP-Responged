@@ -10,6 +10,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord;
@@ -105,7 +106,7 @@ public class GymWarp extends Command {
             if (Utils.gymExists(args[0]) && Utils.isGymLeader((Player) sender, Utils.getGym(args[1]))) {
                 return getListOfStringsMatchingLastWord(args, Arrays.asList("challenger", "leader", "stands"));
             } else {
-                return getListOfStringsMatchingLastWord(args, Arrays.asList("stands"));
+                return getListOfStringsMatchingLastWord(args, Collections.singletonList("stands"));
             }
         }
         return null;

@@ -42,7 +42,8 @@ j       | ,-"'    `    .'         `. `        `.
  */
 
 import agp.andwhat5.commands.administrative.*;
-import agp.andwhat5.commands.commandelements.GymNameCommandElement;
+import agp.andwhat5.commands.commandelements.GymArenaCommandElement;
+import agp.andwhat5.commands.commandelements.GymCommandElement;
 import agp.andwhat5.commands.gyms.*;
 import agp.andwhat5.commands.leaders.*;
 import agp.andwhat5.commands.players.*;
@@ -71,7 +72,6 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
-import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -112,7 +112,7 @@ public class AGP {
     public void loadConfig() throws IOException, ObjectMappingException {
         //Config
         this.node = this.configLoader.load();
-        TypeToken<AGPConfig> type = TypeToken.of(AGPConfig.class);
+        @SuppressWarnings("UnstableApiUsage") TypeToken<AGPConfig> type = TypeToken.of(AGPConfig.class);
         this.config = node.getValue(type, new AGPConfig());
         node.setValue(type, this.config);
         this.configLoader.save(node);
@@ -121,7 +121,7 @@ public class AGP {
 
     public void saveConfig() {
         try {
-            TypeToken<AGPConfig> type = TypeToken.of(AGPConfig.class);
+            @SuppressWarnings("UnstableApiUsage") TypeToken<AGPConfig> type = TypeToken.of(AGPConfig.class);
             node.setValue(type, this.config);
             this.configLoader.save(node);
         } catch (Exception e) {
@@ -237,12 +237,41 @@ public class AGP {
         loadConfig();
 
         CommandManager commandManager = Sponge.getCommandManager();
-        commandManager.register(this, new AcceptChallenge(), "acceptchallenge", "ac");
         commandManager.register(this, new EditGym(), "editgym");//This command makes we want to kill myself.
         commandManager.register(this, new GymWarp(), "gymwarp");//This command makes me want to kill myself.
-        commandManager.register(this, new QueueList(), "queuelist", "ql");
         commandManager.register(this, new SetGymWarp(), "setgymwarp", "sgw", "setgwarp");//This command also makes me want to kill myself
-        commandManager.register(this, new SpawnNPCLeader(), "spawnnpcleader", "snl", "spawnleader");
+
+        CommandSpec queueListSpec = CommandSpec.builder()
+                .description(Text.of("Shows the players waiting in the specified gyms queue."))
+                .permission("agp.command.queuelist")
+                .executor(new QueueList())
+                .arguments(
+                        GenericArguments.onlyOne(GymCommandElement.gym()),
+                        GenericArguments.optional(GenericArguments.player(Text.of("Target")))
+                )
+                .build();
+        commandManager.register(this, queueListSpec, "queuelist", "ql");
+
+        CommandSpec acceptChallengeSpec = CommandSpec.builder()
+                .description(Text.of("Accepts a challenge from a player in the specififed gym queue."))
+                .permission("agp.command.acceptchallenge")
+                .executor(new AcceptChallenge())
+                .arguments(
+                        GenericArguments.onlyOne(GymCommandElement.gym()),
+                        GenericArguments.optional(GymArenaCommandElement.gymArena())
+                )
+                .build();
+        commandManager.register(this, acceptChallengeSpec, "acceptchallenge", "ac");
+
+        CommandSpec spawnNpcLeaderSpec = CommandSpec.builder()
+                .description(Text.of("Spawns an NPC Leader of the specified gym where you are standing."))
+                .permission("agp.command.spawnnpcleader")
+                .executor(new SpawnNPCLeader())
+                .arguments(
+                        GenericArguments.onlyOne(GymCommandElement.gym())
+                )
+                .build();
+        commandManager.register(this, spawnNpcLeaderSpec, "spawnnpcleader", "snl", "spawnleader");
 
         CommandSpec storageConverterSpec = CommandSpec.builder()
                 .description(Text.of("Converts AGP's data between supported storage types."))
@@ -260,7 +289,7 @@ public class AGP {
                 .permission("agp.command.denychallenge")
                 .executor(new DenyChallenge())
                 .arguments(
-                        GenericArguments.onlyOne(GymNameCommandElement.gym(Text.of("GymName"))),
+                        GenericArguments.onlyOne(GymCommandElement.gym()),
                         GenericArguments.optional(GenericArguments.player(Text.of("player")))
                 )
                 .build();
@@ -272,7 +301,7 @@ public class AGP {
                 .executor(new AddLeader())
                 .arguments(
                         GenericArguments.onlyOne(GenericArguments.string(Text.of("player"))),
-                        GenericArguments.onlyOne(GymNameCommandElement.gym(Text.of("GymName")))
+                        GenericArguments.onlyOne(GymCommandElement.gym())
                 )
                 .build();
         commandManager.register(this, addLeaderSpec, "addleader");
@@ -283,7 +312,7 @@ public class AGP {
                 .executor(new DeleteLeader())
                 .arguments(
                         GenericArguments.onlyOne(GenericArguments.string(Text.of("player"))),
-                        GenericArguments.onlyOne(GymNameCommandElement.gym(Text.of("GymName")))
+                        GenericArguments.onlyOne(GymCommandElement.gym())
                 )
                 .build();
         commandManager.register(this, delLeaderSpec, "delleader");
@@ -294,7 +323,7 @@ public class AGP {
                 .executor(new GiveBadge())
                 .arguments(
                         GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))),
-                        GenericArguments.onlyOne(GymNameCommandElement.gym(Text.of("GymName")))
+                        GenericArguments.onlyOne(GymCommandElement.gym())
                 )
                 .build();
         commandManager.register(this, giveBadgeSpec, "givebadge");
@@ -305,7 +334,7 @@ public class AGP {
                 .executor(new DelBadge())
                 .arguments(
                         GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))),
-                        GenericArguments.onlyOne(GymNameCommandElement.gym(Text.of("GymName")))
+                        GenericArguments.onlyOne(GymCommandElement.gym())
                 )
                 .build();
         commandManager.register(this, delBadgeSpec, "delbadge");
@@ -321,7 +350,7 @@ public class AGP {
                 .permission("agp.command.gymrules")
                 .executor(new GymRules())
                 .arguments(
-                        GenericArguments.onlyOne(GymNameCommandElement.gym(Text.of("GymName")))
+                        GenericArguments.onlyOne(GymCommandElement.gym())
                 )
                 .build();
         commandManager.register(this, gymRulesSpec, "gymrules");
@@ -341,7 +370,7 @@ public class AGP {
                 .permission("agp.command.challangegym")
                 .executor(new ChallengeGym())
                 .arguments(
-                        GenericArguments.onlyOne(GymNameCommandElement.gym(Text.of("GymName")))
+                        GenericArguments.onlyOne(GymCommandElement.gym())
                 )
                 .build();
         commandManager.register(this, challengeGymSpec, "challengegym", "chalgym");
@@ -358,7 +387,7 @@ public class AGP {
                 .permission("agp.command.listgymcommands")
                 .executor(new ListGymCommands())
                 .arguments(
-                        GenericArguments.onlyOne(GymNameCommandElement.gym(Text.of("GymName")))
+                        GenericArguments.onlyOne(GymCommandElement.gym())
                 )
                 .build();
         commandManager.register(this, listGymCommandsSpec, "listgymcommands");
@@ -375,7 +404,7 @@ public class AGP {
                 .permission("agp.command.delgym")
                 .executor(new DeleteGym())
                 .arguments(
-                        GenericArguments.onlyOne(GymNameCommandElement.gym(Text.of("GymName")))
+                        GenericArguments.onlyOne(GymCommandElement.gym())
                 )
                 .build();
         commandManager.register(this, deleteGymSpec, "delgym");
@@ -385,7 +414,7 @@ public class AGP {
                 .permission("agp.command.addgymcommand")
                 .executor(new AddGymCommand())
                 .arguments(
-                        GenericArguments.onlyOne(GymNameCommandElement.gym(Text.of("GymName"))),
+                        GenericArguments.onlyOne(GymCommandElement.gym()),
                         GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of("command")))
                 )
                 .build();
@@ -396,7 +425,7 @@ public class AGP {
                 .permission("agp.command.delgymcommand")
                 .executor(new DelGymCommand())
                 .arguments(
-                        GenericArguments.onlyOne(GymNameCommandElement.gym(Text.of("GymName"))),
+                        GenericArguments.onlyOne(GymCommandElement.gym()),
                         GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of("command")))
                 )
                 .build();
@@ -407,7 +436,7 @@ public class AGP {
                 .permission("agp.command.opengym")
                 .executor(new OpenGym())
                 .arguments(
-                        GenericArguments.onlyOne(GymNameCommandElement.gym(Text.of("GymName")))
+                        GenericArguments.onlyOne(GymCommandElement.gym())
                 )
                 .build();
         commandManager.register(this, openGymSpec, "opengym");
@@ -417,7 +446,7 @@ public class AGP {
                 .permission("agp.command.closegym")
                 .executor(new CloseGym())
                 .arguments(
-                        GenericArguments.onlyOne(GymNameCommandElement.gym(Text.of("GymName"))),
+                        GenericArguments.onlyOne(GymCommandElement.gym()),
                         GenericArguments.optional(GenericArguments.string(Text.of("-f")))
                 )
                 .build();
