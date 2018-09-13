@@ -7,12 +7,10 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.SelectorCommandElement;
 import org.spongepowered.api.text.Text;
 
-import javax.annotation.Nullable;
+public class GymCommandElement extends SelectorCommandElement {
 
-public class GymNameCommandElement extends SelectorCommandElement {
-
-    protected GymNameCommandElement(@Nullable Text key) {
-        super(key);
+    protected GymCommandElement() {
+        super(Text.of("GymName"));
     }
 
     @Override
@@ -30,8 +28,8 @@ public class GymNameCommandElement extends SelectorCommandElement {
         return value;
     }
 
-    public static CommandElement gym(Text key) {
-        return new GymNameCommandElement(key);
+    public static CommandElement gym() {
+        return new GymCommandElement();
     }
 
 }
