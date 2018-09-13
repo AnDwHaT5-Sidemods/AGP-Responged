@@ -59,7 +59,7 @@ public class GymListGui {
         List<GymStruc> gymData = DataStruc.gcon.GymData;
 
         //Sanity checks
-        int maxPages = (int) (Math.ceil((double)gymData.size() / (double)itemsPerPage) - 1);
+        int maxPages = Math.max(0, (int) (Math.ceil((double)gymData.size() / (double)itemsPerPage) - 1));
         if(page < 0)
             page = 0;
         if(page >= maxPages)

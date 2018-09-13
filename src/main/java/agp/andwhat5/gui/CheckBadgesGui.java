@@ -62,9 +62,8 @@ public class CheckBadgesGui
 
         List<BadgeStruc> badgeData = getPlayerData(player).Badges;//56
 
-        //TODO verify this all works properly when the player has no badges, seems to error in console
         //Sanity checks
-        int maxPages = (int) (Math.ceil((double)badgeData.size() / (double)itemsPerPage) - 1);
+        int maxPages = Math.max(0, (int) (Math.ceil((double)badgeData.size() / (double)itemsPerPage) - 1));
         if (page < 0)
             page = 0;
         if (page >= maxPages)
