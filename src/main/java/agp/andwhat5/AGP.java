@@ -237,9 +237,51 @@ public class AGP {
         loadConfig();
 
         CommandManager commandManager = Sponge.getCommandManager();
-        commandManager.register(this, new EditGym(), "editgym");//This command makes we want to kill myself.
-        commandManager.register(this, new GymWarp(), "gymwarp");//This command makes me want to kill myself.
-        commandManager.register(this, new SetGymWarp(), "setgymwarp", "sgw", "setgwarp");//This command also makes me want to kill myself
+
+        CommandSpec gymWarpSpec = CommandSpec.builder()
+                .description(Text.of("Warps you to the specified gym location."))
+                .permission("agp.command.gymwarp")
+                .executor(new GymWarp())
+                .arguments(
+                        GenericArguments.onlyOne(GymCommandElement.gym()),
+                        GenericArguments.onlyOne(GenericArguments.string(Text.of("location"))),
+                        GenericArguments.optional(GenericArguments.seq(
+                                GenericArguments.optional(GymArenaCommandElement.gymArena()),
+                                GenericArguments.optional(GenericArguments.string(Text.of("arenaSubLocation")))
+                        ))
+                )
+                .build();
+        commandManager.register(this, gymWarpSpec, "gymwarp");
+
+        CommandSpec setGymWarpSpec = CommandSpec.builder()
+                .description(Text.of("Sets a warp for the gym where you stand."))
+                .extendedDescription(Utils.toText("&b/SetGymWarp <gym> <lobby|home|arena> [(if arena) <name> <stands|challenger|leader> <opt-(-delete)>]&7.", true))
+                .permission("agp.command.setgymwarp")
+                .executor(new SetGymWarp())
+                .arguments(
+                        GenericArguments.onlyOne(GymCommandElement.gym()),
+                        GenericArguments.onlyOne(GenericArguments.string(Text.of("location"))),
+                        GenericArguments.optional(GenericArguments.seq(
+                                    GenericArguments.optional(GenericArguments.string(Text.of("GymArena"))),
+                                    GenericArguments.optional(GenericArguments.string(Text.of("arenaSubLocation"))),
+                                    GenericArguments.optional(GenericArguments.string(Text.of("-delete")))
+                        ))
+                )
+                .build();
+        commandManager.register(this, setGymWarpSpec, "setgymwarp", "sgw", "setgwarp");
+
+
+        CommandSpec editGymSpec = CommandSpec.builder()
+                .description(Text.of("Edits the specified gym with the specified parameters."))
+                .permission("agp.command.editgym")
+                .executor(new EditGym())
+                .arguments(//This is such a terrible command
+                        GenericArguments.onlyOne(GymCommandElement.gym()),
+                        GenericArguments.optional(GenericArguments.remainingRawJoinedStrings(Text.of("args")))
+                )
+                .build();
+        commandManager.register(this, editGymSpec, "editgym");
+
 
         CommandSpec queueListSpec = CommandSpec.builder()
                 .description(Text.of("Shows the players waiting in the specified gyms queue."))
