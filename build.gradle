@@ -36,20 +36,15 @@ repositories {
 dependencies {
     shadow "org.spongepowered:spongecommon:${spongeversion}:dev"
     implementation "com.github.SimonFlash.TeslaPowered:TeslaLibs:v${teslaversion}"
-    shadow fileTree(dir: 'libs-', include: "Pixelmon-1.12.2-${pixelmonversion}-server-deobf.jar")
+    shadow fileTree(dir: 'libs-', include: "Pixelmon-1.12.2-${pixelmonversion}-server.jar")
 	compile group: 'com.zaxxer', name: 'HikariCP', version: '2.5.1'
-}
-
-jar {
-    archiveName = "${project.name}-s${spongeversion[0..2]}-t${teslaversion}-v${version}.jar"
 }
 
 shadowJar {
     dependencies {
         include dependency("com.github.SimonFlash.TeslaPowered:TeslaLibs:v${teslaversion}")
     }
-    relocate 'com.mcsimonflash.sponge.teslalibs', 'agp.andwhat5.sponge.wondertrade.teslalibs'
-    archiveName = "${project.name}-s${spongeversion.substring(0, 3)}-v${version}.jar"
+    relocate 'com.mcsimonflash.sponge.teslalibs', 'agp.andwhat5.sponge.agp.teslalibs'
 }
 
 reobf {
