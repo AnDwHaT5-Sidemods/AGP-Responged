@@ -1,0 +1,11 @@
+language: java
+install: true
+
+jdk:
+  - oraclejdk8
+
+script:
+  - mkdir ./libs-
+  - wget https://download.nodecdn.net/containers/reforged/server/release/6.3.4/Pixelmon-1.12.2-6.3.4-server.jar -O ./libs-/Pixelmon-1.12.2-6.3.4-server.jar
+  - ./gradlew build --scan -s
+  
