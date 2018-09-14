@@ -20,7 +20,7 @@ public class AGPReload implements CommandExecutor {
 
     @SuppressWarnings("deprecation")
 	@Override
-	public CommandResult execute(CommandSource src, CommandContext args) throws org.spongepowered.api.command.CommandException {
+	public CommandResult execute(CommandSource src, CommandContext args) {
     	try {
 			AGP.getInstance().loadConfig();
 	        AGP.getInstance().getStorage().shutdown();

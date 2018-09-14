@@ -1,7 +1,6 @@
 package agp.andwhat5.gui;
 
 import agp.andwhat5.AGP;
-import agp.andwhat5.Utils;
 import agp.andwhat5.config.structs.DataStruc;
 import agp.andwhat5.config.structs.GymStruc;
 import com.mcsimonflash.sponge.teslalibs.inventory.Action;

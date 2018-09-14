@@ -13,7 +13,8 @@ import java.util.UUID;
 /**
  * Created by nickd on 4/7/2017.
  */
-public class AgpAPI {
+@SuppressWarnings("unused")
+class AgpAPI {
     //TODO: Make the API a separate project?
     //TODO: This should have little implementation. Most of this is in Utils as well
 
@@ -41,7 +42,7 @@ public class AgpAPI {
      *
      * @return An optional parameter, representing a specific gym being present or not
      */
-    public Optional<GymStruc> getSpecificGym(String gym) {
+    private Optional<GymStruc> getSpecificGym(String gym) {
         return DataStruc.gcon.GymData.stream().filter(g -> g.Name.equalsIgnoreCase(gym)).findAny();
     }
 

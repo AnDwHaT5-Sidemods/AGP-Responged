@@ -18,8 +18,9 @@ public class PlayerStruc {
 	/**
 	 * The {@link UUID} of the player.
 	 */
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
     @Expose
-    public UUID uuid;
+    private UUID uuid;
 
     /**
      * A {@link List} of {@link BadgeStruc}s that contains all of the users badges.
@@ -35,10 +36,4 @@ public class PlayerStruc {
         Badges = new ArrayList<>();
     }
 
-    public static class Leader {
-        @Expose
-        public boolean isLeader = false;
-        @Expose
-        public boolean JoinMessage = false;
-    }
 }

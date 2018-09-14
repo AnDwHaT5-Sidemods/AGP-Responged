@@ -3,7 +3,6 @@ package agp.andwhat5.commands.commandelements;
 import agp.andwhat5.config.structs.ArenaStruc;
 import agp.andwhat5.config.structs.GymStruc;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandArgs;
 import org.spongepowered.api.command.args.CommandContext;
@@ -16,13 +15,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 //Don't look directly at it, just don't
 public class GymArenaCommandElement extends SelectorCommandElement {
 
-    GymStruc currentGym = null;
+    private GymStruc currentGym = null;
 
-    protected GymArenaCommandElement() {
+    private GymArenaCommandElement() {
         super(Text.of("GymArena"));
     }
 
@@ -63,13 +64,13 @@ public class GymArenaCommandElement extends SelectorCommandElement {
         CommandArgs.Snapshot state = args.getSnapshot();
         final Optional<String> nextArg = args.nextIfPresent();
         args.applySnapshot(state);
-        List<String> choices = nextArg.isPresent() ? Selector.complete(nextArg.get()) : ImmutableList.of();
+        List<String> choices = nextArg.map(Selector::complete).orElseGet(ImmutableList::of);
 
         if (choices.isEmpty()) {
             Iterable<String> choices2 = getGymArenas(context);
             final Optional<String> nextArg2 = args.nextIfPresent();
             if (nextArg2.isPresent()) {
-                choices2 = Iterables.filter(choices2, input -> getFormattedPattern(nextArg2.get()).matcher(input).find());
+                choices2 = StreamSupport.stream(choices2.spliterator(), false).filter(input -> getFormattedPattern(nextArg2.get()).matcher(input).find()).collect(Collectors.toList());
                 choices = ImmutableList.copyOf(choices2);
             }
             return choices;
@@ -78,7 +79,7 @@ public class GymArenaCommandElement extends SelectorCommandElement {
         return ImmutableList.of();
     }
 
-        Pattern getFormattedPattern(String input) {
+        private Pattern getFormattedPattern(String input) {
             if (!input.startsWith("^")) { // Anchor matches to the beginning -- this lets us use find()
                 input = "^" + input;
             }

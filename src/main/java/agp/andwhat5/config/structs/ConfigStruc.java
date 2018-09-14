@@ -20,7 +20,5 @@ public class ConfigStruc {
     @Deprecated
     @Expose(serialize = false)
     public List<String> Badges = new ArrayList<>();
-    @Deprecated
-    @Expose(serialize = false)
-    public List<LeaderStruc> Leaders = new ArrayList<>();
+
 }

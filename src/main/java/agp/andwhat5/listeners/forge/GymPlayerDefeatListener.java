@@ -50,7 +50,7 @@ public class GymPlayerDefeatListener {
                     }
                     if (result.equals(BattleResults.VICTORY)) {
                         if (PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) challenger).get().getFirstAblePokemon((World) challenger.getWorld()) != null)
-                            if (PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) leader).get().getFirstAblePokemon((World) leader).getEntityWorld() != null) {
+                            if (PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) leader).get().getFirstAblePokemon((World) leader.getWorld()) != null) {
                                 DataStruc.gcon.GymBattlers.remove(bts);
                                 return;
                             }
@@ -65,16 +65,14 @@ public class GymPlayerDefeatListener {
                             }
                             if(!bts.gym.Commands.isEmpty())
                             {
-                            	bts.gym.Commands.stream().forEach(i -> Sponge.getCommandManager().process((CommandSource) Sponge.getServer(), i.trim()));
+                            	bts.gym.Commands.forEach(i -> Sponge.getCommandManager().process((CommandSource) Sponge.getServer(), i.trim()));
                             }
 
                             challenger.sendMessage(Utils.toText("&7Congratulations, you defeated the &b" + bts.gym.Name + " &7gym! ", true));
 
                             if (AGPConfig.Announcements.winAnnouncement) {
-
-                                for (Player player : Utils.getAllPlayers())
-                                    player.sendMessage(Utils.toText(AGPConfig.Announcements.winMessage
-                                            .replace("{gym}", bts.gym.Name).replace("{challenger}", challenger.getName()).replace("{leader}", leader.getName()), false));
+                                Sponge.getServer().getBroadcastChannel().send(Utils.toText(AGPConfig.Announcements.winMessage
+                                        .replace("{gym}", bts.gym.Name).replace("{challenger}", challenger.getName()).replace("{leader}", leader.getName()), true));
                             }
                             Utils.saveAGPData();
                         }

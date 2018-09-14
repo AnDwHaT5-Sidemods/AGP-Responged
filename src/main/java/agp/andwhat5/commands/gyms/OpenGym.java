@@ -15,7 +15,7 @@ import static agp.andwhat5.config.structs.GymStruc.EnumStatus.OPEN;
 public class OpenGym implements CommandExecutor {
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws org.spongepowered.api.command.CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
 
         GymStruc gs = args.<GymStruc>getOne("GymName").get();
         if (!Utils.isGymLeader((Player) src, gs) && !src.hasPermission("agp.headleader")) {

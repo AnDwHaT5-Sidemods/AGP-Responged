@@ -24,7 +24,7 @@ public interface Storage {
      *
      * @throws Exception Occurs on any failure
      */
-    void shutdown() throws Exception;
+    void shutdown();
 
     /**
      * Will delete all current data saved to the system

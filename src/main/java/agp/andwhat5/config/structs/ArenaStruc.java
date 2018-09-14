@@ -8,7 +8,7 @@ public class ArenaStruc {
 	 * The name of the Arena.
 	 */
     @Expose
-    public String Name;
+    public final String Name;
     
     /**
      * The location of the Stands for the gym. The players watching area.
@@ -31,7 +31,7 @@ public class ArenaStruc {
     /**
      * Whether or not this arena is currently in use.
      */
-    public boolean inUse = false;
+    public boolean inUse = false;//TODO this should be used.. stupid psyduck
 
     public ArenaStruc(String name) {
         this.Name = name;

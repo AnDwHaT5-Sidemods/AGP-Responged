@@ -11,7 +11,7 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 public class DeleteGym implements CommandExecutor {
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws org.spongepowered.api.command.CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
         GymStruc gs = args.<GymStruc>getOne("GymName").get();
         Utils.removeGym(gs);
         AGP.getInstance().getStorage().updateAllBadges(gs);

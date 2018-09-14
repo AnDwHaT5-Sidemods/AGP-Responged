@@ -84,8 +84,8 @@ public class GymStruc {
         NPC
     }
     public EnumStatus Status = EnumStatus.CLOSED;
-    public Queue<UUID> Queue = new LinkedList<>();
-    public List<UUID> OnlineLeaders = new ArrayList<>();
+    public final Queue<UUID> Queue = new LinkedList<>();
+    public final List<UUID> OnlineLeaders = new ArrayList<>();
 
     public GymStruc() {
     }

@@ -15,7 +15,7 @@ import org.spongepowered.api.entity.living.player.Player;
 public class DelBadge implements CommandExecutor {
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws org.spongepowered.api.command.CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
         Player target = args.<Player>getOne("player").get();
         GymStruc gym = args.<GymStruc>getOne("GymName").get();
 

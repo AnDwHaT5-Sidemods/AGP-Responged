@@ -3,7 +3,6 @@ package agp.andwhat5.commands.leaders;
 import agp.andwhat5.Utils;
 import agp.andwhat5.config.structs.GymStruc;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -14,12 +13,10 @@ import org.spongepowered.api.service.user.UserStorageService;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static agp.andwhat5.commands.Command.getEntityPlayer;
-
 public class QueueList implements CommandExecutor {
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
         GymStruc gym = args.<GymStruc>getOne("GymName").get();
         Optional<Player> target = args.getOne("Target");
 
@@ -38,7 +35,7 @@ public class QueueList implements CommandExecutor {
                 src.sendMessage(Utils.toText("&7There are no challengers in the queue!", false));
             } else {
                 UserStorageService userStorageService = Sponge.getServiceManager().provide(UserStorageService.class).get();
-                gym.Queue.parallelStream().forEach(uuid -> userStorageService.get(uuid).ifPresent(user -> src.sendMessage(Utils.toText("&b" + i.incrementAndGet() + ": " + (getEntityPlayer(uuid) != null ? "&a" : "&c") + user.getName(), false))));
+                gym.Queue.parallelStream().forEach(uuid -> userStorageService.get(uuid).ifPresent(user -> src.sendMessage(Utils.toText("&b" + i.incrementAndGet() + ": " + (Sponge.getServer().getPlayer(uuid).isPresent() ? "&a" : "&c") + user.getName(), false))));
             }
         } else {
             //Target specific player

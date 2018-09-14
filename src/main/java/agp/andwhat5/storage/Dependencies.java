@@ -6,6 +6,7 @@ import java.util.Optional;
  * Created by Nick on 2/22/2017.
  */
 
+@SuppressWarnings("unused")
 public enum Dependencies {
 
     MYSQL_DRIVER("https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.6/mysql-connector-java-5.1.6.jar", "5.1.6", "com.mysql.jdbc.jdbc2.optional.MysqlDataSource"),
@@ -18,17 +19,17 @@ public enum Dependencies {
     MONGODB_DRIVER("https://repo1.maven.org/maven2/org/mongodb/mongo-java-driver/3.4.1/mongo-java-driver-3.4.1.jar", "3.4.1", "com.mongodb.Mongo"),
     JEDIS("https://github.com/lucko/jedis/releases/download/jedis-2.9.1-shaded/jedis-2.9.1-shaded.jar", "2.9.1-shaded", "redis.clients.jedis.shaded.Jedis");
 
-    private String url;
-    private String version;
-    private String testClass;
+    private final String url;
+    private final String version;
+    private final String testClass;
 
-    private Dependencies(String url, String version, String testClass) {
+    Dependencies(String url, String version, String testClass) {
         this.url = url;
         this.version = version;
         this.testClass = testClass;
     }
 
-    public static Optional<Dependencies> getFromName(String name) {
+    private static Optional<Dependencies> getFromName(String name) {
         return Optional.of(valueOf(name));
     }
 

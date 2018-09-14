@@ -9,7 +9,7 @@ import org.spongepowered.api.text.Text;
 
 public class GymCommandElement extends SelectorCommandElement {
 
-    protected GymCommandElement() {
+    private GymCommandElement() {
         super(Text.of("GymName"));
     }
 

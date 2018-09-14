@@ -14,12 +14,11 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static agp.andwhat5.config.structs.GymStruc.EnumStatus.*;
-import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord;
 
 public class CloseGym implements CommandExecutor {
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws org.spongepowered.api.command.CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
 
         AtomicBoolean force = new AtomicBoolean(false);
         args.<String>getOne("-f").ifPresent(consumer -> {

@@ -33,15 +33,15 @@ public class PlayerCheck {
 
     //private final static String devLink = "https://pastebin.com/raw/SXepayjB";
     //private final static String scrubLink = "https://pastebin.com/raw/gqXKbgad";
-    private static List<UUID> devs = Lists.newArrayList(
+    private static final List<UUID> devs = Lists.newArrayList(
     		UUID.fromString("e978a5b2-3ea7-4f10-acde-1c220967c338") /*AnDwHaT5*/,
     		UUID.fromString("88333268-79b6-4537-8066-48d255a6a0f9") /*Sy1veon*/,
     		UUID.fromString("07aa849d-43e5-4da1-b2f9-5d8ac69f4d1a") /*ClientHax*/);
-    private static List<UUID> scrubs = Lists.newArrayList(
+    private static final List<UUID> scrubs = Lists.newArrayList(
     		UUID.fromString("0eb8e4fa-f8dc-4648-989b-98ac5bd417a3") /*HackoJacko*/);
     
     //The best of eastereggs.
-    int eventCounter = 0;
+    private int eventCounter = 0;
 
     private boolean isDeveloper(Player player) {
         return devs.contains(player.getUniqueId());
@@ -68,7 +68,7 @@ public class PlayerCheck {
         boolean isLeader = Utils.isAnyLeader(player);
         if(!isLeader)
         	return;
-        DataStruc.gcon.GymData.stream().forEach(g -> {if(g.PlayerLeaders.contains(player.getUniqueId())) g.OnlineLeaders.add(player.getUniqueId());});       
+        DataStruc.gcon.GymData.forEach(g -> {if(g.PlayerLeaders.contains(player.getUniqueId())) g.OnlineLeaders.add(player.getUniqueId());});
         if (AGPConfig.Announcements.announceLeaderJoin) 
         {
         	for (GymStruc g : DataStruc.gcon.GymData) 
@@ -225,9 +225,9 @@ public class PlayerCheck {
 }
 
 class JumpThread implements Runnable {
-    private EntityPixelmon p;
-    private float startingblock = 0;
-    private float i = 0;
+    private final EntityPixelmon p;
+    private final float startingblock;
+    private float i;
 
     JumpThread(EntityPixelmon pixelmon) {
         p = pixelmon;

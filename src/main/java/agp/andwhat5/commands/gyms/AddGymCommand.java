@@ -5,7 +5,6 @@ import agp.andwhat5.Utils;
 import agp.andwhat5.config.AGPConfig;
 import agp.andwhat5.config.structs.DataStruc;
 import agp.andwhat5.config.structs.GymStruc;
-import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -14,7 +13,7 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 public class AddGymCommand implements CommandExecutor {
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
         String command = args.<String>getOne("command").get();
 
         GymStruc gym = args.<GymStruc>getOne("GymName").get();

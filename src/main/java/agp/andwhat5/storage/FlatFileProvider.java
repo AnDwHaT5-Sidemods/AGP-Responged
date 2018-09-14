@@ -7,15 +7,10 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.service.user.UserStorageService;
 
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
@@ -25,7 +20,6 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
 import agp.andwhat5.Utils;
-import agp.andwhat5.config.structs.ArenaStruc;
 import agp.andwhat5.config.structs.BadgeStruc;
 import agp.andwhat5.config.structs.ConfigStruc;
 import agp.andwhat5.config.structs.DataStruc;
@@ -36,8 +30,8 @@ public class FlatFileProvider implements Storage {
 
     private static final Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting()
             .create();
-    private File badges = new File("config/agp/data/badges.json");
-    private File gyms = new File("config/agp/data/gyms.json");
+    private final File badges = new File("config/agp/data/badges.json");
+    private final File gyms = new File("config/agp/data/gyms.json");
 
     public FlatFileProvider() {
         try {
@@ -114,17 +108,6 @@ public class FlatFileProvider implements Storage {
         return gyms;
     }
 
-    private <V extends List<ArenaStruc>> List<ArenaStruc> getArenaData(Reader reader, TypeToken<V> token) {
-        List<ArenaStruc> arenas = Lists.newArrayList();
-
-        V response = gson.fromJson(reader, token.getType());
-        if (response != null) {
-            arenas = response;
-        }
-
-        return arenas;
-    }
-
     private <V extends HashMap<UUID, PlayerStruc>> HashMap<UUID, PlayerStruc> getBadgeData(Reader reader,
                                                                                            TypeToken<V> token) {
         HashMap<UUID, PlayerStruc> badges = new HashMap<>();
@@ -138,7 +121,7 @@ public class FlatFileProvider implements Storage {
     }
 
     @Override
-    public void shutdown() throws Exception {
+    public void shutdown() {
     }
 
     @Override

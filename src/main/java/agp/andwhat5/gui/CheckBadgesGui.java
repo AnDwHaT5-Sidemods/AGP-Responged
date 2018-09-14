@@ -7,7 +7,6 @@ import com.mcsimonflash.sponge.teslalibs.inventory.Element;
 import com.mcsimonflash.sponge.teslalibs.inventory.Layout;
 import com.mcsimonflash.sponge.teslalibs.inventory.View;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemType;
@@ -118,6 +117,7 @@ public class CheckBadgesGui
         view.setElement(50, next);
     }
 
+    @SuppressWarnings("unused")
     private static Element getBadgeElement(Player player, BadgeStruc badge)
     {
 

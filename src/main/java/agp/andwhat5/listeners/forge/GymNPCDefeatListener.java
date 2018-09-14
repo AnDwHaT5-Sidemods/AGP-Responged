@@ -85,13 +85,12 @@ public class GymNPCDefeatListener {
                 }
                 if(!gs.Commands.isEmpty())
                 {
-                	gs.Commands.stream().forEach(i -> Sponge.getCommandManager().process((CommandSource) Sponge.getServer(), i.trim()));
+                	gs.Commands.forEach(i -> Sponge.getCommandManager().process((CommandSource) Sponge.getServer(), i.trim()));
                 }
                 ((Player) e.player).sendMessage(Utils.toText("&7Congratulations, you defeated the &b" + gs.Name + " &7Gym!", true));
                 if (AGPConfig.Announcements.winAnnouncement) {
-                    for (Player player : Utils.getAllPlayers())
-                        player.sendMessage(Utils.toText(AGPConfig.Announcements.winMessage
-                                .replace("{gym}", gs.Name).replace("{challenger}", e.player.getName()).replace("{leader}", e.trainer.getName()), false));
+                    Sponge.getServer().getBroadcastChannel().send(Utils.toText(AGPConfig.Announcements.winMessage
+                            .replace("{gym}", gs.Name).replace("{challenger}", e.player.getName()).replace("{leader}", e.trainer.getName()), true));
                 }
             }
         }
