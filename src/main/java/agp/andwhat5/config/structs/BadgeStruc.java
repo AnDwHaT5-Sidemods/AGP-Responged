@@ -6,6 +6,7 @@ import com.google.gson.annotations.Expose;
 import java.util.Date;
 import java.util.List;
 
+@SuppressWarnings("CanBeFinal")
 public class BadgeStruc {
 	
 	/**
@@ -37,9 +38,6 @@ public class BadgeStruc {
      */
     @Expose
     public List<String> Pokemon;
-
-    public BadgeStruc() {
-    }
 
     public BadgeStruc(String gym, String badge, String leader, Date obtained) {
         Gym = gym;

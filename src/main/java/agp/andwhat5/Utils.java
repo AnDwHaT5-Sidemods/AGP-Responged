@@ -1,41 +1,18 @@
 package agp.andwhat5;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Consumer;
+import java.util.*;
 
-import agp.andwhat5.gui.GymListGui;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.data.manipulator.mutable.item.LoreData;
-import org.spongepowered.api.data.value.mutable.ListValue;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.CauseStackManager;
-import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
-import org.spongepowered.api.item.ItemType;
-import org.spongepowered.api.item.ItemTypes;
-import org.spongepowered.api.item.inventory.Inventory;
-import org.spongepowered.api.item.inventory.InventoryArchetypes;
-import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.item.inventory.property.InventoryDimension;
-import org.spongepowered.api.item.inventory.property.InventoryTitle;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.Lists;
-import com.mcsimonflash.sponge.teslalibs.inventory.Action;
-import com.mcsimonflash.sponge.teslalibs.inventory.Element;
-import com.mcsimonflash.sponge.teslalibs.inventory.Layout;
-import com.mcsimonflash.sponge.teslalibs.inventory.Layout.Builder;
-import com.mcsimonflash.sponge.teslalibs.inventory.View;
 import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.storage.NbtKeys;
 import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
@@ -45,19 +22,12 @@ import agp.andwhat5.api.AGPBadgeGivenEvent;
 import agp.andwhat5.config.AGPConfig;
 import agp.andwhat5.config.structs.ArenaStruc;
 import agp.andwhat5.config.structs.BadgeStruc;
-import agp.andwhat5.config.structs.BattleStruc;
 import agp.andwhat5.config.structs.DataStruc;
 import agp.andwhat5.config.structs.GymStruc;
-import agp.andwhat5.config.structs.GymStruc.EnumStatus;
 import agp.andwhat5.config.structs.PlayerStruc;
 import agp.andwhat5.config.structs.Vec3dStruc;
-import agp.andwhat5.ui.EnumGUIType;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-
-import javax.xml.crypto.Data;
 
 @SuppressWarnings("Duplicates")
 public class Utils {
@@ -144,7 +114,7 @@ public class Utils {
      * @param prefix  Whether AGP uses its prefix in the announcement. True: Yes False: No.
      */
     public static void sendToAll(String message, boolean prefix) {
-    	Utils.getAllPlayers().stream().forEach(player -> player.sendMessage(Utils.toText(message, prefix)));
+        Sponge.getServer().getBroadcastChannel().send(Utils.toText(message, prefix));
     }
 
     /**
@@ -245,7 +215,7 @@ public class Utils {
      */
     public static List<String> getGymNames(boolean sort) {
         List<String> gymNames = Lists.newArrayList();
-        DataStruc.gcon.GymData.stream().forEach(gym -> gymNames.add(gym.Name));
+        DataStruc.gcon.GymData.forEach(gym -> gymNames.add(gym.Name));
         gymNames.sort(String::compareTo);
         return gymNames;
     }
@@ -322,7 +292,7 @@ public class Utils {
      */
     public static List<String> getArenaNames(GymStruc gs, boolean sort) {
         List<String> arenaNames = Lists.newArrayList();
-        gs.Arenas.stream().forEach(arena -> arenaNames.add(arena.Name));
+        gs.Arenas.forEach(arena -> arenaNames.add(arena.Name));
         if (sort)
             arenaNames.sort(Comparator.naturalOrder());
         return arenaNames;
@@ -346,15 +316,6 @@ public class Utils {
     public static void setPosition(Player player, Vec3dStruc loc) {
         player.setRotation(new Vector3d(loc.pitch, loc.yaw, 0));
         player.setLocation(player.getWorld().getLocation(loc.x, loc.y + 1, loc.z));
-    }
-
-    /**
-     * Checks to see if the specified player is online.
-     * @param player The player you wish to check if is online or not.
-     * @return True: The player is online. False: The player is offline.
-     */
-    public static boolean isOnline(Player player) {
-        return getAllPlayers().contains(player);
     }
 
     /**
@@ -396,16 +357,6 @@ public class Utils {
     }
 
     /**
-     * Checks to see if a player is in a specific gym queue.
-     * @param player The player which you would like to check against.
-     * @param gs The {@link GymStruc} of the gym you are checking against.
-     * @return The player is in the gym queue. False: The player is not in the gym queue.
-     */
-    public static boolean isInGymQueue(Player player, GymStruc gs) {
-        return gs.Queue.stream().anyMatch(p -> p.equals(player.getUniqueId()));
-    }
-
-    /**
      * Checks to see if the specified player is in a gym battle.
      * @param player The player which you would like to check against.
      * @return True: The player is in a gym battle. False: The player is not in a gym battle.
@@ -444,9 +395,7 @@ public class Utils {
      * @return Returns a {@link List} of {@link UUID}s of the players waiting in the list.
      */
     public static List<UUID> getQueuedPlayers(GymStruc gs) {
-        List<UUID> toList = Lists.newArrayList();
-        getAllPlayers().forEach(player -> {if(isInGymQueue(player, gs)) toList.add(player.getUniqueId());});
-        return toList;
+        return new ArrayList<>(gs.Queue);
     }
 
     /**
@@ -455,9 +404,7 @@ public class Utils {
      * @return Returns a {@link List} of {@link UUID}s of the leaders of the specified gym.
      */
     public static List<UUID> getGymLeaders(GymStruc gs) {
-        List<UUID> toList = Lists.newArrayList();
-        getAllPlayers().forEach(player -> {if(isGymLeader(player, gs)) toList.add(player.getUniqueId());});
-        return toList;
+        return gs.PlayerLeaders;
     }
     
     /**

@@ -15,10 +15,10 @@ import java.util.regex.Pattern;
 
 public abstract class SQLDatabase implements Storage {
 
-    private String gymTable;
-    private String badgeTable;
+    private final String gymTable;
+    private final String badgeTable;
 
-    public SQLDatabase(String gymTable, String badgeTable) {
+    SQLDatabase(String gymTable, String badgeTable) {
         this.gymTable = gymTable;
         this.badgeTable = badgeTable;
     }
@@ -26,7 +26,7 @@ public abstract class SQLDatabase implements Storage {
     abstract HikariDataSource getHikari();
 
     @Override
-    public void shutdown() throws Exception {
+    public void shutdown() {
         if (getHikari() != null) {
             getHikari().close();
         }
@@ -46,7 +46,6 @@ public abstract class SQLDatabase implements Storage {
                 try (PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `"
                         + badgeTable + "` (uuid CHAR(36) NOT NULL PRIMARY KEY, Player varchar(16), Badges MEDIUMTEXT);")) {
                     statement.executeUpdate();
-                    statement.close();
                 }
                 // Gym Table for Data
                 try (PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `" + gymTable
@@ -58,7 +57,6 @@ public abstract class SQLDatabase implements Storage {
                         "Requirement MEDIUMTEXT," +
                         "Rules MEDIUMTEXT);")) {
                     statement.executeUpdate();
-                    statement.close();
                 }
 
             }
@@ -106,7 +104,6 @@ public abstract class SQLDatabase implements Storage {
 
                 try (PreparedStatement statement = connection.prepareStatement("TRUNCATE TABLE `" + table + "`")) {
                     statement.executeUpdate();
-                    statement.close();
                 }
             }
         } catch (SQLException e) {
@@ -144,7 +141,6 @@ public abstract class SQLDatabase implements Storage {
                         playerData.put(u, plst);
                     }
                     result.close();
-                    ps.close();
                 }
             }
         } catch (SQLException e) {
@@ -188,7 +184,6 @@ public abstract class SQLDatabase implements Storage {
                         "REPLACE INTO `" + badgeTable + "` VALUES('" + uuid + "', '" + name
                                 + "', '" + gson.toJson(data.Badges) + "')")) {
                     ps.executeUpdate();
-                    ps.close();
                 }
                 DataStruc.gcon.PlayerData.put(uuid, data);
             }
@@ -245,7 +240,6 @@ public abstract class SQLDatabase implements Storage {
                         gyms.add(gym);
                     }
                     result.close();
-                    ps.close();
                 }
             }
         } catch (SQLException e) {
@@ -275,7 +269,6 @@ public abstract class SQLDatabase implements Storage {
                                     .Badge + "', '" + gym.LevelCap + "', '" + gym.Commands + "', '" + gym.Money + "', '" + gym
                                     .PlayerLeaders + "', '" + new Gson().toJson(gym.Arenas) + "', '" + new Gson().toJson(gym.Lobby) + "', '" + gym.Requirement + "', '" + gym.Rules + "')")) {
                         ps.executeUpdate();
-                        ps.close();
                     }
                     if (Utils.gymExists(gym.Name))
                         Utils.editGym(gym);
@@ -285,7 +278,6 @@ public abstract class SQLDatabase implements Storage {
                     try (PreparedStatement ps = connection
                             .prepareStatement("DELETE FROM `" + gymTable + "` WHERE Gym='" + gym.Name + "'")) {
                         ps.executeUpdate();
-                        ps.close();
                     }
                     DataStruc.gcon.GymData.remove(gym);
                 }

@@ -3,7 +3,6 @@ package agp.andwhat5.commands.leaders;
 import agp.andwhat5.Utils;
 import agp.andwhat5.config.structs.GymStruc;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -16,10 +15,10 @@ import java.util.UUID;
 public class DenyChallenge implements CommandExecutor {
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
 
         GymStruc gym = args.<GymStruc>getOne("GymName").get();
-        Optional<Player> target = args.<Player>getOne("player");
+        Optional<Player> target = args.getOne("player");
 
         if (!Utils.isGymLeader((Player) src, gym) && !src.hasPermission("agp.headleader")) {
             src.sendMessage(Utils.toText("&7You are not a leader of the &b" + gym.Name + " &7Gym!", true));

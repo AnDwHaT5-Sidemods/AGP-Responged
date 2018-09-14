@@ -15,7 +15,7 @@ import java.util.Optional;
 public class SetGymWarp extends PlayerOnlyCommand {
 
     @Override
-    public CommandResult execute(Player player, CommandContext args) throws org.spongepowered.api.command.CommandException {
+    public CommandResult execute(Player player, CommandContext args) {
        // /SetGymWarp <gym> <lobby|home|arena> [(if arena) <name> <stands|challenger|leader> <opt-(-delete)>
 
         GymStruc gym = args.<GymStruc>getOne("GymName").get();

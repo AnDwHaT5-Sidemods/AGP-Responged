@@ -15,7 +15,7 @@ import static agp.andwhat5.config.structs.GymStruc.EnumStatus.OPEN;
 public class OpenGym implements CommandExecutor {
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws org.spongepowered.api.command.CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
 
         GymStruc gs = args.<GymStruc>getOne("GymName").get();
         if (!Utils.isGymLeader((Player) src, gs) && !src.hasPermission("agp.headleader")) {
@@ -32,7 +32,7 @@ public class OpenGym implements CommandExecutor {
         src.sendMessage(Utils.toText("&7Successfully opened the &b" + gs.Name + " &7Gym!", true));
         if (AGPConfig.Announcements.openAnnouncement) {
             Sponge.getServer().getBroadcastChannel().send(Utils.toText(AGPConfig.Announcements.openMessage
-                    .replace("{gym}", gs.Name).replace("{leader}", src.getName()), false));
+                    .replace("{gym}", gs.Name).replace("{leader}", src.getName()), true));
         }
 
         return CommandResult.success();

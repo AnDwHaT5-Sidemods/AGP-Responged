@@ -3,7 +3,6 @@ package agp.andwhat5.commands.gyms;
 import agp.andwhat5.Utils;
 import agp.andwhat5.config.structs.GymStruc;
 import agp.andwhat5.gui.GymListGui;
-import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -16,7 +15,7 @@ import static agp.andwhat5.config.structs.GymStruc.EnumStatus.OPEN;
 public class GymList implements CommandExecutor {
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
         if (src instanceof Player)
         {
             GymListGui.openGymListGUI((Player) src);

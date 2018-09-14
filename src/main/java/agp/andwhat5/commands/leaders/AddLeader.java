@@ -4,7 +4,6 @@ import agp.andwhat5.Utils;
 import agp.andwhat5.config.AGPConfig;
 import agp.andwhat5.config.structs.GymStruc;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -19,7 +18,7 @@ import static agp.andwhat5.config.structs.GymStruc.EnumStatus.OPEN;
 public class AddLeader implements CommandExecutor {
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
         String target = args.<String>getOne("player").get();//TODO kill the psyduck
         GymStruc gym = args.<GymStruc>getOne("GymName").get();
 

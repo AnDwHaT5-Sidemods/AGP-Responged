@@ -7,7 +7,6 @@ import com.mcsimonflash.sponge.teslalibs.inventory.Element;
 import com.mcsimonflash.sponge.teslalibs.inventory.Layout;
 import com.mcsimonflash.sponge.teslalibs.inventory.View;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemType;
@@ -62,9 +61,8 @@ public class CheckBadgesGui
 
         List<BadgeStruc> badgeData = getPlayerData(player).Badges;//56
 
-        //TODO verify this all works properly when the player has no badges, seems to error in console
         //Sanity checks
-        int maxPages = (int) (Math.ceil((double)badgeData.size() / (double)itemsPerPage) - 1);
+        int maxPages = Math.max(0, (int) (Math.ceil((double)badgeData.size() / (double)itemsPerPage) - 1));
         if (page < 0)
             page = 0;
         if (page >= maxPages)
@@ -119,6 +117,7 @@ public class CheckBadgesGui
         view.setElement(50, next);
     }
 
+    @SuppressWarnings("unused")
     private static Element getBadgeElement(Player player, BadgeStruc badge)
     {
 

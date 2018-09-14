@@ -79,7 +79,7 @@ public class H2Provider extends SQLDatabase {
     }
 
     @Override
-    public void init() throws Exception {
+    public void init() {
         HikariConfig config = new HikariConfig();
 
         config.setMaximumPoolSize(10);
@@ -89,7 +89,7 @@ public class H2Provider extends SQLDatabase {
         config.setConnectionTimeout(TimeUnit.SECONDS.toMillis(10)); // 10000
         config.setLeakDetectionThreshold(TimeUnit.SECONDS.toMillis(5)); // 5000
         config.setValidationTimeout(TimeUnit.SECONDS.toMillis(3)); // 3000
-        config.setInitializationFailFast(true);
+        config.setInitializationFailTimeout(1);
         config.setConnectionTestQuery("/* AGP ping */ SELECT 1");
 
         this.hikari = new HikariDataSource(config);

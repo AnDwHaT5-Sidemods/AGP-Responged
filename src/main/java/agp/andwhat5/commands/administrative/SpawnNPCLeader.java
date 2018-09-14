@@ -14,7 +14,6 @@ import com.pixelmonmod.pixelmon.entities.npcs.registry.NPCRegistryTrainers;
 import com.pixelmonmod.pixelmon.enums.EnumTrainerAI;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
-import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
@@ -22,7 +21,7 @@ import org.spongepowered.api.entity.living.player.Player;
 public class SpawnNPCLeader extends PlayerOnlyCommand {
 
     @Override
-    public CommandResult execute(Player src, CommandContext args) throws CommandException {
+    public CommandResult execute(Player src, CommandContext args) {
         GymStruc gym = args.<GymStruc>getOne("GymName").get();
 
         NPCTrainer trainer = new NPCTrainer((World) src.getWorld());

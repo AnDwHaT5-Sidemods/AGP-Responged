@@ -6,7 +6,6 @@ import agp.andwhat5.config.structs.GymStruc;
 import com.pixelmonmod.pixelmon.entities.pixelmon.drops.DropItemHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -19,7 +18,7 @@ import org.spongepowered.api.item.inventory.ItemStack;
 public class GiveBadge implements CommandExecutor {
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
         Player target = args.<Player>getOne("player").get();
         GymStruc gym = args.<GymStruc>getOne("GymName").get();
 
@@ -40,6 +39,7 @@ public class GiveBadge implements CommandExecutor {
         if (AGPConfig.General.physicalBadge) {
             ItemType itemType = Sponge.getRegistry().getType(ItemType.class, gym.Badge).orElse(ItemTypes.POTATO);
             ItemStack itemStack = ItemStack.of(itemType, 1);
+            //noinspection ConstantConditions
             DropItemHelper.giveItemStackToPlayer((EntityPlayer) target, (net.minecraft.item.ItemStack)(Object)itemStack);//TODO make helper function for this
         }
         if (!gym.Commands.isEmpty()) {
@@ -50,7 +50,7 @@ public class GiveBadge implements CommandExecutor {
         src.sendMessage(Utils.toText("&7Congratulations, you defeated the &b" + gym.Name + " &7Gym!", true));
         if (AGPConfig.Announcements.winAnnouncement) {
             Sponge.getServer().getBroadcastChannel().send(Utils.toText(AGPConfig.Announcements.winMessage
-                    .replace("{gym}", gym.Name).replace("{challenger}", target.getName()).replace("{leader}", src.getName()), false));
+                    .replace("{gym}", gym.Name).replace("{challenger}", target.getName()).replace("{leader}", src.getName()), true));
         }
 
         return CommandResult.success();

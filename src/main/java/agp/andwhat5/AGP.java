@@ -49,7 +49,7 @@ import agp.andwhat5.commands.leaders.*;
 import agp.andwhat5.commands.players.*;
 import agp.andwhat5.config.AGPConfig;
 import agp.andwhat5.config.structs.GymStruc;
-import agp.andwhat5.listeners.ListenerBadgeObtained;
+import agp.andwhat5.listeners.forge.GymExperienceGain;
 import agp.andwhat5.listeners.forge.GymNPCDefeatListener;
 import agp.andwhat5.listeners.forge.GymPlayerDefeatListener;
 import agp.andwhat5.storage.FlatFileProvider;
@@ -92,15 +92,14 @@ public class AGP {
     private static AGP instance;
     @Inject
     public PluginContainer container;
-    public AGPConfig config;
-    Task announcementTask;
+    private AGPConfig config;
+    private Task announcementTask;
     @Inject
     @DefaultConfig(sharedRoot = false)
     private ConfigurationLoader<CommentedConfigurationNode> configLoader;
     private CommentedConfigurationNode node;
     private Storage storage; //TODO: Look into storage options.
-    private File base;
-    //private Timer specialTimer;
+    private File base = new File(".");
 
     //TODO: Move storage related actions to a dedicated class
 
@@ -119,6 +118,7 @@ public class AGP {
         //End config
     }
 
+    @SuppressWarnings("unused")
     public void saveConfig() {
         try {
             @SuppressWarnings("UnstableApiUsage") TypeToken<AGPConfig> type = TypeToken.of(AGPConfig.class);
@@ -229,7 +229,7 @@ public class AGP {
         Sponge.getEventManager().registerListeners(this, new PlayerCheck());
         Pixelmon.EVENT_BUS.register(new GymNPCDefeatListener());
         Pixelmon.EVENT_BUS.register(new GymPlayerDefeatListener());
-        Sponge.getEventManager().registerListeners(this, new ListenerBadgeObtained());
+        Pixelmon.EVENT_BUS.register(new GymExperienceGain());
     }
 
     @Listener

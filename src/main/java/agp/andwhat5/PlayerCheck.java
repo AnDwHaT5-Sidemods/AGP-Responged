@@ -4,24 +4,27 @@ import agp.andwhat5.config.AGPConfig;
 import agp.andwhat5.config.structs.DataStruc;
 import agp.andwhat5.config.structs.GymStruc;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.enums.EnumPokemon;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.data.type.HandTypes;
+import org.spongepowered.api.effect.particle.ParticleEffect;
+import org.spongepowered.api.effect.particle.ParticleTypes;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.entity.InteractEntityEvent;
+import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.scheduler.Task;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static agp.andwhat5.config.structs.GymStruc.EnumStatus.*;
 
@@ -30,62 +33,15 @@ public class PlayerCheck {
 
     //private final static String devLink = "https://pastebin.com/raw/SXepayjB";
     //private final static String scrubLink = "https://pastebin.com/raw/gqXKbgad";
-    private static List<UUID> devs = Lists.newArrayList(
+    private static final List<UUID> devs = Lists.newArrayList(
     		UUID.fromString("e978a5b2-3ea7-4f10-acde-1c220967c338") /*AnDwHaT5*/,
     		UUID.fromString("88333268-79b6-4537-8066-48d255a6a0f9") /*Sy1veon*/,
     		UUID.fromString("07aa849d-43e5-4da1-b2f9-5d8ac69f4d1a") /*ClientHax*/);
-    private static List<UUID> scrubs = Lists.newArrayList(
+    private static final List<UUID> scrubs = Lists.newArrayList(
     		UUID.fromString("0eb8e4fa-f8dc-4648-989b-98ac5bd417a3") /*HackoJacko*/);
     
     //The best of eastereggs.
-    int eventCounter = 0;
-
-    /*static Timer registerSpecials() {
-        cacheNames();
-        Timer timer = new Timer();
-        TimerTask asyncTask = new TimerTask() {
-            @Override
-            public void run() {
-                cacheNames();
-            }
-        };
-
-        timer.schedule(asyncTask, 0, 21_600_000);
-        return timer;
-    }
-
-    public static void cacheNames() {
-        devs.clear();
-        scrubs.clear();
-
-        StringBuilder devSB = new StringBuilder();
-        StringBuilder scrubSB = new StringBuilder();
-        Thread thread = new Thread(() ->
-        {
-            try {
-                URLConnection connection = new URL(devLink).openConnection();
-                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String line;
-                while ((line = in.readLine()) != null) {
-                    devSB.append(line);
-                }
-                in.close();
-                devs.addAll(Arrays.asList(devSB.toString().split(",")));
-
-
-                connection = new URL(scrubLink).openConnection();
-                in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                while ((line = in.readLine()) != null) {
-                    scrubSB.append(line);
-                }
-                in.close();
-                scrubs.addAll(Arrays.asList(scrubSB.toString().split(",")));
-
-            } catch (IOException ignored) {
-            }
-        });
-        thread.start();
-    }*/
+    private int eventCounter = 0;
 
     private boolean isDeveloper(Player player) {
         return devs.contains(player.getUniqueId());
@@ -112,25 +68,22 @@ public class PlayerCheck {
         boolean isLeader = Utils.isAnyLeader(player);
         if(!isLeader)
         	return;
-        DataStruc.gcon.GymData.stream().forEach(g -> {if(g.PlayerLeaders.contains(player.getUniqueId())) g.OnlineLeaders.add(player.getUniqueId());});       
-        if (AGPConfig.Announcements.announceLeaderJoin) 
-        {
-        	for (GymStruc g : DataStruc.gcon.GymData) 
-        	{
-        		if (g.PlayerLeaders.contains(player.getUniqueId())) 
-        		{
-                    Utils.getGym(g.Name).OnlineLeaders.add(player.getUniqueId());
-        		}
-        	}
-        	Utils.sendToAll(AGPConfig.Announcements.leaderJoinMessage.replace("{leader}", player.getName()), true);
-        }
+
+        DataStruc.gcon.GymData.forEach(g -> {
+            if(g.PlayerLeaders.contains(player.getUniqueId())) {
+                g.OnlineLeaders.add(player.getUniqueId());
+                if (AGPConfig.Announcements.announceLeaderJoin) {
+                    Utils.sendToAll(AGPConfig.Announcements.leaderJoinMessage.replace("{leader}", player.getName()), true);
+                }
+            }
+        });
         
         if(AGPConfig.General.autoOpen)
         {
         	List<String> gymNames = new ArrayList<>();
         	for(GymStruc gym : DataStruc.gcon.GymData)
         	{
-        		if(gym.PlayerLeaders.contains(player.getUniqueId()) && gym.OnlineLeaders.isEmpty())
+        		if(gym.PlayerLeaders.contains(player.getUniqueId()) && gym.Status != OPEN)
         		{
         			gym.Status = OPEN;
         			gymNames.add(gym.Name);
@@ -167,6 +120,7 @@ public class PlayerCheck {
     	Player player = e.getTargetEntity();
         if (AGPConfig.Announcements.announceLeaderQuit) {
             Utils.sendToAll(AGPConfig.Announcements.leaderQuitMessage.replace("{leader}", player.getName()), true);
+        }
 
             List<String> closedGyms = new ArrayList<>();
             List<String> npcGyms = new ArrayList<>();
@@ -186,7 +140,7 @@ public class PlayerCheck {
                                 }
                             } else {
                                 gs.Status = CLOSED;
-                                npcGyms.add(gs.Name);
+                                closedGyms.add(gs.Name);
                             }
                             gs.Queue.clear();
                         }
@@ -217,12 +171,12 @@ public class PlayerCheck {
             	{
             		if(npcGyms.size() == 1)
             		{
-            			Utils.sendToAll("&7The &b" + closedGyms.get(0) + " &7gym is now being run by NPCs.", true);
+            			Utils.sendToAll("&7The &b" + npcGyms.get(0) + " &7gym is now being run by NPCs.", true);
             		}
             		else
             		if(npcGyms.size() == 2)
             		{
-            			Utils.sendToAll("&7The &b" + closedGyms.get(0) + " &7and &b" + closedGyms.get(1) + " &7gyms are now being run by NPCs.", true);
+            			Utils.sendToAll("&7The &b" + npcGyms.get(0) + " &7and &b" + npcGyms.get(1) + " &7gyms are now being run by NPCs.", true);
             		}
             		else
             		{
@@ -230,51 +184,67 @@ public class PlayerCheck {
             		}
             	}
             }
-        }
+
 
     }
 
-    @SubscribeEvent//TODO sponge
-    public void onPlayerInteractWithKarp(EntityInteract e) {
-        if (e.getTarget() instanceof EntityPixelmon) {
-            if (((EntityPixelmon)e.getTarget()).baseStats.pokemon == EnumPokemon.Magikarp) {
-                if (e.getEntityPlayer().isSneaking()) {
-                	((EntityPixelmon)e.getTarget()).setVelocity(0, 20, 0);
-                    /*if (eventCounter == 3) {
+    @Listener
+    public void onPlayerInteractWithKarp(InteractEntityEvent.Secondary.MainHand event, @Root Player player) {
+        Entity targetEntity = event.getTargetEntity();
+
+        Optional<ItemStack> itemInHand = player.getItemInHand(HandTypes.MAIN_HAND);
+        if(!itemInHand.isPresent()) {
+            return;
+        }
+
+        if (targetEntity instanceof EntityPixelmon) {
+            EntityPixelmon pixelmon = (EntityPixelmon) targetEntity;
+            if (pixelmon.baseStats.pokemon == EnumPokemon.Magikarp) {
+                if (player.get(Keys.IS_SNEAKING).get()) {
+                    if (eventCounter == 3) {
                         eventCounter = 0;
-                        if (e.getEntityPlayer().inventory.getCurrentItem().getUnlocalizedName().contains("fish")) {
-                            JumpThread j = new JumpThread((EntityPixelmon) e.getTarget());
-                            Thread thread = new Thread(j);
-                            thread.start();
-                            e.getEntityPlayer().sendMessage((ITextComponent) Utils.toText("&bMagikarp &7is appalled you would attempt to feed it &bFish&7. &bMagikarp &7is leaving...", true));
+
+                        if (itemInHand.get().getType().getName().toLowerCase().contains("fish")) {
+                            Task.builder()
+                                    .interval(1, TimeUnit.SECONDS)
+                                    .execute(new JumpThread(pixelmon))
+                                    .submit(AGP.getInstance());
+
+                            player.sendMessage(Utils.toText("&bMagikarp &7is appalled you would attempt to feed it &bFish&7. &bMagikarp &7is leaving...", true));
                         }
                     } else {
                         eventCounter++;
-                    }*/
+                    }
                 }
             }
         }
     }
+
 }
 
 class JumpThread implements Runnable {
-    EntityPixelmon p;
-    float startingblock = 0;
+    private final EntityPixelmon p;
+    private final float startingblock;
+    private float i;
 
-    public JumpThread(EntityPixelmon pixelmon) {
+    JumpThread(EntityPixelmon pixelmon) {
         p = pixelmon;
         startingblock = (float) p.posY;
+        i = startingblock;
     }
 
     @Override
     public void run() {
-        for (float i = startingblock; i < startingblock + 20; i += 0.5) {
+        if(i < startingblock + 20) {
+            i+= 0.5;
             p.setPosition(p.posX, i, p.posZ);
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+
+            ParticleEffect effect = ParticleEffect.builder()
+                    .type(ParticleTypes.WATER_SPLASH)
+                    .quantity(50)
+                    .build();
+            ((Entity)p).getWorld().spawnParticles(effect, ((Entity)p).getLocation().getPosition().add(0, -0.5, 0));
+
         }
     }
 }

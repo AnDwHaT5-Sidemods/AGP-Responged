@@ -1,6 +1,5 @@
 package agp.andwhat5.commands.utils;
 
-import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -12,7 +11,7 @@ import org.spongepowered.api.text.format.TextColors;
 public abstract class PlayerOnlyCommand implements CommandExecutor {
 
     @Override
-    public final CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+    public final CommandResult execute(CommandSource src, CommandContext args) {
 
         if(!(src instanceof Player)) {
             src.sendMessage(Text.of(TextColors.RED, "This command may only be executed by a player"));
@@ -23,6 +22,6 @@ public abstract class PlayerOnlyCommand implements CommandExecutor {
 
     }
 
-    public abstract CommandResult execute(Player player, CommandContext args) throws CommandException;
+    protected abstract CommandResult execute(Player player, CommandContext args);
 
 }

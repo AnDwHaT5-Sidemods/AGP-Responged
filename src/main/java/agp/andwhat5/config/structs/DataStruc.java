@@ -27,20 +27,13 @@ public class DataStruc {
     public HashMap<UUID, PlayerStruc> PlayerData;
 
     /**
-     * Holds all of the Arena Data for all of the gyms.
-     */
-    @Expose
-    public List<ArenaStruc> ArenaData;
-
-    /**
      * Holds all of the active gym battles.
      */
-    public List<BattleStruc> GymBattlers;
+    public final List<BattleStruc> GymBattlers;
 
     public DataStruc() {
         this.GymData = new ArrayList<>();
         this.PlayerData = new HashMap<>();
-        this.ArenaData = new ArrayList<>();
         this.GymBattlers = new ArrayList<>();
     }
 }

@@ -13,7 +13,7 @@ import java.util.Optional;
 public class GymWarp extends PlayerOnlyCommand {
 
     @Override
-    public CommandResult execute(Player player, CommandContext args) throws org.spongepowered.api.command.CommandException {
+    public CommandResult execute(Player player, CommandContext args) {
         GymStruc gym = args.<GymStruc>getOne("GymName").get();
         String location = args.<String>getOne("location").get();
 

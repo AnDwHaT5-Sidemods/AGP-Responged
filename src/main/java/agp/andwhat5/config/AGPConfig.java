@@ -3,18 +3,23 @@ package agp.andwhat5.config;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
+@SuppressWarnings("CanBeFinal")
 @ConfigSerializable
 public class AGPConfig {
 
+    @SuppressWarnings("unused")
     @Setting
     Announcements announcements = new Announcements();
 
+    @SuppressWarnings("unused")
     @Setting
     General general = new General();
 
+    @SuppressWarnings("unused")
     @Setting
     Storage storage = new Storage();
 
+    @SuppressWarnings("CanBeFinal")
     @ConfigSerializable
     public static class Announcements {
         @Setting(comment = "Whether or not the AGP announcement message is enabled.")
@@ -60,6 +65,7 @@ public class AGPConfig {
         public static String winMessage = "&7Challenger &b{challenger} &7has beat the &b{gym} &7Gym!";
     }
 
+    @SuppressWarnings("CanBeFinal")
     @ConfigSerializable
     public static class General {
         @Setting(comment = "Should physical gym badges be given along with the digital ones?")
@@ -72,6 +78,7 @@ public class AGPConfig {
         public static boolean autoOpen = true;
     }
 
+    @SuppressWarnings("CanBeFinal")
     @ConfigSerializable
     public static class Storage {
         @Setting(comment = "Valid storage types are: flatfile, h2, mysql.")

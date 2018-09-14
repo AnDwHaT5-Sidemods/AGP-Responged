@@ -22,4 +22,5 @@ public class GymExperienceGain {
             event.setExperience(0);
         }
     }
+
 }

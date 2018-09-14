@@ -14,12 +14,11 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static agp.andwhat5.config.structs.GymStruc.EnumStatus.*;
-import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord;
 
 public class CloseGym implements CommandExecutor {
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws org.spongepowered.api.command.CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
 
         AtomicBoolean force = new AtomicBoolean(false);
         args.<String>getOne("-f").ifPresent(consumer -> {
@@ -56,7 +55,7 @@ public class CloseGym implements CommandExecutor {
         if (AGPConfig.Announcements.closeAnnouncement) {
             Sponge.getServer().getBroadcastChannel().send(Utils.toText(AGPConfig.Announcements.closeMessage
                     .replace("{gym}", gs.Name)
-                    .replace("{leader}", src.getName()), false));
+                    .replace("{leader}", src.getName()), true));
         } else {
             for (UUID leader : Utils.getGymLeaders(gs)) {
                 Sponge.getServer().getPlayer(leader).ifPresent(player -> player.sendMessage(Utils.toText("&7Leader &b" + src.getName() + " &7has closed the &b" + gs.Name + " &7Gym!", true)));

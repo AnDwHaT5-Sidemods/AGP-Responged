@@ -10,7 +10,7 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 public class GymRules implements CommandExecutor {
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws org.spongepowered.api.command.CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
         GymStruc gym = args.<GymStruc>getOne("GymName").get();
         if (gym.Rules.isEmpty()) {
             src.sendMessage(Utils.toText("&7This gym does not have any rules!", true));

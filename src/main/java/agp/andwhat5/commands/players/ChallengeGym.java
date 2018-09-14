@@ -1,7 +1,6 @@
 package agp.andwhat5.commands.players;
 
 import agp.andwhat5.Utils;
-import agp.andwhat5.commands.Command;
 import agp.andwhat5.config.structs.GymStruc;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -19,7 +18,7 @@ import static agp.andwhat5.config.structs.GymStruc.EnumStatus.OPEN;
 public class ChallengeGym implements CommandExecutor {
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws org.spongepowered.api.command.CommandException {
+    public CommandResult execute(CommandSource src, CommandContext args) {
         if(!(src instanceof Player)) {
             src.sendMessage(Text.of(TextColors.RED, "This command can only be ran by players"));
             return CommandResult.success();

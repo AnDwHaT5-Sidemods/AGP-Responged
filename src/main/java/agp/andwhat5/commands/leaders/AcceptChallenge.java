@@ -1,7 +1,6 @@
 package agp.andwhat5.commands.leaders;
 
 import agp.andwhat5.Utils;
-import agp.andwhat5.commands.Command;
 import agp.andwhat5.commands.utils.PlayerOnlyCommand;
 import agp.andwhat5.config.structs.ArenaStruc;
 import agp.andwhat5.config.structs.BattleStruc;
@@ -15,29 +14,21 @@ import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.enums.battle.EnumBattleEndCause;
 import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
 import com.pixelmonmod.pixelmon.storage.PlayerStorage;
-import net.minecraft.command.CommandException;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
-import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import static agp.andwhat5.commands.Command.getEntityPlayer;
-import static agp.andwhat5.commands.Command.requireEntityPlayer;
-import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord;
 
 public class AcceptChallenge extends PlayerOnlyCommand {
 
     @Override
-    public CommandResult execute(Player sender, CommandContext args) throws org.spongepowered.api.command.CommandException {
+    public CommandResult execute(Player sender, CommandContext args) {
 
         GymStruc gym = args.<GymStruc>getOne("GymName").get();
         Optional<ArenaStruc> optGymArena = args.getOne("GymArena");
@@ -58,12 +49,13 @@ public class AcceptChallenge extends PlayerOnlyCommand {
         }
 
         UUID cUUID = gym.Queue.poll();
-        Player challenger = getEntityPlayer(cUUID);
-        if (challenger == null) {
+        Optional<Player> optChallenger = Sponge.getServer().getPlayer(cUUID);
+        if (!optChallenger.isPresent()) {
             sender.sendMessage(Utils.toText("&7Player &b" + Utils.getNameFromUUID(cUUID) + " &7was not found on the server!", true));
             return CommandResult.success();
         }
 
+        Player challenger = optChallenger.get();
         if (!Utils.checkLevels(challenger, gym.LevelCap)) {
             sender.sendMessage(Utils.toText("&7Player &b" + Utils.getNameFromUUID(cUUID) + "&7's team is above the level cap for the &b" + gym.Name + " &7Gym!", true));
             challenger.sendMessage(Utils.toText("&7Your team is above the level cap for the &b" + gym.Name + " &7Gym!", true));
