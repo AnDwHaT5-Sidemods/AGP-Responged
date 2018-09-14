@@ -96,16 +96,16 @@ public class PlayerCheck {
         		{
         			if(gymNames.size() == 1)
         			{
-        				Utils.sendToAll("The " + gymNames.get(0) + " gym has opened!", true);
+        				Utils.sendToAll("&7The &b" + gymNames.get(0) + " &7gym has opened!", true);
         			}
         			else
         			if(gymNames.size() == 2)
         			{
-        				Utils.sendToAll("The &b" + gymNames.get(0) + " &7and &b" + gymNames.get(1) + " &7gyms have opened!", true);
+        				Utils.sendToAll("&7The &b" + gymNames.get(0) + " &7and &b" + gymNames.get(1) + " &7gyms have opened!", true);
         			}
         			else
         			{
-        				Utils.sendToAll("Multiple gyms have opened! Use &b/GymList &7to see all open gyms.", true);
+        				Utils.sendToAll("&7Multiple gyms have opened! Use &b/GymList &7to see all open gyms.", true);
         			}
         		}
         	}

@@ -33,7 +33,7 @@ public class DenyChallenge implements CommandExecutor {
         if (!target.isPresent()) {
             //Target first in the queue
             UUID pUUID = gym.Queue.poll();
-            src.sendMessage(Utils.toText("&7Challenger &b" + pUUID + " &7has been removed from the &b" + gym.Name + " &7Gym queue!", true));
+            src.sendMessage(Utils.toText("&7Challenger &b" + Utils.getNameFromUUID(pUUID) + " &7has been removed from the &b" + gym.Name + " &7Gym queue!", true));
             Sponge.getServer().getPlayer(pUUID).ifPresent(player1 -> player1.sendMessage(Utils.toText("&7Your challenge to the &b" + gym.Name + " &7Gym was denied!", true)));
         } else {
             //Target specific player
@@ -41,11 +41,11 @@ public class DenyChallenge implements CommandExecutor {
 
             UUID pUUID = player.getUniqueId();
             if (!gym.Queue.contains(pUUID)) {
-                src.sendMessage(Utils.toText("&7Challenger &b" + pUUID + " &7is not in the &b" + gym.Name + " &7Gym queue!", true));
+                src.sendMessage(Utils.toText("&7Challenger &b" + Utils.getNameFromUUID(pUUID) + " &7is not in the &b" + gym.Name + " &7Gym queue!", true));
                 return CommandResult.success();
             }
             gym.Queue.remove(pUUID);
-            src.sendMessage(Utils.toText("&7Challenger &b" + pUUID + " &7has been removed from the &b" + gym.Name + " &7Gym queue!", true));
+            src.sendMessage(Utils.toText("&7Challenger &b" + Utils.getNameFromUUID(pUUID) + " &7has been removed from the &b" + gym.Name + " &7Gym queue!", true));
             player.sendMessage(Utils.toText("&7Your challenge to the &b" + gym.Name + " &7Gym was denied!", true));
         }
 
