@@ -68,25 +68,22 @@ public class PlayerCheck {
         boolean isLeader = Utils.isAnyLeader(player);
         if(!isLeader)
         	return;
-        DataStruc.gcon.GymData.forEach(g -> {if(g.PlayerLeaders.contains(player.getUniqueId())) g.OnlineLeaders.add(player.getUniqueId());});
-        if (AGPConfig.Announcements.announceLeaderJoin) 
-        {
-        	for (GymStruc g : DataStruc.gcon.GymData) 
-        	{
-        		if (g.PlayerLeaders.contains(player.getUniqueId())) 
-        		{
-                    Utils.getGym(g.Name).OnlineLeaders.add(player.getUniqueId());
-        		}
-        	}
-        	Utils.sendToAll(AGPConfig.Announcements.leaderJoinMessage.replace("{leader}", player.getName()), true);
-        }
+
+        DataStruc.gcon.GymData.forEach(g -> {
+            if(g.PlayerLeaders.contains(player.getUniqueId())) {
+                g.OnlineLeaders.add(player.getUniqueId());
+                if (AGPConfig.Announcements.announceLeaderJoin) {
+                    Utils.sendToAll(AGPConfig.Announcements.leaderJoinMessage.replace("{leader}", player.getName()), true);
+                }
+            }
+        });
         
         if(AGPConfig.General.autoOpen)
         {
         	List<String> gymNames = new ArrayList<>();
         	for(GymStruc gym : DataStruc.gcon.GymData)
         	{
-        		if(gym.PlayerLeaders.contains(player.getUniqueId()) && gym.OnlineLeaders.isEmpty())
+        		if(gym.PlayerLeaders.contains(player.getUniqueId()) && gym.Status != OPEN)
         		{
         			gym.Status = OPEN;
         			gymNames.add(gym.Name);
@@ -123,6 +120,7 @@ public class PlayerCheck {
     	Player player = e.getTargetEntity();
         if (AGPConfig.Announcements.announceLeaderQuit) {
             Utils.sendToAll(AGPConfig.Announcements.leaderQuitMessage.replace("{leader}", player.getName()), true);
+        }
 
             List<String> closedGyms = new ArrayList<>();
             List<String> npcGyms = new ArrayList<>();
@@ -142,7 +140,7 @@ public class PlayerCheck {
                                 }
                             } else {
                                 gs.Status = CLOSED;
-                                npcGyms.add(gs.Name);
+                                closedGyms.add(gs.Name);
                             }
                             gs.Queue.clear();
                         }
@@ -173,12 +171,12 @@ public class PlayerCheck {
             	{
             		if(npcGyms.size() == 1)
             		{
-            			Utils.sendToAll("&7The &b" + closedGyms.get(0) + " &7gym is now being run by NPCs.", true);
+            			Utils.sendToAll("&7The &b" + npcGyms.get(0) + " &7gym is now being run by NPCs.", true);
             		}
             		else
             		if(npcGyms.size() == 2)
             		{
-            			Utils.sendToAll("&7The &b" + closedGyms.get(0) + " &7and &b" + closedGyms.get(1) + " &7gyms are now being run by NPCs.", true);
+            			Utils.sendToAll("&7The &b" + npcGyms.get(0) + " &7and &b" + npcGyms.get(1) + " &7gyms are now being run by NPCs.", true);
             		}
             		else
             		{
@@ -186,7 +184,7 @@ public class PlayerCheck {
             		}
             	}
             }
-        }
+
 
     }
 

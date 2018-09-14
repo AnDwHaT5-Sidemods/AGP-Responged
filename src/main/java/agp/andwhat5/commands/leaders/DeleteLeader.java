@@ -48,7 +48,7 @@ public class DeleteLeader implements CommandExecutor {
 
         Sponge.getServer().getPlayer(pUUID).ifPresent(player1 -> {
             Utils.getGym(gym.Name).OnlineLeaders.remove(pUUID);
-            player1.sendMessage(Utils.toText("&7You are no longer a leader of the &b" + gym.Name + "&7Gym!", true));
+            player1.sendMessage(Utils.toText("&7You are no longer a leader of the &b" + gym.Name + " &7Gym!", true));
         });
 
         return CommandResult.success();

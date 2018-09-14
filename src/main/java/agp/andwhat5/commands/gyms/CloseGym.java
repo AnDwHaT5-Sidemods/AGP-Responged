@@ -55,7 +55,7 @@ public class CloseGym implements CommandExecutor {
         if (AGPConfig.Announcements.closeAnnouncement) {
             Sponge.getServer().getBroadcastChannel().send(Utils.toText(AGPConfig.Announcements.closeMessage
                     .replace("{gym}", gs.Name)
-                    .replace("{leader}", src.getName()), false));
+                    .replace("{leader}", src.getName()), true));
         } else {
             for (UUID leader : Utils.getGymLeaders(gs)) {
                 Sponge.getServer().getPlayer(leader).ifPresent(player -> player.sendMessage(Utils.toText("&7Leader &b" + src.getName() + " &7has closed the &b" + gs.Name + " &7Gym!", true)));
