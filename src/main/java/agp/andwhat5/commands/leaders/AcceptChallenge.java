@@ -42,13 +42,13 @@ public class AcceptChallenge extends PlayerOnlyCommand {
             sender.sendMessage(Utils.toText("&7The &b" + gym.Name + " &7Gym queue is empty!", true));
             return CommandResult.success();
         }
-
+        gym.Queue.remove(0);
         if (!Utils.checkLevels(sender, gym.LevelCap)) {
             sender.sendMessage(Utils.toText("&7Your team is above the level cap for the &b" + gym.Name + " &7Gym!", true));
             return CommandResult.success();
         }
 
-        UUID cUUID = gym.Queue.poll();
+        UUID cUUID = gym.Queue.get(0);
         Optional<Player> optChallenger = Sponge.getServer().getPlayer(cUUID);
         if (!optChallenger.isPresent()) {
             sender.sendMessage(Utils.toText("&7Player &b" + Utils.getNameFromUUID(cUUID) + " &7was not found on the server!", true));
@@ -72,10 +72,29 @@ public class AcceptChallenge extends PlayerOnlyCommand {
             battlecontroller.endBattle(EnumBattleEndCause.NORMAL);
         }
 
-        ArenaStruc as = optGymArena.orElseGet(() -> (gym.Arenas.size() > 0 ? gym.Arenas.get(0) : null));
-        if (as != null && as.Leader != null && as.Challenger != null) {
-            Utils.setPosition(sender, as.Leader);
-            Utils.setPosition(challenger, as.Challenger);
+        ArenaStruc as = optGymArena.orElse(null);
+        if(as == null)
+        {
+            for(ArenaStruc a : gym.Arenas)
+            {
+                if(a != null) {
+                    if (!a.inUse && a.Leader != null && a.Challenger != null) {
+                        Utils.setPosition(sender, a.Leader);
+                        Utils.setPosition(challenger, a.Challenger);
+
+                        a.inUse = true;
+                        as = a;
+                        break;
+                    }
+                }
+            }
+        }
+        else {
+            if (as.Leader != null && as.Challenger != null) {
+                as.inUse = true;
+                Utils.setPosition(sender, as.Leader);
+                Utils.setPosition(challenger, as.Challenger);
+            }
         }
 
         Optional<PlayerStorage> leaderTeam = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) sender);
@@ -85,7 +104,7 @@ public class AcceptChallenge extends PlayerOnlyCommand {
             leaderTeam.get().healAllPokemon((World) sender.getWorld());
             challengerTeam.get().healAllPokemon((World) challenger.getWorld());
 
-            BattleStruc bs = new BattleStruc(gym, sender.getUniqueId(), challenger.getUniqueId());
+            BattleStruc bs = new BattleStruc(gym, as, sender.getUniqueId(), challenger.getUniqueId());
             DataStruc.gcon.GymBattlers.add(bs);
             sender.sendMessage(Utils.toText("&7Initiating battle against &b" + Utils.getNameFromUUID(cUUID) + "&7!", true));
             challenger.sendMessage(Utils.toText("&7Gym Leader &b" + sender.getName() + " &7has accepted your challenge against the &b" + gym.Name + " &bGym!", true));

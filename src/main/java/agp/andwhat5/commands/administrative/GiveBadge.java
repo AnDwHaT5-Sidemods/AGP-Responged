@@ -42,8 +42,9 @@ public class GiveBadge implements CommandExecutor {
             //noinspection ConstantConditions
             DropItemHelper.giveItemStackToPlayer((EntityPlayer) target, (net.minecraft.item.ItemStack)(Object)itemStack);//TODO make helper function for this
         }
-        if (!gym.Commands.isEmpty()) {
-            gym.Commands.forEach(i -> Sponge.getCommandManager().process((CommandSource) Sponge.getServer(), i.trim()));
+        if(!gym.Commands.isEmpty())
+        {
+            gym.Commands.forEach(i -> Sponge.getCommandManager().process((CommandSource) Sponge.getServer(), i.trim().replace("%player%", target.getName()).replace("%leader%", src.getName())));
         }
 
         src.sendMessage(Utils.toText("&7Successfully gave &b" + target.getName() + " &7the &b" + gym.Name + " &7Gym's badge!", true));

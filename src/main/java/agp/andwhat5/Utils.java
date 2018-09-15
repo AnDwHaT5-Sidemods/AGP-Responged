@@ -388,14 +388,15 @@ public class Utils {
     public static Collection<Player> getAllPlayers() {
         return Sponge.getServer().getOnlinePlayers();
     }
-    
+
+    //TODO: Replace methods that use this with gymstruc.Queue
     /**
      * Gets all of the players waiting in the specified gyms queue for battle.
      * @param gs The {@link GymStruc} of the gym you are checking against.
      * @return Returns a {@link List} of {@link UUID}s of the players waiting in the list.
      */
     public static List<UUID> getQueuedPlayers(GymStruc gs) {
-        return new ArrayList<>(gs.Queue);
+        return gs.Queue;
     }
 
     /**
