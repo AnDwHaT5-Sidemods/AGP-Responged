@@ -42,13 +42,13 @@ public class AcceptChallenge extends PlayerOnlyCommand {
             sender.sendMessage(Utils.toText("&7The &b" + gym.Name + " &7Gym queue is empty!", true));
             return CommandResult.success();
         }
-        gym.Queue.remove(0);
         if (!Utils.checkLevels(sender, gym.LevelCap)) {
             sender.sendMessage(Utils.toText("&7Your team is above the level cap for the &b" + gym.Name + " &7Gym!", true));
             return CommandResult.success();
         }
 
         UUID cUUID = gym.Queue.get(0);
+        gym.Queue.remove(0);
         Optional<Player> optChallenger = Sponge.getServer().getPlayer(cUUID);
         if (!optChallenger.isPresent()) {
             sender.sendMessage(Utils.toText("&7Player &b" + Utils.getNameFromUUID(cUUID) + " &7was not found on the server!", true));
