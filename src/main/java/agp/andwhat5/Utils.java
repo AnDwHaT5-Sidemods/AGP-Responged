@@ -3,6 +3,7 @@ package agp.andwhat5;
 import java.time.Instant;
 import java.util.*;
 
+import agp.andwhat5.exceptions.AGPException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
@@ -28,6 +29,7 @@ import agp.andwhat5.config.structs.PlayerStruc;
 import agp.andwhat5.config.structs.Vec3dStruc;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import org.spongepowered.api.world.World;
 
 @SuppressWarnings("Duplicates")
 public class Utils {
@@ -215,8 +217,8 @@ public class Utils {
      */
     public static List<String> getGymNames(boolean sort) {
         List<String> gymNames = Lists.newArrayList();
+        sortGyms();
         DataStruc.gcon.GymData.forEach(gym -> gymNames.add(gym.Name));
-        gymNames.sort(String::compareTo);
         return gymNames;
     }
 
@@ -240,16 +242,9 @@ public class Utils {
      * Did you read the method name? No, the javadoc came first.
      */
     public static void sortGyms() {
-        DataStruc.gcon.GymData.sort((gym1, gym2) ->
-        {
-            if (gym1.LevelCap < gym2.LevelCap)
-                return -1;
-            else if (gym1.LevelCap > gym2.LevelCap)
-                return 1;
-            else {
-                return gym1.Name.compareTo(gym2.Name);
-            }
-        });
+        Collections.sort(DataStruc.gcon.GymData, (e1, e2) -> (Integer.compare(e1.Weight, e2.Weight)));
+
+        //DataStruc.gcon.GymData.sort(Comparator.comparing(e -> e.Weight);
     }
 
     /**
@@ -312,8 +307,16 @@ public class Utils {
      * Sets the players position to the specified position.
      * @param player The player whom will be teleported.
      * @param loc The {@link Vec3dStruc} where the player will be teleported.
+     * @param worldUUID The UUID of the destination world.
      */
-    public static void setPosition(Player player, Vec3dStruc loc) {
+    public static void setPosition(Player player, Vec3dStruc loc, UUID worldUUID) {
+        World world = null;
+        try {
+            world = Sponge.getServer().getWorld(worldUUID).orElseThrow(() -> new AGPException("Invalid World"));
+        } catch (AGPException e) {
+            e.printStackTrace();
+        }
+        player.transferToWorld(world);
         player.setRotation(new Vector3d(loc.pitch, loc.yaw, 0));
         player.setLocation(player.getWorld().getLocation(loc.x, loc.y + 1, loc.z));
     }

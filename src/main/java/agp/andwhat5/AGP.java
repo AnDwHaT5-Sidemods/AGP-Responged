@@ -48,7 +48,9 @@ import agp.andwhat5.commands.gyms.*;
 import agp.andwhat5.commands.leaders.*;
 import agp.andwhat5.commands.players.*;
 import agp.andwhat5.config.AGPConfig;
+import agp.andwhat5.config.structs.DataStruc;
 import agp.andwhat5.config.structs.GymStruc;
+import agp.andwhat5.exceptions.AGPException;
 import agp.andwhat5.listeners.forge.GymExperienceGain;
 import agp.andwhat5.listeners.forge.GymNPCDefeatListener;
 import agp.andwhat5.listeners.forge.GymPlayerDefeatListener;
@@ -86,7 +88,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-@Plugin(id = "agp", name = "AGP Responged", version = "1.0.0-Beta5", dependencies = @Dependency(id = "pixelmon"), description = "Another gym plugin... but for Sponge!", authors = {"AnDwHaT5", "ClientHax"})
+@Plugin(id = "agp", name = "AGP Responged", version = "1.0.0-Beta7", dependencies = @Dependency(id = "pixelmon"), description = "Another gym plugin... but for Sponge!", authors = {"AnDwHaT5", "ClientHax"})
 public class AGP {
 
     private static AGP instance;
@@ -209,6 +211,18 @@ public class AGP {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        DataStruc.gcon.GymData.forEach(gym ->
+        {
+            if(gym.worldUUID == null) {
+                try {
+                    gym.worldUUID = Sponge.getServer().getDefaultWorld().orElseThrow(() -> new AGPException("No Default World")).getUniqueId();
+                } catch (AGPException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        Utils.saveAGPData();
     }
 
     public void setupTasks() {

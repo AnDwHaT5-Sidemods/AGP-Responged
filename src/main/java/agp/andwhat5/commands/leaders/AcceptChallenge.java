@@ -72,6 +72,12 @@ public class AcceptChallenge extends PlayerOnlyCommand {
             battlecontroller.endBattle(EnumBattleEndCause.NORMAL);
         }
 
+        if(challenger.getName().equalsIgnoreCase(sender.getName()))
+        {
+            sender.sendMessage(Utils.toText("&7You can not accept a challenge from yourself!", true));
+            gym.Queue.remove(0);
+            return CommandResult.success();
+        }
         ArenaStruc as = optGymArena.orElse(null);
         if(as == null)
         {
@@ -79,8 +85,8 @@ public class AcceptChallenge extends PlayerOnlyCommand {
             {
                 if(a != null) {
                     if (!a.inUse && a.Leader != null && a.Challenger != null) {
-                        Utils.setPosition(sender, a.Leader);
-                        Utils.setPosition(challenger, a.Challenger);
+                        Utils.setPosition(sender, a.Leader, gym.worldUUID);
+                        Utils.setPosition(challenger, a.Challenger, gym.worldUUID);
 
                         a.inUse = true;
                         as = a;
@@ -92,8 +98,8 @@ public class AcceptChallenge extends PlayerOnlyCommand {
         else {
             if (as.Leader != null && as.Challenger != null) {
                 as.inUse = true;
-                Utils.setPosition(sender, as.Leader);
-                Utils.setPosition(challenger, as.Challenger);
+                Utils.setPosition(sender, as.Leader, gym.worldUUID);
+                Utils.setPosition(challenger, as.Challenger, gym.worldUUID);
             }
         }
 

@@ -27,7 +27,7 @@ public class ArenaStruc {
      */
     @Expose
     public Vec3dStruc Leader;
-    
+
     /**
      * Whether or not this arena is currently in use.
      */

@@ -27,7 +27,7 @@ public class EditGym implements CommandExecutor {
         GymStruc gym = args.<GymStruc>getOne("GymName").get();
         Optional<String> args1 = args.getOne("args");
         if(!args1.isPresent()) {
-            sender.sendMessage(Utils.toText("&7Incorrect usage: /EditGym <gym> <name:(name) | badge:(badge) | require:(gym) | rules:(rules) | level:(level) | money:(money)>&7.", true));
+            sender.sendMessage(Utils.toText("&7Incorrect usage: /EditGym <gym> <name:(name) | badge:(badge) | weight:(weight) | require:(gym) | rules:(rules) | level:(level) | money:(money)>&7.", true));
             return CommandResult.success();
         }
 
@@ -35,6 +35,13 @@ public class EditGym implements CommandExecutor {
 
         // Parse options
         for (String anArgList : argList) {
+            if(anArgList.toLowerCase().startsWith("weight:") && !anArgList.toLowerCase().equalsIgnoreCase("weight:"))
+            {
+                int weight = Integer.parseInt(anArgList.substring(7));
+                gym.Weight = weight;
+                sender.sendMessage(Utils.toText("&7Successfully changed the weight of the &b" + gym.Name + "&7 gym to &b" + weight+ "&7!", true));
+            }
+            else
             if (anArgList.toLowerCase().startsWith("rules:") && !anArgList.toLowerCase().equalsIgnoreCase("rules:")) {
                 gym.Rules = "";
                 for (String s : argList) {
@@ -99,7 +106,7 @@ public class EditGym implements CommandExecutor {
                                     sender.sendMessage(Utils.toText("&7Successfully changed the badge of the &b" + gym.Name + "&7 gym to &b" + gym.Badge + "&7!", true));
                                 }
                                 else {
-                                    sender.sendMessage(Utils.toText("&7Incorrect usage: /EditGym <gym> <name:(name) | badge:(badge) | require:(gym) | rules:(rules) | level:(level) | money:(money)>&7.", true));
+                                    sender.sendMessage(Utils.toText("&7Incorrect usage: /EditGym <gym> <name:(name) | badge:(badge) | weight:(weight) | require:(gym) | rules:(rules) | level:(level) | money:(money)>&7.", true));
                                 }
         }
         if (AGPConfig.Storage.storageType.equalsIgnoreCase("flatfile")) {

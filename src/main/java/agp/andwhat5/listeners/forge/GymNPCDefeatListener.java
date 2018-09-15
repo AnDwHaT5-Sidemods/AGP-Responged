@@ -57,10 +57,13 @@ public class GymNPCDefeatListener {
                 }
                 if (!Utils.checkLevels((Player) player, gym.LevelCap)) {
                     ((Player) player).sendMessage(Utils.toText("&7One or more of your Pixelmon exceed the level cap of this gym!", true));
+                    player.closeScreen();
+
                     event.setCanceled(true);
                 }
             } else {
                 ((Player) player).sendMessage(Utils.toText("&7You have already won against the &b" + trainer.getEntityData().getString("GymLeader") + " &7gym!", true));
+                player.closeScreen();
                 event.setCanceled(true);
             }
         }

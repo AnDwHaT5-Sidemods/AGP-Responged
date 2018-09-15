@@ -23,7 +23,7 @@ public class GymWarp extends PlayerOnlyCommand {
                     player.sendMessage(Utils.toText("&7The &b" + gym.Name + " &7Gym's lobby has not been set!", true));
                     return CommandResult.success();
                 }
-                Utils.setPosition(player, gym.Lobby);
+                Utils.setPosition(player, gym.Lobby, gym.worldUUID);
                 player.sendMessage(Utils.toText("&7Teleported to the &b" + gym.Name + " &7Gym lobby!", true));
                 break;
 
@@ -46,7 +46,7 @@ public class GymWarp extends PlayerOnlyCommand {
                             return CommandResult.success();
                         }
 
-                        Utils.setPosition(player, arena.Stands);
+                        Utils.setPosition(player, arena.Stands, gym.worldUUID);
                         player.sendMessage(Utils.toText("&7Teleported to the &b" + gym.Name + " &7Gym's &b" + arena.Name + " stands&7!", true));
                         break;
 
@@ -56,7 +56,7 @@ public class GymWarp extends PlayerOnlyCommand {
                             return CommandResult.success();
                         }
 
-                        Utils.setPosition(player, arena.Challenger);
+                        Utils.setPosition(player, arena.Challenger, gym.worldUUID);
                         player.sendMessage(Utils.toText("&7Teleported to the &b" + gym.Name + " &7Gym's &b" + arena.Name + " challenger stage&7!", true));
                         break;
 
@@ -65,7 +65,7 @@ public class GymWarp extends PlayerOnlyCommand {
                             player.sendMessage(Utils.toText("&7The &b" + gym.Name + " &7Gym's &b" + arena.Name + " &7leader stage has not been set!", true));
                             return CommandResult.success();
                         }
-                        Utils.setPosition(player, arena.Leader);
+                        Utils.setPosition(player, arena.Leader, gym.worldUUID);
                         player.sendMessage(Utils.toText("&7Teleported to the &b" + gym.Name + " &7Gym's &b" + arena.Name + " &7leader stage!", true));
                         break;
                     default:
