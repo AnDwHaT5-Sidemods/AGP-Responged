@@ -4,6 +4,16 @@ import java.time.Instant;
 import java.util.*;
 
 import agp.andwhat5.exceptions.AGPException;
+import com.pixelmonmod.pixelmon.battles.attacks.Attack;
+import com.pixelmonmod.pixelmon.client.gui.pokemoneditor.ImportExportConverter;
+import com.pixelmonmod.pixelmon.comm.PixelmonData;
+import com.pixelmonmod.pixelmon.config.PixelmonEntityList;
+import com.pixelmonmod.pixelmon.config.PixelmonServerConfig;
+import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
+import com.pixelmonmod.pixelmon.entities.pixelmon.stats.FriendShip;
+import com.pixelmonmod.pixelmon.entities.pixelmon.stats.Gender;
+import com.pixelmonmod.pixelmon.entities.pixelmon.stats.Moveset;
+import com.pixelmonmod.pixelmon.enums.items.EnumPokeballs;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
@@ -418,6 +428,77 @@ public class Utils {
      */
     public static void addCurrency(Player player, int money) {
         Pixelmon.moneyManager.getBankAccount((EntityPlayerMP) player).get().changeMoney(money);
+    }
+
+    /**
+     * A custom converter for EntityPixelmon to PixelmonData
+     * @param pixelmon The EntityPixelmon you would like to convert.
+     * @return The PixelmonData of the EntityPixelmon provided.
+     */
+    public static PixelmonData entityPixelmonToPixelmonData(EntityPixelmon pixelmon)
+    {
+        return new PixelmonData(pixelmon);
+    }
+
+    /**
+     * A custom converter for PixelmonData to EntityPixelmon.
+     * @param data The PixelmonData of the Pokemon you would like to convert.
+     * @param world The world the player is in.
+     * @return An EntityPixelmon value of PixelmonData
+     */
+    public static EntityPixelmon pixelmonDataToEntityPixelmon(PixelmonData data, net.minecraft.world.World world)
+    {
+        if(!data.name.isEmpty()) {
+            EntityPixelmon pixelmon = (EntityPixelmon) PixelmonEntityList.createEntityByName(data.name, world);
+            if(!data.nickname.isEmpty())
+                pixelmon.setNickname(data.nickname);
+            if(data.lvl > 0 && data.lvl <= 100)
+                pixelmon.getLvl().setLevel(data.lvl);
+            pixelmon.setHealth(data.health);
+            pixelmon.friendship.setFriendship(data.friendship);
+            if(data.gender != null)
+                pixelmon.setGender(data.gender);
+            pixelmon.setIsShiny(data.isShiny);
+            if(data.heldItem != null)
+                pixelmon.setHeldItem(data.heldItem);
+            pixelmon.getLvl().setExp(data.xp);
+            if(data.nature != null)
+                pixelmon.setNature(data.nature);
+            if(data.growth != null)
+                pixelmon.setGrowth(data.growth);
+            if(data.pokeball != null)
+                pixelmon.caughtBall = data.pokeball;
+            if(data.moveset != null)
+            {
+                Attack attacks[] = {
+                        (data.moveset[0] != null ? data.moveset[0].getAttack() : null),
+                    (data.moveset[1] != null ? data.moveset[1].getAttack() : null),
+                    (data.moveset[2] != null ? data.moveset[2].getAttack() : null),
+                    (data.moveset[3] != null ? data.moveset[3].getAttack() : null)};
+
+                pixelmon.setMoveset(new Moveset(attacks));
+            }
+            if(!data.ability.isEmpty())
+                pixelmon.setAbility(data.ability);
+            if (data.evs != null) {
+                pixelmon.stats.evs.speed = data.evs[5];
+                pixelmon.stats.evs.specialAttack = data.evs[3];
+                pixelmon.stats.evs.specialDefence = data.evs[4];
+                pixelmon.stats.evs.defence = data.evs[2];
+                pixelmon.stats.evs.attack = data.evs[1];
+                pixelmon.stats.evs.hp = data.evs[0];
+            }
+            if (data.ivs != null) {
+                pixelmon.stats.ivs.Speed = data.ivs[5];
+                pixelmon.stats.ivs.SpAtt = data.ivs[3];
+                pixelmon.stats.ivs.SpDef = data.ivs[4];
+                pixelmon.stats.ivs.Defence = data.ivs[2];
+                pixelmon.stats.ivs.Attack = data.ivs[1];
+                pixelmon.stats.ivs.HP = data.ivs[0];
+            }
+            return pixelmon;
+        }
+        return null;
     }
 
 }
