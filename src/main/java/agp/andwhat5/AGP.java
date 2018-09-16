@@ -308,6 +308,27 @@ public class AGP {
                 .build();
         commandManager.register(this, queueListSpec, "queuelist", "ql");
 
+        CommandSpec addGymPokeSpec = CommandSpec.builder()
+                .description(Text.of("Adds a Pokemon to the gyms pokemon pool"))
+                .permission("agp.command.addgympoke")
+                .executor(new AddGymPoke())
+                .arguments(
+                        GenericArguments.onlyOne(GenericArguments.integer(Text.of("slot"))),
+                        GenericArguments.onlyOne(GymCommandElement.gym())
+                )
+                .build();
+        commandManager.register(this, addGymPokeSpec, "addgympoke");
+
+        CommandSpec giveGymPokeSpec = CommandSpec.builder()
+                .description(Text.of("Adds a Pokemon to the gyms pokemon pool"))
+                .permission("agp.command.givegympoke")
+                .executor(new GiveGymPoke())
+                .arguments(
+                        GenericArguments.onlyOne(GymCommandElement.gym())
+                )
+                .build();
+        commandManager.register(this, giveGymPokeSpec, "givegympoke");
+
         CommandSpec acceptChallengeSpec = CommandSpec.builder()
                 .description(Text.of("Accepts a challenge from a player in the specififed gym queue."))
                 .permission("agp.command.acceptchallenge")

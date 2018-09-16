@@ -87,6 +87,12 @@ public class GymStruc {
     @Expose
     public int Weight = 0;
 
+    /**
+     * The pool of the gyms pokemon.
+     */
+    @Expose
+    public List<String> pokemon = new ArrayList<>();
+
     // 0 = open
     // 1 = closed
     // 2 = npc leader
