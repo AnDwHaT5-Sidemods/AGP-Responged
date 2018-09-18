@@ -8,16 +8,20 @@ import com.pixelmonmod.pixelmon.battles.attacks.Attack;
 import com.pixelmonmod.pixelmon.client.gui.pokemoneditor.ImportExportConverter;
 import com.pixelmonmod.pixelmon.comm.PixelmonData;
 import com.pixelmonmod.pixelmon.config.PixelmonEntityList;
+import com.pixelmonmod.pixelmon.config.PixelmonItems;
 import com.pixelmonmod.pixelmon.config.PixelmonServerConfig;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.FriendShip;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.Gender;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.Moveset;
+import com.pixelmonmod.pixelmon.enums.EnumPokemon;
 import com.pixelmonmod.pixelmon.enums.items.EnumPokeballs;
+import com.pixelmonmod.pixelmon.util.helpers.SpriteHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.CauseStackManager;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -499,6 +503,37 @@ public class Utils {
             return pixelmon;
         }
         return null;
+    }
+
+    public static ItemStack getPixelmonSprite(PixelmonData data)
+    {
+        net.minecraft.item.ItemStack nativeItem = new net.minecraft.item.ItemStack(PixelmonItems.itemPixelmonSprite);
+        NBTTagCompound nbt = new NBTTagCompound();
+        EnumPokemon species = EnumPokemon.getFromNameAnyCase(data.name);
+        String idValue = String.format("%03d", species.getNationalPokedexInteger());
+        if (data.isEgg){
+            switch(species) {
+                case Manaphy:
+                case Togepi:
+                    nbt.setString(NbtKeys.SPRITE_NAME, "pixelmon:sprites/eggs/manaphy1");
+                    break;
+                default:
+                    nbt.setString(NbtKeys.SPRITE_NAME, "pixelmon:sprites/eggs/egg1");
+                    break;
+            }
+        } else {
+            if (data.isShiny) {
+                nbt.setString(NbtKeys.SPRITE_NAME, "pixelmon:sprites/shinypokemon/" + idValue + SpriteHelper.getSpriteExtra(
+                        species.name, data.form)
+                );
+            } else {
+                nbt.setString(NbtKeys.SPRITE_NAME, "pixelmon:sprites/pokemon/" + idValue + SpriteHelper.getSpriteExtra(
+                        species.name, data.form)
+                );
+            }
+        }
+        nativeItem.setTagCompound(nbt);
+        return (ItemStack) (Object) nativeItem;
     }
 
 }
