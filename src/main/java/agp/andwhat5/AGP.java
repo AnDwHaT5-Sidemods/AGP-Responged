@@ -318,6 +318,16 @@ public class AGP {
                 .build();
         commandManager.register(this, queueListSpec, "queuelist", "ql");
 
+        CommandSpec gymPokemonSpec = CommandSpec.builder()
+                .description(Text.of("Displays all of the Pokemon in the gym pool."))
+                .permission("agp.command.gympokemon")
+                .executor(new GymPokemon())
+                .arguments(
+                        GenericArguments.onlyOne(GymCommandElement.gym())
+                )
+                .build();
+        commandManager.register(this, gymPokemonSpec, "gympokemon", "gympokes");
+
         CommandSpec addGymPokeSpec = CommandSpec.builder()
                 .description(Text.of("Adds a Pokemon to the gyms pokemon pool"))
                 .permission("agp.command.addgympoke")
