@@ -27,11 +27,11 @@ public class ArenaStruc {
      */
     @Expose
     public Vec3dStruc Leader;
-    
+
     /**
      * Whether or not this arena is currently in use.
      */
-    public boolean inUse = false;//TODO this should be used.. stupid psyduck
+    public boolean inUse = false;
 
     public ArenaStruc(String name) {
         this.Name = name;

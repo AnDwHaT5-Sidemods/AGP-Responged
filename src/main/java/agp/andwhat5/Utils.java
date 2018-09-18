@@ -3,6 +3,17 @@ package agp.andwhat5;
 import java.time.Instant;
 import java.util.*;
 
+import agp.andwhat5.exceptions.AGPException;
+import com.pixelmonmod.pixelmon.battles.attacks.Attack;
+import com.pixelmonmod.pixelmon.client.gui.pokemoneditor.ImportExportConverter;
+import com.pixelmonmod.pixelmon.comm.PixelmonData;
+import com.pixelmonmod.pixelmon.config.PixelmonEntityList;
+import com.pixelmonmod.pixelmon.config.PixelmonServerConfig;
+import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
+import com.pixelmonmod.pixelmon.entities.pixelmon.stats.FriendShip;
+import com.pixelmonmod.pixelmon.entities.pixelmon.stats.Gender;
+import com.pixelmonmod.pixelmon.entities.pixelmon.stats.Moveset;
+import com.pixelmonmod.pixelmon.enums.items.EnumPokeballs;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
@@ -28,6 +39,7 @@ import agp.andwhat5.config.structs.PlayerStruc;
 import agp.andwhat5.config.structs.Vec3dStruc;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import org.spongepowered.api.world.World;
 
 @SuppressWarnings("Duplicates")
 public class Utils {
@@ -215,8 +227,8 @@ public class Utils {
      */
     public static List<String> getGymNames(boolean sort) {
         List<String> gymNames = Lists.newArrayList();
+        sortGyms();
         DataStruc.gcon.GymData.forEach(gym -> gymNames.add(gym.Name));
-        gymNames.sort(String::compareTo);
         return gymNames;
     }
 
@@ -240,16 +252,9 @@ public class Utils {
      * Did you read the method name? No, the javadoc came first.
      */
     public static void sortGyms() {
-        DataStruc.gcon.GymData.sort((gym1, gym2) ->
-        {
-            if (gym1.LevelCap < gym2.LevelCap)
-                return -1;
-            else if (gym1.LevelCap > gym2.LevelCap)
-                return 1;
-            else {
-                return gym1.Name.compareTo(gym2.Name);
-            }
-        });
+        Collections.sort(DataStruc.gcon.GymData, (e1, e2) -> (Integer.compare(e1.Weight, e2.Weight)));
+
+        //DataStruc.gcon.GymData.sort(Comparator.comparing(e -> e.Weight);
     }
 
     /**
@@ -312,8 +317,16 @@ public class Utils {
      * Sets the players position to the specified position.
      * @param player The player whom will be teleported.
      * @param loc The {@link Vec3dStruc} where the player will be teleported.
+     * @param worldUUID The UUID of the destination world.
      */
-    public static void setPosition(Player player, Vec3dStruc loc) {
+    public static void setPosition(Player player, Vec3dStruc loc, UUID worldUUID) {
+        World world = null;
+        try {
+            world = Sponge.getServer().getWorld(worldUUID).orElseThrow(() -> new AGPException("Invalid World"));
+        } catch (AGPException e) {
+            e.printStackTrace();
+        }
+        player.transferToWorld(world);
         player.setRotation(new Vector3d(loc.pitch, loc.yaw, 0));
         player.setLocation(player.getWorld().getLocation(loc.x, loc.y + 1, loc.z));
     }
@@ -388,14 +401,15 @@ public class Utils {
     public static Collection<Player> getAllPlayers() {
         return Sponge.getServer().getOnlinePlayers();
     }
-    
+
+    //TODO: Replace methods that use this with gymstruc.Queue
     /**
      * Gets all of the players waiting in the specified gyms queue for battle.
      * @param gs The {@link GymStruc} of the gym you are checking against.
      * @return Returns a {@link List} of {@link UUID}s of the players waiting in the list.
      */
     public static List<UUID> getQueuedPlayers(GymStruc gs) {
-        return new ArrayList<>(gs.Queue);
+        return gs.Queue;
     }
 
     /**
@@ -414,6 +428,77 @@ public class Utils {
      */
     public static void addCurrency(Player player, int money) {
         Pixelmon.moneyManager.getBankAccount((EntityPlayerMP) player).get().changeMoney(money);
+    }
+
+    /**
+     * A custom converter for EntityPixelmon to PixelmonData
+     * @param pixelmon The EntityPixelmon you would like to convert.
+     * @return The PixelmonData of the EntityPixelmon provided.
+     */
+    public static PixelmonData entityPixelmonToPixelmonData(EntityPixelmon pixelmon)
+    {
+        return new PixelmonData(pixelmon);
+    }
+
+    /**
+     * A custom converter for PixelmonData to EntityPixelmon.
+     * @param data The PixelmonData of the Pokemon you would like to convert.
+     * @param world The world the player is in.
+     * @return An EntityPixelmon value of PixelmonData
+     */
+    public static EntityPixelmon pixelmonDataToEntityPixelmon(PixelmonData data, net.minecraft.world.World world)
+    {
+        if(!data.name.isEmpty()) {
+            EntityPixelmon pixelmon = (EntityPixelmon) PixelmonEntityList.createEntityByName(data.name, world);
+            if(!data.nickname.isEmpty())
+                pixelmon.setNickname(data.nickname);
+            if(data.lvl > 0 && data.lvl <= 100)
+                pixelmon.getLvl().setLevel(data.lvl);
+            pixelmon.setHealth(data.health);
+            pixelmon.friendship.setFriendship(data.friendship);
+            if(data.gender != null)
+                pixelmon.setGender(data.gender);
+            pixelmon.setIsShiny(data.isShiny);
+            if(data.heldItem != null)
+                pixelmon.setHeldItem(data.heldItem);
+            pixelmon.getLvl().setExp(data.xp);
+            if(data.nature != null)
+                pixelmon.setNature(data.nature);
+            if(data.growth != null)
+                pixelmon.setGrowth(data.growth);
+            if(data.pokeball != null)
+                pixelmon.caughtBall = data.pokeball;
+            if(data.moveset != null)
+            {
+                Attack attacks[] = {
+                        (data.moveset[0] != null ? data.moveset[0].getAttack() : null),
+                    (data.moveset[1] != null ? data.moveset[1].getAttack() : null),
+                    (data.moveset[2] != null ? data.moveset[2].getAttack() : null),
+                    (data.moveset[3] != null ? data.moveset[3].getAttack() : null)};
+
+                pixelmon.setMoveset(new Moveset(attacks));
+            }
+            if(!data.ability.isEmpty())
+                pixelmon.setAbility(data.ability);
+            if (data.evs != null) {
+                pixelmon.stats.evs.speed = data.evs[5];
+                pixelmon.stats.evs.specialAttack = data.evs[3];
+                pixelmon.stats.evs.specialDefence = data.evs[4];
+                pixelmon.stats.evs.defence = data.evs[2];
+                pixelmon.stats.evs.attack = data.evs[1];
+                pixelmon.stats.evs.hp = data.evs[0];
+            }
+            if (data.ivs != null) {
+                pixelmon.stats.ivs.Speed = data.ivs[5];
+                pixelmon.stats.ivs.SpAtt = data.ivs[3];
+                pixelmon.stats.ivs.SpDef = data.ivs[4];
+                pixelmon.stats.ivs.Defence = data.ivs[2];
+                pixelmon.stats.ivs.Attack = data.ivs[1];
+                pixelmon.stats.ivs.HP = data.ivs[0];
+            }
+            return pixelmon;
+        }
+        return null;
     }
 
 }

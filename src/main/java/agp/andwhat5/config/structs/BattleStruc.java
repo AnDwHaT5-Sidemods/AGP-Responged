@@ -19,8 +19,14 @@ public class BattleStruc {
      */
     public final GymStruc gym;
 
-    public BattleStruc(GymStruc gym, UUID leader, UUID challenger) {
+    /**
+     * The {@link ArenaStruc} the challenger and leader are fighting in.
+     */
+    public ArenaStruc arena;
+
+    public BattleStruc(GymStruc gym, ArenaStruc arena, UUID leader, UUID challenger) {
         this.gym = gym;
+        this.arena = arena;
         this.leader = leader;
         this.challenger = challenger;
     }

@@ -29,6 +29,7 @@ public class SetGymWarp extends PlayerOnlyCommand {
         switch (location.toLowerCase()) {
             case "lobby":
                 gym.Lobby = loc;
+                gym.worldUUID = player.getWorldUniqueId().get();
                 lName = "lobby";
                 player.sendMessage(Utils.toText("&7The &b" + gym.Name + " &7Gym's &b" + lName + " &7has been set to your current location!", true));
                 break;
@@ -52,20 +53,23 @@ public class SetGymWarp extends PlayerOnlyCommand {
                     gym.Arenas.add(as);
                 }
 
-                switch (arenaSubLocationName) {
+                switch (arenaSubLocationName.toLowerCase()) {
 
                     case "stands":
                         as.Stands = deleteMode ? null : loc;
+                        gym.worldUUID = player.getWorldUniqueId().get();
                         lName = arenaName+" stands";
                         break;
 
                     case "challenger":
                         as.Challenger = deleteMode ? null : loc;
+                        gym.worldUUID = player.getWorldUniqueId().get();
                         lName = arenaName+" challenger stage";
                         break;
 
                     case "leader":
                         as.Leader = deleteMode ? null : loc;
+                        gym.worldUUID = player.getWorldUniqueId().get();
                         lName = arenaName+" leader stage";
                         break;
 

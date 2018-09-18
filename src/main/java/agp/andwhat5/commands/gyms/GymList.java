@@ -28,7 +28,7 @@ public class GymList implements CommandExecutor {
             src.sendMessage(Utils.toText("", false));
 
             for (GymStruc gs : Utils.getGymStrucs(true)) {
-                StringBuilder msg = new StringBuilder((gs.Status == CLOSED ? "&a" : gs.Status == OPEN ? "&c" : "&e") + gs.Name + "&7[&f");
+                StringBuilder msg = new StringBuilder((gs.Status == CLOSED ? "&c" : gs.Status == OPEN ? "&a" : "&e") + gs.Name + "&7[&f");
                 msg.append(gs.LevelCap == 0 ? "No Cap" : "lvl" + gs.LevelCap).append("&7]&8: ");
                 boolean foundNPC = false;
                 if (gs.PlayerLeaders.isEmpty()) {

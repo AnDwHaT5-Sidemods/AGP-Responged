@@ -137,7 +137,7 @@ public class GymListGui {
 
         Consumer<Action.Click> clickConsumer = click -> Task.builder().execute(task -> {
             if(gym.Lobby != null) {
-                setPosition(player, gym.Lobby);
+                setPosition(player, gym.Lobby, gym.worldUUID);
                 player.sendMessage(toText("&7Teleported to the &b" + gym.Name + " &7Gym lobby!", true));
             }
         }).submit(AGP.getInstance());

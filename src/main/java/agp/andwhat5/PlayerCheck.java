@@ -38,7 +38,11 @@ public class PlayerCheck {
     		UUID.fromString("88333268-79b6-4537-8066-48d255a6a0f9") /*Sy1veon*/,
     		UUID.fromString("07aa849d-43e5-4da1-b2f9-5d8ac69f4d1a") /*ClientHax*/);
     private static final List<UUID> scrubs = Lists.newArrayList(
-    		UUID.fromString("0eb8e4fa-f8dc-4648-989b-98ac5bd417a3") /*HackoJacko*/);
+    		UUID.fromString("6d55917f-1f16-4044-80be-71c117971b97") /*HackoJacko*/,
+            UUID.fromString("0b813a81-5814-4050-9a6d-a492e89417ba") /*XpanD*/,
+            UUID.fromString("8f580f86-2ef2-455e-84ad-442b12219b5f") /*MarshallxD*/,
+            UUID.fromString("940d87bf-5aff-4ac7-99ec-ca3986612c40") /*1997Stijn*/,
+            UUID.fromString("b256860b-60a9-4903-b90d-7e59dac11529") /*Malakae*/);
     
     //The best of eastereggs.
     private int eventCounter = 0;
@@ -72,11 +76,11 @@ public class PlayerCheck {
         DataStruc.gcon.GymData.forEach(g -> {
             if(g.PlayerLeaders.contains(player.getUniqueId())) {
                 g.OnlineLeaders.add(player.getUniqueId());
-                if (AGPConfig.Announcements.announceLeaderJoin) {
-                    Utils.sendToAll(AGPConfig.Announcements.leaderJoinMessage.replace("{leader}", player.getName()), true);
-                }
             }
         });
+        if (AGPConfig.Announcements.announceLeaderJoin) {
+            Utils.sendToAll(AGPConfig.Announcements.leaderJoinMessage.replace("{leader}", player.getName()), true);
+        }
         
         if(AGPConfig.General.autoOpen)
         {
@@ -96,16 +100,16 @@ public class PlayerCheck {
         		{
         			if(gymNames.size() == 1)
         			{
-        				Utils.sendToAll("The " + gymNames.get(0) + " gym has opened!", true);
+        				Utils.sendToAll("&7The &b" + gymNames.get(0) + " &7gym has opened!", true);
         			}
         			else
         			if(gymNames.size() == 2)
         			{
-        				Utils.sendToAll("The &b" + gymNames.get(0) + " &7and &b" + gymNames.get(1) + " &7gyms have opened!", true);
+        				Utils.sendToAll("&7The &b" + gymNames.get(0) + " &7and &b" + gymNames.get(1) + " &7gyms have opened!", true);
         			}
         			else
         			{
-        				Utils.sendToAll("Multiple gyms have opened! Use &b/GymList &7to see all open gyms.", true);
+        				Utils.sendToAll("&7Multiple gyms have opened! Use &b/GymList &7to see all open gyms.", true);
         			}
         		}
         	}

@@ -35,7 +35,7 @@ public class QueueList implements CommandExecutor {
                 src.sendMessage(Utils.toText("&7There are no challengers in the queue!", false));
             } else {
                 UserStorageService userStorageService = Sponge.getServiceManager().provide(UserStorageService.class).get();
-                gym.Queue.parallelStream().forEach(uuid -> userStorageService.get(uuid).ifPresent(user -> src.sendMessage(Utils.toText("&b" + i.incrementAndGet() + ": " + (Sponge.getServer().getPlayer(uuid).isPresent() ? "&a" : "&c") + user.getName(), false))));
+                gym.Queue.forEach(uuid -> userStorageService.get(uuid).ifPresent(user -> src.sendMessage(Utils.toText("&b" + i.incrementAndGet() + ": " + (Sponge.getServer().getPlayer(uuid).isPresent() ? "&a" : "&c") + user.getName(), false))));
             }
         } else {
             //Target specific player

@@ -40,7 +40,7 @@ public class GymStruc {
      * A {@link Vec3dStruc} of the location of the lobby for the gym.
      */
     @Expose
-    public Vec3dStruc Lobby;//TODO this is retarded and needs to be moved to a world specific var, otherwise people in multiworld are going to have a GREAAATTTTT time.
+    public Vec3dStruc Lobby;
 
     //Only here for legacy reasons. Remove later.
     @SuppressWarnings("DeprecatedIsStillUsed")
@@ -75,6 +75,24 @@ public class GymStruc {
     @Expose
     public String Rules = "";
 
+    /**
+     * The UUID of the world the gym is located in.
+     */
+    @Expose
+    public UUID worldUUID;
+
+    /**
+     * The weight of the gym for sorting.
+     */
+    @Expose
+    public int Weight = 0;
+
+    /**
+     * The pool of the gyms pokemon.
+     */
+    @Expose
+    public List<String> pokemon = new ArrayList<>();
+
     // 0 = open
     // 1 = closed
     // 2 = npc leader
@@ -84,7 +102,7 @@ public class GymStruc {
         NPC
     }
     public EnumStatus Status = EnumStatus.CLOSED;
-    public final Queue<UUID> Queue = new LinkedList<>();
+    public final List<UUID> Queue = new ArrayList<>();
     public final Set<UUID> OnlineLeaders = new HashSet<>();
 
     public GymStruc() {

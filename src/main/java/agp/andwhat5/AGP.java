@@ -49,7 +49,9 @@ import agp.andwhat5.commands.leaders.*;
 import agp.andwhat5.commands.players.*;
 import agp.andwhat5.commands.testing.GymBattleTest;
 import agp.andwhat5.config.AGPConfig;
+import agp.andwhat5.config.structs.DataStruc;
 import agp.andwhat5.config.structs.GymStruc;
+import agp.andwhat5.exceptions.AGPException;
 import agp.andwhat5.listeners.forge.GymExperienceGain;
 import agp.andwhat5.listeners.forge.GymNPCDefeatListener;
 import agp.andwhat5.listeners.forge.GymPlayerDefeatListener;
@@ -87,7 +89,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-@Plugin(id = "agp", name = "AGP Responged", version = "1.0.0-Beta1", dependencies = @Dependency(id = "pixelmon"), description = "Another gym plugin... but for Sponge!", authors = {"AnDwHaT5", "ClientHax"})
+@Plugin(id = "agp", name = "AGP Responged", version = "1.0.0-Beta7", dependencies = @Dependency(id = "pixelmon"), description = "Another gym plugin... but for Sponge!", authors = {"AnDwHaT5", "ClientHax"})
 public class AGP {
 
     private static AGP instance;
@@ -210,6 +212,18 @@ public class AGP {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        DataStruc.gcon.GymData.forEach(gym ->
+        {
+            if(gym.worldUUID == null) {
+                try {
+                    gym.worldUUID = Sponge.getServer().getDefaultWorld().orElseThrow(() -> new AGPException("No Default World")).getUniqueId();
+                } catch (AGPException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        Utils.saveAGPData();
     }
 
     public void setupTasks() {
@@ -303,6 +317,27 @@ public class AGP {
                 )
                 .build();
         commandManager.register(this, queueListSpec, "queuelist", "ql");
+
+        CommandSpec addGymPokeSpec = CommandSpec.builder()
+                .description(Text.of("Adds a Pokemon to the gyms pokemon pool"))
+                .permission("agp.command.addgympoke")
+                .executor(new AddGymPoke())
+                .arguments(
+                        GenericArguments.onlyOne(GenericArguments.integer(Text.of("slot"))),
+                        GenericArguments.onlyOne(GymCommandElement.gym())
+                )
+                .build();
+        commandManager.register(this, addGymPokeSpec, "addgympoke");
+
+        CommandSpec giveGymPokeSpec = CommandSpec.builder()
+                .description(Text.of("Adds a Pokemon to the gyms pokemon pool"))
+                .permission("agp.command.givegympoke")
+                .executor(new GiveGymPoke())
+                .arguments(
+                        GenericArguments.onlyOne(GymCommandElement.gym())
+                )
+                .build();
+        commandManager.register(this, giveGymPokeSpec, "givegympoke");
 
         CommandSpec acceptChallengeSpec = CommandSpec.builder()
                 .description(Text.of("Accepts a challenge from a player in the specififed gym queue."))
