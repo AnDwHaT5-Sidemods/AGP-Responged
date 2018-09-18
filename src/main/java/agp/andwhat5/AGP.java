@@ -47,6 +47,7 @@ import agp.andwhat5.commands.commandelements.GymCommandElement;
 import agp.andwhat5.commands.gyms.*;
 import agp.andwhat5.commands.leaders.*;
 import agp.andwhat5.commands.players.*;
+import agp.andwhat5.commands.testing.GymBattleTest;
 import agp.andwhat5.config.AGPConfig;
 import agp.andwhat5.config.structs.DataStruc;
 import agp.andwhat5.config.structs.GymStruc;
@@ -251,6 +252,15 @@ public class AGP {
         loadConfig();
 
         CommandManager commandManager = Sponge.getCommandManager();
+
+        CommandSpec gymBattleTest = CommandSpec.builder()
+                .permission("agp.command.testing")
+                .executor(new GymBattleTest())
+                .arguments(
+                        GenericArguments.onlyOne(GenericArguments.player(Text.of("player")))
+                )
+                .build();
+        commandManager.register(this, gymBattleTest, "gymbattletest");
 
         CommandSpec gymWarpSpec = CommandSpec.builder()
                 .description(Text.of("Warps you to the specified gym location."))

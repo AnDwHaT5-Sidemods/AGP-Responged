@@ -450,10 +450,10 @@ public class Utils {
      * @param world The world the player is in.
      * @return An EntityPixelmon value of PixelmonData
      */
-    public static EntityPixelmon pixelmonDataToEntityPixelmon(PixelmonData data, net.minecraft.world.World world)
+    public static Optional<EntityPixelmon> pixelmonDataToEntityPixelmon(PixelmonData data, World world)
     {
         if(!data.name.isEmpty()) {
-            EntityPixelmon pixelmon = (EntityPixelmon) PixelmonEntityList.createEntityByName(data.name, world);
+            EntityPixelmon pixelmon = (EntityPixelmon) PixelmonEntityList.createEntityByName(data.name, (net.minecraft.world.World) world);
             if(!data.nickname.isEmpty())
                 pixelmon.setNickname(data.nickname);
             if(data.lvl > 0 && data.lvl <= 100)
@@ -500,9 +500,9 @@ public class Utils {
                 pixelmon.stats.ivs.Attack = data.ivs[1];
                 pixelmon.stats.ivs.HP = data.ivs[0];
             }
-            return pixelmon;
+            return Optional.of(pixelmon);
         }
-        return null;
+        return Optional.empty();
     }
 
     public static ItemStack getPixelmonSprite(PixelmonData data)
