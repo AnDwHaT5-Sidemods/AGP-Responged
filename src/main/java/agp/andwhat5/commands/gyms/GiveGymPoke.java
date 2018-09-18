@@ -9,10 +9,11 @@ import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
 import com.pixelmonmod.pixelmon.storage.PlayerStorage;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.world.World;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
+
+import java.util.Optional;
 
 public class GiveGymPoke extends PlayerOnlyCommand {
     @Override
@@ -22,10 +23,10 @@ public class GiveGymPoke extends PlayerOnlyCommand {
         {
             PixelmonData data = new PixelmonData();
             ImportExportConverter.importText(gym.pokemon.get(0), data);
-            EntityPixelmon pixelmon = Utils.pixelmonDataToEntityPixelmon(data, (World)player.getWorld());
+            Optional<EntityPixelmon> pixelmon = Utils.pixelmonDataToEntityPixelmon(data, player.getWorld());
             PlayerStorage storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP)player).get();
-            if(pixelmon != null) {
-                storage.addToParty(pixelmon);
+            if(pixelmon.isPresent()) {
+                storage.addToParty(pixelmon.get());
                 player.sendMessage(Utils.toText("&7Successfully gave yourself that pokemon from the pool.", true));
                 return CommandResult.success();
             }

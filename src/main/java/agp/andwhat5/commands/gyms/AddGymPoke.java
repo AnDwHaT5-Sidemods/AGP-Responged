@@ -26,7 +26,7 @@ public class AddGymPoke extends PlayerOnlyCommand {
             player.sendMessage(Utils.toText("&7There is no Pokemon in the specified slot.", true));
             return CommandResult.success();
         }
-        EntityPixelmon pixelmon = (EntityPixelmon)PixelmonEntityList.createEntityFromNBT(storage.partyPokemon[slot], (World)player.getWorld());
+        EntityPixelmon pixelmon = (EntityPixelmon)PixelmonEntityList.createEntityFromNBT(storage.partyPokemon[slot], (World) player.getWorld());
         gym.pokemon.add(ImportExportConverter.getExportText(Utils.entityPixelmonToPixelmonData(pixelmon)));
         Utils.saveAGPData();
         player.sendMessage(Utils.toText("&7Successfully added that Pokemon to the gym pool.", true));
