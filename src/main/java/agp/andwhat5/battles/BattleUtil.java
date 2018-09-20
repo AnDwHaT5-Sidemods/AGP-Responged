@@ -66,7 +66,7 @@ public class BattleUtil {
 
         leaderParticipant.controlledPokemon.add(leaderParticipant.allPokemon[0]);//Only the first one needs to be controlled!!
 
-        new BattleControllerBase(challengerParticipant, leaderParticipant);
+        new BattleControllerBase(leaderParticipant, challengerParticipant);
     }
 
     //If you break this there is a special place in hell for you

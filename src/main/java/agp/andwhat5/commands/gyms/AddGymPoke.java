@@ -17,7 +17,7 @@ import org.spongepowered.api.entity.living.player.Player;
 public class AddGymPoke extends PlayerOnlyCommand {
     @Override
     protected CommandResult execute(Player player, CommandContext args) {
-        int slot = args.<Integer>getOne("slot").get();
+        int slot = args.<Integer>getOne("slot").get() + 1;
         GymStruc gym = args.<GymStruc>getOne("GymName").get();
 
         PlayerStorage storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).get();

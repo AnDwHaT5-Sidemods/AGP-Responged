@@ -464,7 +464,7 @@ public class AGP {
 
         CommandSpec challengeGymSpec = CommandSpec.builder()
                 .description(Text.of("Challenges the specified gym to a battle."))
-                .permission("agp.command.challangegym")
+                .permission("agp.command.challengegym")
                 .executor(new ChallengeGym())
                 .arguments(
                         GenericArguments.onlyOne(GymCommandElement.gym())
