@@ -6,6 +6,7 @@ import agp.andwhat5.config.structs.ArenaStruc;
 import agp.andwhat5.config.structs.BattleStruc;
 import agp.andwhat5.config.structs.DataStruc;
 import agp.andwhat5.config.structs.GymStruc;
+import agp.andwhat5.gui.ChooseTeamGui;
 import com.pixelmonmod.pixelmon.battles.BattleRegistry;
 import com.pixelmonmod.pixelmon.battles.controller.BattleControllerBase;
 import com.pixelmonmod.pixelmon.battles.controller.participants.BattleParticipant;
@@ -78,57 +79,8 @@ public class AcceptChallenge extends PlayerOnlyCommand {
             gym.Queue.remove(0);
             return CommandResult.success();
         }
-        ArenaStruc as = optGymArena.orElse(null);
-        if(as == null)
-        {
-            for(ArenaStruc a : gym.Arenas)
-            {
-                if(a != null) {
-                    if (!a.inUse && a.Leader != null && a.Challenger != null) {
-                        Utils.setPosition(sender, a.Leader, gym.worldUUID);
-                        Utils.setPosition(challenger, a.Challenger, gym.worldUUID);
-
-                        a.inUse = true;
-                        as = a;
-                        break;
-                    }
-                }
-            }
-        }
-        else {
-            if (as.Leader != null && as.Challenger != null) {
-                as.inUse = true;
-                Utils.setPosition(sender, as.Leader, gym.worldUUID);
-                Utils.setPosition(challenger, as.Challenger, gym.worldUUID);
-            }
-        }
-
-        Optional<PlayerStorage> leaderTeam = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) sender);
-        Optional<PlayerStorage> challengerTeam = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) challenger);
-
-        if (leaderTeam.isPresent() && challengerTeam.isPresent()) {
-            leaderTeam.get().healAllPokemon((World) sender.getWorld());
-            challengerTeam.get().healAllPokemon((World) challenger.getWorld());
-
-            BattleStruc bs = new BattleStruc(gym, as, sender.getUniqueId(), challenger.getUniqueId());
-            DataStruc.gcon.GymBattlers.add(bs);
-            sender.sendMessage(Utils.toText("&7Initiating battle against &b" + Utils.getNameFromUUID(cUUID) + "&7!", true));
-            challenger.sendMessage(Utils.toText("&7Gym Leader &b" + sender.getName() + " &7has accepted your challenge against the &b" + gym.Name + " &bGym!", true));
-
-            EntityPixelmon leaderPkmn1 = leaderTeam.get().getFirstAblePokemon((World) sender.getWorld());
-            BattleParticipant ldr = new PlayerParticipant((EntityPlayerMP) sender, leaderPkmn1);
-            EntityPixelmon challengerPkmn1 = challengerTeam.get().getFirstAblePokemon((World) challenger.getWorld());
-            BattleParticipant chal = new PlayerParticipant((EntityPlayerMP) challenger, challengerPkmn1);
-
-            ldr.startedBattle = true;
-            BattleParticipant[] team1 = new BattleParticipant[]{ldr};
-            BattleParticipant[] team2 = new BattleParticipant[]{chal};
-            new BattleControllerBase(team1, team2);
-        } else {
-            sender.sendMessage(Utils.toText("&7An error occurred starting the gym battle!", true));
-            challenger.sendMessage(Utils.toText("&7An error occurred starting the gym battle!", true));
-        }
-
+        ChooseTeamGui gui = new ChooseTeamGui();
+        gui.openChooseTeamGui(sender, cUUID, gym, optGymArena);
         return CommandResult.success();
     }
 
