@@ -5,7 +5,6 @@ import com.pixelmonmod.pixelmon.battles.controller.participants.PixelmonWrapper;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PlayerParticipant;
 import com.pixelmonmod.pixelmon.comm.ChatHandler;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
-import com.pixelmonmod.pixelmon.enums.battle.EnumBattleEndCause;
 import net.minecraft.entity.player.EntityPlayerMP;
 
 import java.util.Arrays;
@@ -34,6 +33,7 @@ public class TempTeamedParticipant extends PlayerParticipant {
         for (PixelmonWrapper pixelmonWrapper : allPokemon) {
             if(Arrays.equals(pixelmonWrapper.getPokemonID(), newPixelmonId)) {
                 newWrapper = pixelmonWrapper;
+                //TODO bail out if this is null
                 break;
             }
         }
@@ -48,16 +48,7 @@ public class TempTeamedParticipant extends PlayerParticipant {
                 newPixelmon.setLocationAndAngles(x, y, z, this.player.rotationYaw, 0.0F);
             } else {
                 newPixelmon = newWrapper.pokemon;
-                //Should send out pokemon here?
-                getWorld().spawnEntity(newPixelmon);//TODO
-
-
-                if (newPixelmon == null) {
-                    this.bc.sendToAll("Problem sending out Pokémon, cancelling battle. Please report this.");
-                    this.bc.endBattle(EnumBattleEndCause.FORCE);
-                    return null;
-                }
-
+                getWorld().spawnEntity(newPixelmon);
                 newPixelmon.motionX = newPixelmon.motionY = newPixelmon.motionZ = 0.0D;
                 newPixelmon.setLocationAndAngles(x, y, z, this.player.rotationYaw, 0.0F);
                 newPixelmon.releaseFromPokeball();

@@ -158,7 +158,7 @@ public class ChooseTeamGui {
                 for (String s : selectedPokemon) {
                     PixelmonData data = new PixelmonData();
                     ImportExportConverter.importText(s, data);
-                    leaderPixelmon.add(Utils.pixelmonDataToEntityPixelmon(data, leader.getWorld()).get());
+                    BattleUtil.pixelmonDataToTempBattlePokemon(leader, data).ifPresent(leaderPixelmon::add);
                 }
 
                 ArenaStruc as = arena.orElse(null);

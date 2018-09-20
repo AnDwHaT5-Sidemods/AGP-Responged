@@ -1,6 +1,7 @@
 package agp.andwhat5.commands.gyms;
 
 import agp.andwhat5.Utils;
+import agp.andwhat5.battles.BattleUtil;
 import agp.andwhat5.commands.utils.PlayerOnlyCommand;
 import agp.andwhat5.config.structs.GymStruc;
 import com.pixelmonmod.pixelmon.client.gui.pokemoneditor.ImportExportConverter;
@@ -23,7 +24,7 @@ public class GiveGymPoke extends PlayerOnlyCommand {
         {
             PixelmonData data = new PixelmonData();
             ImportExportConverter.importText(gym.pokemon.get(0), data);
-            Optional<EntityPixelmon> pixelmon = Utils.pixelmonDataToEntityPixelmon(data, player.getWorld());
+            Optional<EntityPixelmon> pixelmon = BattleUtil.pixelmonDataToTempBattlePokemon(player, data);
             PlayerStorage storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP)player).get();
             if(pixelmon.isPresent()) {
                 storage.addToParty(pixelmon.get());
