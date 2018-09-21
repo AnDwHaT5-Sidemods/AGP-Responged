@@ -27,7 +27,7 @@ public class EditGym implements CommandExecutor {
         GymStruc gym = args.<GymStruc>getOne("GymName").get();
         Optional<String> args1 = args.getOne("args");
         if(!args1.isPresent()) {
-            sender.sendMessage(Utils.toText("&7Incorrect usage: /EditGym <gym> <name:(name) | badge:(badge) | weight:(weight) | require:(gym) | rules:(rules) | level:(level) | money:(money)>&7.", true));
+            sender.sendMessage(Utils.toText("&7Incorrect usage: /EditGym <gym> <name:(name) | badge:(badge) | weight:(weight) | minpokemon:(minpokemon) | maxpokemon:(maxpokemon) | require:(gym) | rules:(rules) | level:(level) | money:(money)>&7.", true));
             return CommandResult.success();
         }
 
@@ -35,6 +35,28 @@ public class EditGym implements CommandExecutor {
 
         // Parse options
         for (String anArgList : argList) {
+            if(anArgList.toLowerCase().startsWith("minpokemon:") && !anArgList.toLowerCase().equalsIgnoreCase("minpokemon:"))
+            {
+                int minPokemon = Integer.parseInt(anArgList.substring(11));
+                if(minPokemon > 0 && minPokemon < 7) {
+                    gym.minimumPokemon = minPokemon;
+                    sender.sendMessage(Utils.toText("&7Successfully changed the minimum gym Pokemon count of the &b" + gym.Name + "&7 gym to &b" + minPokemon + "&7!", true));
+                }
+                else
+                    sender.sendMessage(Utils.toText("&7The minimum amount of Pokemon must be 1-6.", true));
+            }
+            else
+            if(anArgList.toLowerCase().startsWith("maxpokemon:") && !anArgList.toLowerCase().equalsIgnoreCase("maxpokemon:"))
+            {
+                int maxPokemon = Integer.parseInt(anArgList.substring(11));
+                if(maxPokemon > 0 && maxPokemon < 7) {
+                    gym.maximumPokemon = maxPokemon;
+                    sender.sendMessage(Utils.toText("&7Successfully changed the maximum gym Pokemon count of the &b" + gym.Name + "&7 gym to &b" + maxPokemon + "&7!", true));
+                }
+                else
+                    sender.sendMessage(Utils.toText("&7The maximum amount of Pokemon must be 1-6.", true));
+            }
+            else
             if(anArgList.toLowerCase().startsWith("weight:") && !anArgList.toLowerCase().equalsIgnoreCase("weight:"))
             {
                 int weight = Integer.parseInt(anArgList.substring(7));
@@ -106,7 +128,7 @@ public class EditGym implements CommandExecutor {
                                     sender.sendMessage(Utils.toText("&7Successfully changed the badge of the &b" + gym.Name + "&7 gym to &b" + gym.Badge + "&7!", true));
                                 }
                                 else {
-                                    sender.sendMessage(Utils.toText("&7Incorrect usage: /EditGym <gym> <name:(name) | badge:(badge) | weight:(weight) | require:(gym) | rules:(rules) | level:(level) | money:(money)>&7.", true));
+                                    sender.sendMessage(Utils.toText("&7Incorrect usage: /EditGym <gym> <name:(name) | badge:(badge) | weight:(weight) | minpokemon:(minpokemon) | maxpokemon:(maxpokemon) | require:(gym) | rules:(rules) | level:(level) | money:(money)>&7.", true));
                                 }
         }
         if (AGPConfig.Storage.storageType.equalsIgnoreCase("flatfile")) {

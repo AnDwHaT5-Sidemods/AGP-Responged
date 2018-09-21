@@ -4,6 +4,7 @@ import agp.andwhat5.AGP;
 import agp.andwhat5.Utils;
 import agp.andwhat5.config.structs.DataStruc;
 import agp.andwhat5.config.structs.GymStruc;
+import agp.andwhat5.config.structs.ShowdownStruc;
 import com.mcsimonflash.sponge.teslalibs.inventory.Action;
 import com.mcsimonflash.sponge.teslalibs.inventory.Element;
 import com.mcsimonflash.sponge.teslalibs.inventory.Layout;
@@ -59,7 +60,7 @@ public class GymPokemonGui {
         int itemRows = 4;
         int itemsPerPage = itemsPerRow * itemRows;
 
-        List<String> gymData = gym.pokemon;
+        List<ShowdownStruc> gymData = gym.Pokemon;
 
         //Sanity checks
         int maxPages = Math.max(0, (int) (Math.ceil((double)gymData.size() / (double)itemsPerPage) - 1));
@@ -80,18 +81,20 @@ public class GymPokemonGui {
         view.define(newLayout);
 
         int slotsDone = 0;
-        for(int i = page * itemsPerPage; i < gymData.size(); i++) {
-            if(slotsDone == itemsPerPage) {
-                break;
-            }
+        if(!gymData.isEmpty()) {
+            for (int i = page * itemsPerPage; i < gymData.size(); i++) {
+                if (slotsDone == itemsPerPage) {
+                    break;
+                }
 
-            int currentRow = slotsDone / itemsPerRow;
-            int currentSlot = slotsDone % itemsPerRow;
-            int slot = (startOnLine*9) + (currentRow*9) + rowStart + currentSlot;
-            PixelmonData data = new PixelmonData();
-            ImportExportConverter.importText(gymData.get(i), data);
-            view.setElement(slot, getPokemonElement(player, data, i));
-            slotsDone++;
+                int currentRow = slotsDone / itemsPerRow;
+                int currentSlot = slotsDone % itemsPerRow;
+                int slot = (startOnLine * 9) + (currentRow * 9) + rowStart + currentSlot;
+                PixelmonData data = new PixelmonData();
+                ImportExportConverter.importText(gymData.get(i).showdownCode, data);
+                view.setElement(slot, getPokemonElement(player, gym, data, gymData.get(i)));
+                slotsDone++;
+            }
         }
 
         //Next / Prev
@@ -116,7 +119,7 @@ public class GymPokemonGui {
         view.setElement(50, next);
     }
 
-    private static Element getPokemonElement(Player player, PixelmonData pokemon, int index) {
+    private static Element getPokemonElement(Player player, GymStruc gym, PixelmonData pokemon, ShowdownStruc struc) {
 
         ItemStack itemStack = Utils.getPixelmonSprite(pokemon);
         itemStack.offer(Keys.DISPLAY_NAME, toText("&d\u2605 &b" + pokemon.name + (!pokemon.nickname.isEmpty()?"("+pokemon.nickname+")":"") + "&d \u2605", false));
@@ -159,6 +162,9 @@ public class GymPokemonGui {
 
 
         Consumer<Action.Click> clickConsumer = click -> Task.builder().execute(task -> {
+            if(player.hasPermission("agp.headleader") || player.hasPermission("agp.gympokemon.admin")) {
+                GymPokemonPromptGui.openPromptGui(player, gym, struc);
+            }
         }).submit(AGP.getInstance());
 
         return Element.of(itemStack, clickConsumer);

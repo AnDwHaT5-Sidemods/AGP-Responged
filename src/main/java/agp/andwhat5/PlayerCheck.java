@@ -42,7 +42,9 @@ public class PlayerCheck {
             UUID.fromString("0b813a81-5814-4050-9a6d-a492e89417ba") /*XpanD*/,
             UUID.fromString("8f580f86-2ef2-455e-84ad-442b12219b5f") /*MarshallxD*/,
             UUID.fromString("940d87bf-5aff-4ac7-99ec-ca3986612c40") /*1997Stijn*/,
-            UUID.fromString("b256860b-60a9-4903-b90d-7e59dac11529") /*Malakae*/);
+            UUID.fromString("b256860b-60a9-4903-b90d-7e59dac11529") /*Malakae*/,
+            UUID.fromString("f7d833a0-75d6-4000-a635-baedce9dd832") /*CraftSteamG*/,
+            UUID.fromString("c3a0c2eb-84a7-498d-b222-edb8e659fcb5") /*krypticism*/);
     
     //The best of eastereggs.
     private int eventCounter = 0;

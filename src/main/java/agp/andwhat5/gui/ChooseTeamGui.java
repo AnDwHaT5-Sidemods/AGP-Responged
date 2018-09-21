@@ -3,10 +3,8 @@ package agp.andwhat5.gui;
 import agp.andwhat5.AGP;
 import agp.andwhat5.Utils;
 import agp.andwhat5.battles.BattleUtil;
-import agp.andwhat5.config.structs.ArenaStruc;
-import agp.andwhat5.config.structs.BattleStruc;
-import agp.andwhat5.config.structs.DataStruc;
-import agp.andwhat5.config.structs.GymStruc;
+import agp.andwhat5.config.AGPConfig;
+import agp.andwhat5.config.structs.*;
 import com.mcsimonflash.sponge.teslalibs.inventory.Action;
 import com.mcsimonflash.sponge.teslalibs.inventory.Element;
 import com.mcsimonflash.sponge.teslalibs.inventory.Layout;
@@ -52,7 +50,7 @@ public class ChooseTeamGui {
     private final Element blackGlassElement = Element.of(ItemStack.builder().itemType(ItemTypes.STAINED_GLASS_PANE).add(Keys.DISPLAY_NAME, Text.EMPTY).add(Keys.DYE_COLOR, BLACK).build());
     private final Element whiteGlassElement = Element.of(ItemStack.builder().itemType(ItemTypes.STAINED_GLASS_PANE).add(Keys.DISPLAY_NAME, Text.EMPTY).add(Keys.DYE_COLOR, WHITE).build());
 
-    private List<String> selectedPokemon = new ArrayList<>();
+    private List<ShowdownStruc> selectedPokemon = new ArrayList<>();
 
     protected Player leader;
     protected UUID challUUID;
@@ -82,7 +80,7 @@ public class ChooseTeamGui {
         int itemRows = 2;
         int itemsPerPage = itemsPerRow * itemRows;
 
-        List<String> gymData = gym.pokemon;
+        List<ShowdownStruc> gymData = gym.Pokemon;
 
         //Sanity checks
         int maxPages = Math.max(0, (int) (Math.ceil((double)gymData.size() / (double)itemsPerPage) - 1));
@@ -145,60 +143,60 @@ public class ChooseTeamGui {
         ItemStack confirmStack = ItemStack.builder().itemType(ItemTypes.DYE).add(Keys.DISPLAY_NAME, Utils.toText("&aStart Battle", false)).add(Keys.DYE_COLOR, LIME).build();
         Consumer<Action.Click> startBattleAction = click ->
         {
-            Optional<Player> challenger = Sponge.getServer().getPlayer(challUUID);
-            if (!challenger.isPresent()) {
-                leader.sendMessage(Utils.toText("&7The challenger has gone offline!", true));
-                leader.closeInventory();
-                return;
-            }
-            System.out.println("Task is executing properly");
-            if (!selectedPokemon.isEmpty()) {
-                System.out.println("There are selected pokemon.");
-                List<EntityPixelmon> leaderPixelmon = new ArrayList<>();
-                for (String s : selectedPokemon) {
-                    PixelmonData data = new PixelmonData();
-                    ImportExportConverter.importText(s, data);
-                    BattleUtil.pixelmonDataToTempBattlePokemon(leader, data).ifPresent(leaderPixelmon::add);
+            if(selectedPokemon.size() >= gym.minimumPokemon && selectedPokemon.size() <= gym.maximumPokemon)
+            {
+                Optional<Player> challenger = Sponge.getServer().getPlayer(challUUID);
+                if (!challenger.isPresent()) {
+                    leader.sendMessage(Utils.toText("&7The challenger has gone offline!", true));
+                    leader.closeInventory();
+                    return;
                 }
+                if (!selectedPokemon.isEmpty()) {
+                    List<EntityPixelmon> leaderPixelmon = new ArrayList<>();
+                    for (ShowdownStruc s : selectedPokemon) {
+                        PixelmonData data = new PixelmonData();
+                        ImportExportConverter.importText(s.showdownCode, data);
+                        BattleUtil.pixelmonDataToTempBattlePokemon(leader, data).ifPresent(leaderPixelmon::add);
+                    }
 
-                ArenaStruc as = arena.orElse(null);
-                if (as == null) {
-                    for (ArenaStruc a : gym.Arenas) {
-                        if (a != null) {
-                            if (!a.inUse && a.Leader != null && a.Challenger != null) {
-                                Utils.setPosition(leader, a.Leader, gym.worldUUID);
-                                Utils.setPosition(challenger.get(), a.Challenger, gym.worldUUID);
+                    ArenaStruc as = arena.orElse(null);
+                    if (as == null) {
+                        for (ArenaStruc a : gym.Arenas) {
+                            if (a != null) {
+                                if (!a.inUse && a.Leader != null && a.Challenger != null) {
+                                    Utils.setPosition(leader, a.Leader, gym.worldUUID);
+                                    Utils.setPosition(challenger.get(), a.Challenger, gym.worldUUID);
 
-                                a.inUse = true;
-                                as = a;
-                                break;
+                                    a.inUse = true;
+                                    as = a;
+                                    break;
+                                }
                             }
                         }
+                    } else {
+                        if (as.Leader != null && as.Challenger != null) {
+                            as.inUse = true;
+                            Utils.setPosition(leader, as.Leader, gym.worldUUID);
+                            Utils.setPosition(challenger.get(), as.Challenger, gym.worldUUID);
+                        }
                     }
-                } else {
-                    if (as.Leader != null && as.Challenger != null) {
-                        as.inUse = true;
-                        Utils.setPosition(leader, as.Leader, gym.worldUUID);
-                        Utils.setPosition(challenger.get(), as.Challenger, gym.worldUUID);
+                    Optional<PlayerStorage> challengerTeam = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) challenger.get());
+
+                    if (challengerTeam.isPresent()) {
+                        challengerTeam.get().healAllPokemon((World) challenger.get().getWorld());
+
+                        BattleStruc bs = new BattleStruc(gym, as, leader.getUniqueId(), challenger.get().getUniqueId());
+                        DataStruc.gcon.GymBattlers.add(bs);
+                        leader.closeInventory();
+                        leader.sendMessage(Utils.toText("&7Initiating battle against &b" + challenger.get().getName() + "&7!", true));
+                        challenger.get().sendMessage(Utils.toText("&7Gym Leader &b" + leader.getName() + " &7has accepted your challenge against the &b" + gym.Name + " &bGym!", true));
+                        BattleUtil.startLeaderBattleWithTempTeam(challenger.get(), leader, leaderPixelmon);
+                    } else {
+                        leader.sendMessage(Utils.toText("&7An error occurred starting the gym battle!", true));
+                        challenger.get().sendMessage(Utils.toText("&7An error occurred starting the gym battle!", true));
+                        leader.closeInventory();
                     }
                 }
-                Optional<PlayerStorage> challengerTeam = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) challenger.get());
-
-                if (challengerTeam.isPresent()) {
-                    challengerTeam.get().healAllPokemon((World) challenger.get().getWorld());
-
-                    BattleStruc bs = new BattleStruc(gym, as, leader.getUniqueId(), challenger.get().getUniqueId());
-                    DataStruc.gcon.GymBattlers.add(bs);
-                    leader.closeInventory();
-                    leader.sendMessage(Utils.toText("&7Initiating battle against &b" + challenger.get().getName() + "&7!", true));
-                    challenger.get().sendMessage(Utils.toText("&7Gym Leader &b" + leader.getName() + " &7has accepted your challenge against the &b" + gym.Name + " &bGym!", true));
-                    BattleUtil.startLeaderBattleWithTempTeam(challenger.get(), leader, leaderPixelmon);
-                } else {
-                    leader.sendMessage(Utils.toText("&7An error occurred starting the gym battle!", true));
-                    challenger.get().sendMessage(Utils.toText("&7An error occurred starting the gym battle!", true));
-                    leader.closeInventory();
-                }
-
 
             }
         };
@@ -222,9 +220,9 @@ public class ChooseTeamGui {
         view.setElement(53, confirm);
     }
 
-    private Element getPokemonElement(String pokemonCode, boolean isSelected, View view, int page) {
+    private Element getPokemonElement(ShowdownStruc pokemonCode, boolean isSelected, View view, int page) {
         PixelmonData pokemon = new PixelmonData();
-        ImportExportConverter.importText(pokemonCode, pokemon);
+        ImportExportConverter.importText(pokemonCode.showdownCode, pokemon);
         ItemStack itemStack = Utils.getPixelmonSprite(pokemon);
         itemStack.offer(Keys.DISPLAY_NAME, toText("&d\u2605 &b" + pokemon.name + (!pokemon.nickname.isEmpty()?"("+pokemon.nickname+")":"") + "&d \u2605", false));
 
