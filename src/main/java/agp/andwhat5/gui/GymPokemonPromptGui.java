@@ -73,30 +73,33 @@ public class GymPokemonPromptGui {
         givePokemonStack.offer(Keys.DISPLAY_NAME, Text.of("Give Pixelmon"));
         Consumer<Action.Click> giveAction = click ->
         {
-            PlayerStorage storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).get();
-            PixelmonData data = new PixelmonData();
-            ImportExportConverter.importText(struc.showdownCode, data);
-            storage.addToParty(BattleUtil.pixelmonDataToTempBattlePokemon(player, data).get());
-            player.sendMessage(Utils.toText("&7Successfully added &b" + data.name + " &7to your party!", true));
-            GymPokemonGui.openGymPokemonGui(player, gym);
+            Task.builder().execute(task ->
+            {
+                PlayerStorage storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).get();
+                PixelmonData data = new PixelmonData();
+                ImportExportConverter.importText(struc.showdownCode, data);
+                storage.addToParty(BattleUtil.pixelmonDataToTempBattlePokemon(player, data).get());
+                player.sendMessage(Utils.toText("&7Successfully added &b" + data.name + " &7to your party!", true));
+                GymPokemonGui.openGymPokemonGui(player, gym);
+            });
         };
 
         ItemStack deleteStack = ItemStack.of(Sponge.getRegistry().getType(ItemType.class, "pixelmon:trash_can").get(), 1);
         deleteStack.offer(Keys.DISPLAY_NAME, Text.of("Delete Pixelmon"));
         Consumer<Action.Click> deleteAction = click ->
         {
-            if(gym.Pokemon.contains(struc))
+            Task.builder().execute(task ->
             {
-                gym.Pokemon.remove(struc);
-                Utils.saveAGPData();
-                player.sendMessage(Utils.toText("&7Successfully removed that Pokemon from the gym.", true));
-                GymPokemonGui.openGymPokemonGui(player, gym);
-            }
-            else
-            {
-                player.sendMessage(Utils.toText("&7Error removing that Pokemon from the gym.", true));
-                GymPokemonGui.openGymPokemonGui(player, gym);
-            }
+                if (gym.Pokemon.contains(struc)) {
+                    gym.Pokemon.remove(struc);
+                    Utils.saveAGPData();
+                    player.sendMessage(Utils.toText("&7Successfully removed that Pokemon from the gym.", true));
+                    GymPokemonGui.openGymPokemonGui(player, gym);
+                } else {
+                    player.sendMessage(Utils.toText("&7Error removing that Pokemon from the gym.", true));
+                    GymPokemonGui.openGymPokemonGui(player, gym);
+                }
+            });
 
         };
 
