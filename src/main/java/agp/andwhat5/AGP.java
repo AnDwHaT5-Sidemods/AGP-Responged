@@ -89,7 +89,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-@Plugin(id = "agp", name = "AGP Responged", version = "1.0.0-Beta7", dependencies = @Dependency(id = "pixelmon"), description = "Another gym plugin... but for Sponge!", authors = {"AnDwHaT5", "ClientHax"})
+@Plugin(id = "agp", name = "AGP Responged", version = "1.0.0", dependencies = @Dependency(id = "pixelmon"), description = "Another gym plugin... but for Sponge!", authors = {"AnDwHaT5", "ClientHax"})
 public class AGP {
 
     private static AGP instance;
@@ -253,15 +253,6 @@ public class AGP {
 
         CommandManager commandManager = Sponge.getCommandManager();
 
-        CommandSpec gymBattleTest = CommandSpec.builder()
-                .permission("agp.command.testing")
-                .executor(new GymBattleTest())
-                .arguments(
-                        GenericArguments.onlyOne(GenericArguments.player(Text.of("player")))
-                )
-                .build();
-        commandManager.register(this, gymBattleTest, "gymbattletest");
-
         CommandSpec gymWarpSpec = CommandSpec.builder()
                 .description(Text.of("Warps you to the specified gym location."))
                 .permission("agp.command.gymwarp")
@@ -338,16 +329,6 @@ public class AGP {
                 )
                 .build();
         commandManager.register(this, addGymPokeSpec, "addgympoke");
-
-        CommandSpec giveGymPokeSpec = CommandSpec.builder()
-                .description(Text.of("Adds a Pokemon to the gyms pokemon pool"))
-                .permission("agp.command.givegympoke")
-                .executor(new GiveGymPoke())
-                .arguments(
-                        GenericArguments.onlyOne(GymCommandElement.gym())
-                )
-                .build();
-        commandManager.register(this, giveGymPokeSpec, "givegympoke");
 
         CommandSpec acceptChallengeSpec = CommandSpec.builder()
                 .description(Text.of("Accepts a challenge from a player in the specififed gym queue."))

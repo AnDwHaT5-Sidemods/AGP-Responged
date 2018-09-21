@@ -91,7 +91,19 @@ public class GymStruc {
      * The pool of the gyms pokemon.
      */
     @Expose
-    public List<String> pokemon = new ArrayList<>();
+    public List<ShowdownStruc> Pokemon = new ArrayList<>();
+
+    /**
+     * The minimum amount of Pokemon a gym leader has to pick for a queue battle.
+     */
+     @Expose
+     public int minimumPokemon = 1;
+
+    /**
+     * The maximum amount of Pokemon a gym leader has to pick for a queue battle.
+     */
+    @Expose
+    public int maximumPokemon = 6;
 
     // 0 = open
     // 1 = closed
