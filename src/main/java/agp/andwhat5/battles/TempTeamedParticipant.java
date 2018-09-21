@@ -5,11 +5,13 @@ import com.pixelmonmod.pixelmon.battles.controller.participants.PixelmonWrapper;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PlayerParticipant;
 import com.pixelmonmod.pixelmon.comm.ChatHandler;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
+import com.pixelmonmod.pixelmon.enums.battle.EnumBattleEndCause;
 import net.minecraft.entity.player.EntityPlayerMP;
 
 import java.util.Arrays;
 import java.util.Optional;
 
+@SuppressWarnings("WeakerAccess")
 public class TempTeamedParticipant extends PlayerParticipant {
 
     public TempTeamedParticipant(EntityPlayerMP p, EntityPixelmon... startingPixelmon) {
@@ -33,15 +35,20 @@ public class TempTeamedParticipant extends PlayerParticipant {
         for (PixelmonWrapper pixelmonWrapper : allPokemon) {
             if(Arrays.equals(pixelmonWrapper.getPokemonID(), newPixelmonId)) {
                 newWrapper = pixelmonWrapper;
-                //TODO bail out if this is null
                 break;
             }
+        }
+
+        if(newWrapper == null) {
+            this.bc.sendToAll("Problem sending out Pokémon, cancelling battle. Please report this to AGP.");
+            this.bc.endBattle(EnumBattleEndCause.FORCE);
+            return null;
         }
 
         if (!this.bc.simulateMode) {
             pw.pokemon.catchInPokeball();
             Optional<EntityPixelmon> newPokemonOptional = this.storage.getAlreadyExists(newPixelmonId, this.player.world);
-            EntityPixelmon newPixelmon = null;
+            EntityPixelmon newPixelmon;
             if (newPokemonOptional.isPresent()) {
                 newPixelmon = newPokemonOptional.get();
                 newPixelmon.motionX = newPixelmon.motionY = newPixelmon.motionZ = 0.0D;

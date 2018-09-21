@@ -2,7 +2,6 @@ package agp.andwhat5.listeners.forge;
 
 import agp.andwhat5.Utils;
 import agp.andwhat5.config.AGPConfig;
-import agp.andwhat5.config.structs.ArenaStruc;
 import agp.andwhat5.config.structs.BattleStruc;
 import agp.andwhat5.config.structs.DataStruc;
 import com.pixelmonmod.pixelmon.api.events.battles.BattleEndEvent;

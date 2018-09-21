@@ -47,7 +47,6 @@ import agp.andwhat5.commands.commandelements.GymCommandElement;
 import agp.andwhat5.commands.gyms.*;
 import agp.andwhat5.commands.leaders.*;
 import agp.andwhat5.commands.players.*;
-import agp.andwhat5.commands.testing.GymBattleTest;
 import agp.andwhat5.config.AGPConfig;
 import agp.andwhat5.config.structs.DataStruc;
 import agp.andwhat5.config.structs.GymStruc;
@@ -102,7 +101,7 @@ public class AGP {
     private ConfigurationLoader<CommentedConfigurationNode> configLoader;
     private CommentedConfigurationNode node;
     private Storage storage; //TODO: Look into storage options.
-    private File base = new File(".");
+    private final File base = new File(".");
 
     //TODO: Move storage related actions to a dedicated class
 

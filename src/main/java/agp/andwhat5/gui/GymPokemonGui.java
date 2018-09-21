@@ -2,7 +2,6 @@ package agp.andwhat5.gui;
 
 import agp.andwhat5.AGP;
 import agp.andwhat5.Utils;
-import agp.andwhat5.config.structs.DataStruc;
 import agp.andwhat5.config.structs.GymStruc;
 import agp.andwhat5.config.structs.ShowdownStruc;
 import com.mcsimonflash.sponge.teslalibs.inventory.Action;
@@ -27,8 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static agp.andwhat5.Utils.getNameFromUUID;
-import static agp.andwhat5.Utils.setPosition;
 import static agp.andwhat5.Utils.toText;
 import static org.spongepowered.api.data.type.DyeColors.BLACK;
 import static org.spongepowered.api.data.type.DyeColors.RED;

@@ -3,24 +3,18 @@ package agp.andwhat5.gui;
 import agp.andwhat5.AGP;
 import agp.andwhat5.Utils;
 import agp.andwhat5.battles.BattleUtil;
-import agp.andwhat5.config.AGPConfig;
 import agp.andwhat5.config.structs.*;
 import com.mcsimonflash.sponge.teslalibs.inventory.Action;
 import com.mcsimonflash.sponge.teslalibs.inventory.Element;
 import com.mcsimonflash.sponge.teslalibs.inventory.Layout;
 import com.mcsimonflash.sponge.teslalibs.inventory.View;
-import com.pixelmonmod.pixelmon.battles.controller.BattleControllerBase;
-import com.pixelmonmod.pixelmon.battles.controller.participants.BattleParticipant;
-import com.pixelmonmod.pixelmon.battles.controller.participants.PlayerParticipant;
 import com.pixelmonmod.pixelmon.client.gui.pokemoneditor.ImportExportConverter;
 import com.pixelmonmod.pixelmon.comm.PixelmonData;
 import com.pixelmonmod.pixelmon.comm.PixelmonMovesetData;
-import com.pixelmonmod.pixelmon.config.PixelmonEntityList;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
 import com.pixelmonmod.pixelmon.storage.PlayerStorage;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
@@ -33,14 +27,13 @@ import org.spongepowered.api.item.inventory.property.InventoryTitle;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import static agp.andwhat5.Utils.getNameFromUUID;
-import static agp.andwhat5.Utils.setPosition;
 import static agp.andwhat5.Utils.toText;
 import static org.spongepowered.api.data.type.DyeColors.*;
 
@@ -52,26 +45,27 @@ public class ChooseTeamGui {
 
     private List<ShowdownStruc> selectedPokemon = new ArrayList<>();
 
-    protected Player leader;
-    protected UUID challUUID;
-    protected GymStruc gym;
-    protected Optional<ArenaStruc> arena;
+    private Player leader;
+    private UUID challengerUUID;
+    private GymStruc gym;
+    @Nullable
+    private ArenaStruc arena;
 
-    public void openChooseTeamGui(Player gymLeader, UUID challengerUUID, GymStruc pokeGym, Optional<ArenaStruc> arena) {
+    public void openChooseTeamGui(Player gymLeader, UUID challengerUUID, GymStruc pokeGym, @Nullable ArenaStruc arena) {
 
         View view = View.builder()
                 .archetype(InventoryArchetypes.DOUBLE_CHEST)
                 .property(InventoryTitle.of(toText("&8Gym Pokemon", false)))
                 .build(AGP.getInstance().container);
         view.open(gymLeader);
-        leader = gymLeader;
-        challUUID = challengerUUID;
-        gym = pokeGym;
+        this.leader = gymLeader;
+        this.challengerUUID = challengerUUID;
+        this.gym = pokeGym;
         this.arena = arena;
         constructChooseTeamPage(gymLeader, challengerUUID, view, pokeGym, arena, 0);
     }
 
-    private void constructChooseTeamPage(Player leader, UUID challUUID, View view, GymStruc gym, Optional<ArenaStruc> arena, int page)
+    private void constructChooseTeamPage(Player leader, UUID challUUID, View view, GymStruc gym, @Nullable ArenaStruc arena, int page)
     {
 
         int startOnLine = 3;
@@ -159,7 +153,7 @@ public class ChooseTeamGui {
                         BattleUtil.pixelmonDataToTempBattlePokemon(leader, data).ifPresent(leaderPixelmon::add);
                     }
 
-                    ArenaStruc as = arena.orElse(null);
+                    ArenaStruc as = arena;
                     if (as == null) {
                         for (ArenaStruc a : gym.Arenas) {
                             if (a != null) {
@@ -203,10 +197,8 @@ public class ChooseTeamGui {
         Element confirm = Element.of(confirmStack, startBattleAction);
 
         ItemStack cancelStack = ItemStack.builder().itemType(ItemTypes.DYE).add(Keys.DISPLAY_NAME, Utils.toText("&4Cancel", false)).add(Keys.DYE_COLOR, RED).build();
-        Consumer<Action.Click> closeAction = click ->
-        {
-            leader.closeInventory();
-        };
+        Consumer<Action.Click> closeAction = click -> leader.closeInventory();
+
         Element cancel = Element.of(cancelStack, closeAction);
 
         Element prev = Element.of(prevStack, prevAction);
@@ -267,14 +259,14 @@ public class ChooseTeamGui {
             if(isSelected)
             {
                 selectedPokemon.remove(pokemonCode);
-                constructChooseTeamPage(leader, challUUID, view, gym, arena, page);
+                constructChooseTeamPage(leader, challengerUUID, view, gym, arena, page);
             }
             else
             {
                 if(selectedPokemon.size() < 6)
                     if (!selectedPokemon.contains(pokemonCode)) {
                         selectedPokemon.add(pokemonCode);
-                        constructChooseTeamPage(leader, challUUID, view, gym, arena, page);
+                        constructChooseTeamPage(leader, challengerUUID, view, gym, arena, page);
                     }
             }
 

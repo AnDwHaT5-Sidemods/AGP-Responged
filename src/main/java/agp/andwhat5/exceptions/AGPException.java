@@ -1,5 +1,6 @@
 package agp.andwhat5.exceptions;
 
+@SuppressWarnings("WeakerAccess")
 public class AGPException extends Exception {
 
     String message;

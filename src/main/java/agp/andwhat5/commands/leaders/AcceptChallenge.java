@@ -71,7 +71,7 @@ public class AcceptChallenge extends PlayerOnlyCommand {
             return CommandResult.success();
         }
         ChooseTeamGui gui = new ChooseTeamGui();
-        gui.openChooseTeamGui(sender, cUUID, gym, optGymArena);
+        gui.openChooseTeamGui(sender, cUUID, gym, optGymArena.orElse(null));
         return CommandResult.success();
     }
 
