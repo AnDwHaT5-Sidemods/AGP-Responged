@@ -81,7 +81,7 @@ public class GymPokemonPromptGui {
                 storage.addToParty(BattleUtil.pixelmonDataToTempBattlePokemon(player, data).get());
                 player.sendMessage(Utils.toText("&7Successfully added &b" + data.name + " &7to your party!", true));
                 GymPokemonGui.openGymPokemonGui(player, gym);
-            });
+            }).submit(AGP.getInstance());
         };
 
         ItemStack deleteStack = ItemStack.of(Sponge.getRegistry().getType(ItemType.class, "pixelmon:trash_can").get(), 1);
@@ -99,7 +99,7 @@ public class GymPokemonPromptGui {
                     player.sendMessage(Utils.toText("&7Error removing that Pokemon from the gym.", true));
                     GymPokemonGui.openGymPokemonGui(player, gym);
                 }
-            });
+            }).submit(AGP.getInstance());
 
         };
 
