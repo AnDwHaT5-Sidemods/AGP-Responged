@@ -6,6 +6,7 @@ import java.util.UUID;
 
 public class ShowdownStruc {
 
+    @SuppressWarnings("unused")
     @Expose
     public UUID uuid;
 

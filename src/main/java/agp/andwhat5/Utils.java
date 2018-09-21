@@ -4,18 +4,10 @@ import java.time.Instant;
 import java.util.*;
 
 import agp.andwhat5.exceptions.AGPException;
-import com.pixelmonmod.pixelmon.battles.attacks.Attack;
-import com.pixelmonmod.pixelmon.client.gui.pokemoneditor.ImportExportConverter;
 import com.pixelmonmod.pixelmon.comm.PixelmonData;
-import com.pixelmonmod.pixelmon.config.PixelmonEntityList;
 import com.pixelmonmod.pixelmon.config.PixelmonItems;
-import com.pixelmonmod.pixelmon.config.PixelmonServerConfig;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
-import com.pixelmonmod.pixelmon.entities.pixelmon.stats.FriendShip;
-import com.pixelmonmod.pixelmon.entities.pixelmon.stats.Gender;
-import com.pixelmonmod.pixelmon.entities.pixelmon.stats.Moveset;
 import com.pixelmonmod.pixelmon.enums.EnumPokemon;
-import com.pixelmonmod.pixelmon.enums.items.EnumPokeballs;
 import com.pixelmonmod.pixelmon.util.helpers.SpriteHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -256,7 +248,7 @@ public class Utils {
      * Did you read the method name? No, the javadoc came first.
      */
     public static void sortGyms() {
-        Collections.sort(DataStruc.gcon.GymData, (e1, e2) -> (Integer.compare(e1.Weight, e2.Weight)));
+        DataStruc.gcon.GymData.sort((e1, e2) -> (Integer.compare(e1.Weight, e2.Weight)));
 
         //DataStruc.gcon.GymData.sort(Comparator.comparing(e -> e.Weight);
     }
