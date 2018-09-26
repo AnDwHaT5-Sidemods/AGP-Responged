@@ -57,13 +57,13 @@ public class GymPlayerDefeatListener {
                         return;
                     }
                     if (result.equals(BattleResults.VICTORY)) {
-                        if (PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) challenger).get().getFirstAblePokemon((World) challenger.getWorld()) != null)
-                            if (PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) leader).get().getFirstAblePokemon((World) leader.getWorld()) != null) {
+                        if (PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) challenger).get().getFirstAblePokemon((World) challenger.getWorld()) == null)
+                        {
                             if(bts.arena != null)
                                 bts.arena.inUse = false;
                             DataStruc.gcon.GymBattlers.remove(bts);
                                 return;
-                            }
+                        }
                         if (!Utils.hasBadge(bts.challenger, bts.gym)) {
                             Utils.giveBadge(challenger, bts.gym, leader.getName());
                             if (bts.gym.Money != 0) {
