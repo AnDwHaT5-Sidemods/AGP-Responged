@@ -42,6 +42,12 @@ public class GymPlayerDefeatListener {
                 BattleStruc bts = DataStruc.gcon.GymBattlers.stream().filter(c -> c.challenger.equals(playerParticipant.player.getUniqueID())).findAny().orElse(null);
                 if (bts != null) {
                     Player challenger = Sponge.getServer().getPlayer(bts.challenger).get();
+
+                    if(!bts.challenger.equals(challenger.getUniqueId())) {
+                        //Return if the player is the gym leader
+                        return;
+                    }
+
                     Player leader = Sponge.getServer().getPlayer(bts.leader).get();
 
                     if (result.equals(BattleResults.FLEE) || result.equals(BattleResults.DRAW)) {
