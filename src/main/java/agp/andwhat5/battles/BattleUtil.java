@@ -118,6 +118,7 @@ public class BattleUtil {
                 pixelmon.setGrowth(data.growth);
             if(data.pokeball != null)
                 pixelmon.caughtBall = data.pokeball;
+            pixelmon.setForm(data.form);
             if(data.moveset != null)
             {
                 Attack attacks[] = {
