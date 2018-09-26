@@ -134,7 +134,7 @@ public class GymPokemonGui {
         int percentage = Math.round(((ivHP + ivDef + ivAtk + ivSpeed + ivSAtk + ivSDef) / 186f) * 100);
         lore.add(toText("&7IVs " + "(&b"+percentage+"%&7):", false));
         lore.add((toText("    &7HP: &b" + (int)ivHP + " &d| &7Atk: &b" + (int)ivAtk + " &d| &7Def: &b" + (int)ivDef, false)));
-        lore.add((toText("    &7SAtk: &b" + (int)ivSAtk + " &d| &7SDef: &b" + ivSDef + " &d| &7Spd: &b" + (int)ivSpeed, false)));
+        lore.add((toText("    &7SAtk: &b" + (int)ivSAtk + " &d| &7SDef: &b" + (int)ivSDef + " &d| &7Spd: &b" + (int)ivSpeed, false)));
         float evHP = pokemon.evs[0];
         float evAtk = pokemon.evs[1];
         float evDef = pokemon.evs[2];

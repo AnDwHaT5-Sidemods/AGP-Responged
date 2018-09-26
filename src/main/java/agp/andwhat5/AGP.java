@@ -88,7 +88,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-@Plugin(id = "agp", name = "AGP Responged", version = "1.0.0", dependencies = @Dependency(id = "pixelmon"), description = "Another gym plugin... but for Sponge!", authors = {"AnDwHaT5", "ClientHax"})
+@Plugin(id = "agp", name = "AGP Responged", version = "1.0.1", dependencies = @Dependency(id = "pixelmon"), description = "Another gym plugin... but for Sponge!", authors = {"AnDwHaT5", "ClientHax"})
 public class AGP {
 
     private static AGP instance;
