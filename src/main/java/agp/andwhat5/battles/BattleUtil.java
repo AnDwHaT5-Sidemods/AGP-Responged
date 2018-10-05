@@ -159,6 +159,11 @@ public class BattleUtil {
             //pixelmon.initializeBaseStatsIfNull();
             pixelmon.setPokemonId(playerStorage.getNewPokemonID());
 
+            //Apply EV/IV changes
+            pixelmon.updateStats();
+
+            pixelmon.setHealth(pixelmon.getMaxHealth());
+
             return Optional.of(pixelmon);
         }
         return Optional.empty();
