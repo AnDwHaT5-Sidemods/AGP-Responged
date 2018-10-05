@@ -1,5 +1,6 @@
 package agp.andwhat5.battles;
 
+import com.pixelmonmod.pixelmon.RandomHelper;
 import com.pixelmonmod.pixelmon.battles.controller.participants.BattleParticipant;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PixelmonWrapper;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PlayerParticipant;
@@ -8,7 +9,9 @@ import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.enums.battle.EnumBattleEndCause;
 import net.minecraft.entity.player.EntityPlayerMP;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @SuppressWarnings("WeakerAccess")
@@ -74,6 +77,22 @@ public class TempTeamedParticipant extends PlayerParticipant {
         this.bc.participants.forEach(BattleParticipant::updateOtherPokemon);
         newWrapper.afterSwitch();
         return newWrapper;
+    }
+
+    //Default code checks if the pw.entity is null, which won't work here as we need it to exist
+    //So check if the pokemon is currently controlled by this battle instead
+    @Override
+    public PixelmonWrapper getRandomPartyPokemon() {
+        List<PixelmonWrapper> choices = new ArrayList<>();
+        PixelmonWrapper[] var2 = this.allPokemon;
+
+        for (PixelmonWrapper pw : var2) {
+            if (!pw.isFainted() && !this.controlledPokemon.contains(pw)) {
+                choices.add(pw);
+            }
+        }
+
+        return RandomHelper.getRandomElementFromList(choices);
     }
 
 }

@@ -135,7 +135,7 @@ public class ChooseTeamGui {
         backStack.offer(Keys.DISPLAY_NAME, Text.EMPTY);
 
         ItemStack confirmStack = ItemStack.builder().itemType(ItemTypes.DYE).add(Keys.DISPLAY_NAME, Utils.toText("&aStart Battle", false)).add(Keys.DYE_COLOR, LIME).build();
-        Consumer<Action.Click> startBattleAction = click ->
+        Consumer<Action.Click> startBattleAction = click -> Task.builder().execute(task ->
         {
             if(selectedPokemon.size() >= gym.minimumPokemon && selectedPokemon.size() <= gym.maximumPokemon)
             {
@@ -193,7 +193,7 @@ public class ChooseTeamGui {
                 }
 
             }
-        };
+        }).submit(AGP.getInstance());
         Element confirm = Element.of(confirmStack, startBattleAction);
 
         ItemStack cancelStack = ItemStack.builder().itemType(ItemTypes.DYE).add(Keys.DISPLAY_NAME, Utils.toText("&4Cancel", false)).add(Keys.DYE_COLOR, RED).build();
