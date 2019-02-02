@@ -8,9 +8,11 @@ import com.mcsimonflash.sponge.teslalibs.inventory.Action;
 import com.mcsimonflash.sponge.teslalibs.inventory.Element;
 import com.mcsimonflash.sponge.teslalibs.inventory.Layout;
 import com.mcsimonflash.sponge.teslalibs.inventory.View;
-import com.pixelmonmod.pixelmon.client.gui.pokemoneditor.ImportExportConverter;
-import com.pixelmonmod.pixelmon.comm.PixelmonData;
-import com.pixelmonmod.pixelmon.comm.PixelmonMovesetData;
+import com.pixelmonmod.pixelmon.api.exceptions.ShowdownImportException;
+import com.pixelmonmod.pixelmon.api.pokemon.ImportExportConverter;
+import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
+import com.pixelmonmod.pixelmon.battles.attacks.Attack;
+import com.pixelmonmod.pixelmon.entities.pixelmon.stats.StatsType;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
@@ -87,9 +89,13 @@ public class GymPokemonGui {
                 int currentRow = slotsDone / itemsPerRow;
                 int currentSlot = slotsDone % itemsPerRow;
                 int slot = (startOnLine * 9) + (currentRow * 9) + rowStart + currentSlot;
-                PixelmonData data = new PixelmonData();
-                ImportExportConverter.importText(gymData.get(i).showdownCode, data);
-                view.setElement(slot, getPokemonElement(player, gym, data, gymData.get(i)));
+                Pokemon pokemon = null;
+                try {
+                    pokemon = ImportExportConverter.importText(gymData.get(i).showdownCode);
+                } catch (ShowdownImportException e) {
+                    e.printStackTrace();
+                }
+                view.setElement(slot, getPokemonElement(player, gym, pokemon, gymData.get(i)));
                 slotsDone++;
             }
         }
@@ -116,42 +122,40 @@ public class GymPokemonGui {
         view.setElement(50, next);
     }
 
-    private static Element getPokemonElement(Player player, GymStruc gym, PixelmonData pokemon, ShowdownStruc struc) {
+    private static Element getPokemonElement(Player player, GymStruc gym, Pokemon pokemon, ShowdownStruc struc) {
 
         ItemStack itemStack = Utils.getPixelmonSprite(pokemon);
-        itemStack.offer(Keys.DISPLAY_NAME, toText("&d\u2605 &b" + pokemon.name + (!pokemon.nickname.isEmpty()?"("+pokemon.nickname+")":"") + "&d \u2605", false));
+        itemStack.offer(Keys.DISPLAY_NAME, toText("&d\u2605 &b" + pokemon.getSpecies().name + (!pokemon.getNickname().isEmpty()?"("+pokemon.getNickname()+")":"") + "&d \u2605", false));
 
         ArrayList<Text> lore = new ArrayList<>();
-        lore.add(toText("&7Nature: &b" + pokemon.nature, false));
-        lore.add(toText("&7Ability: &b" + pokemon.ability, false));
-        lore.add(toText("&7Friendship: &b" + pokemon.friendship, false));
-        float ivHP = pokemon.ivs[0];
-        float ivAtk = pokemon.ivs[1];
-        float ivDef = pokemon.ivs[2];
-        float ivSpeed = pokemon.ivs[5];
-        float ivSAtk = pokemon.ivs[3];
-        float ivSDef = pokemon.ivs[4];
+        lore.add(toText("&7Nature: &b" + pokemon.getNature().name(), false));
+        lore.add(toText("&7Ability: &b" + pokemon.getAbility().getName(), false));
+        lore.add(toText("&7Friendship: &b" + pokemon.getFriendship(), false));
+        float ivHP = pokemon.getIVs().get(StatsType.HP);
+        float ivAtk = pokemon.getIVs().get(StatsType.Attack);
+        float ivDef = pokemon.getIVs().get(StatsType.Defence);
+        float ivSpeed = pokemon.getIVs().get(StatsType.Speed);
+        float ivSAtk = pokemon.getIVs().get(StatsType.SpecialAttack);
+        float ivSDef = pokemon.getIVs().get(StatsType.SpecialDefence);
         int percentage = Math.round(((ivHP + ivDef + ivAtk + ivSpeed + ivSAtk + ivSDef) / 186f) * 100);
         lore.add(toText("&7IVs " + "(&b"+percentage+"%&7):", false));
         lore.add((toText("    &7HP: &b" + (int)ivHP + " &d| &7Atk: &b" + (int)ivAtk + " &d| &7Def: &b" + (int)ivDef, false)));
         lore.add((toText("    &7SAtk: &b" + (int)ivSAtk + " &d| &7SDef: &b" + (int)ivSDef + " &d| &7Spd: &b" + (int)ivSpeed, false)));
-        float evHP = pokemon.evs[0];
-        float evAtk = pokemon.evs[1];
-        float evDef = pokemon.evs[2];
-        float evSpeed = pokemon.evs[5];
-        float evSAtk = pokemon.evs[3];
-        float evSDef = pokemon.evs[4];
+        float evHP = pokemon.getEVs().get(StatsType.HP);
+        float evAtk = pokemon.getEVs().get(StatsType.Attack);
+        float evDef = pokemon.getEVs().get(StatsType.Defence);
+        float evSpeed = pokemon.getEVs().get(StatsType.Speed);
+        float evSAtk = pokemon.getEVs().get(StatsType.SpecialAttack);
+        float evSDef = pokemon.getEVs().get(StatsType.SpecialDefence);
         lore.add(toText("&7EVs:", false));
         lore.add((toText("    &7HP: &b" + (int)evHP + " &d| &7Atk: &b" + (int)evAtk + " &d| &7Def: &b" + (int)evDef, false)));
         lore.add((toText( "    &7SAtk: &b" + (int)evSAtk + " &d| &7SDef: &b" + (int)evSDef + " &d| &7Spd: &b" + (int)evSpeed, false)));
         lore.add(toText("&7Moves:", false));
-        if(pokemon.moveset != null)
+        if(pokemon.getMoveset() != null)
         {
-            for(PixelmonMovesetData da : pokemon.moveset)
-            {
-                if(da != null)
-                {
-                    lore.add(toText("    &b" + da.getAttack().baseAttack.getUnLocalizedName(), false));
+            for (Attack attack : pokemon.getMoveset().attacks) {
+                if(attack != null) {
+                    lore.add(toText("    &b" + attack.baseAttack.getUnLocalizedName(), false));
                 }
             }
         }

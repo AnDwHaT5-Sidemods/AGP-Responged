@@ -1,18 +1,19 @@
 package agp.andwhat5.battles;
 
+import com.pixelmonmod.pixelmon.Pixelmon;
+import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.api.pokemon.PokemonSpec;
-import com.pixelmonmod.pixelmon.battles.attacks.Attack;
 import com.pixelmonmod.pixelmon.battles.controller.BattleControllerBase;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PixelmonWrapper;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PlayerParticipant;
-import com.pixelmonmod.pixelmon.comm.PixelmonData;
+import com.pixelmonmod.pixelmon.battles.rules.BattleRules;
 import com.pixelmonmod.pixelmon.config.PixelmonEntityList;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
-import com.pixelmonmod.pixelmon.entities.pixelmon.stats.Moveset;
+import com.pixelmonmod.pixelmon.entities.pixelmon.stats.StatsType;
 import com.pixelmonmod.pixelmon.enums.EnumBossMode;
+import com.pixelmonmod.pixelmon.enums.battle.EnumBattleType;
 import com.pixelmonmod.pixelmon.enums.items.EnumPokeballs;
-import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
-import com.pixelmonmod.pixelmon.storage.PlayerStorage;
+import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
 import org.spongepowered.api.entity.living.player.Player;
@@ -22,6 +23,7 @@ import org.spongepowered.api.text.format.TextColors;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @SuppressWarnings("Duplicates")
 public class BattleUtil {
@@ -47,18 +49,18 @@ public class BattleUtil {
 
         player2Participant.controlledPokemon.add(player2Participant.allPokemon[0]);//Only the first one needs to be controlled!!
 
-        new BattleControllerBase(player1Participant, player2Participant);
+        new BattleControllerBase(new TempTeamedParticipant[]{player1Participant}, new TempTeamedParticipant[]{player2Participant}, new BattleRules(EnumBattleType.Single));
     }
 
     public static void startLeaderBattleWithTempTeam(Player challenger, Player leader, List<EntityPixelmon> leadersTempTeam) {
-        PlayerStorage challengerStorage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) challenger).get();
-        EntityPixelmon challengerFirstPokemon = challengerStorage.getFirstAblePokemon((World) challenger.getWorld());
-        if(challengerFirstPokemon == null) {
+        PlayerPartyStorage challengerStorage = Pixelmon.storageManager.getParty((EntityPlayerMP) challenger);
+        if(challengerStorage.countAblePokemon() == 0) {
             challenger.sendMessage(Text.of(TextColors.RED, "You have no pokemon to battle with"));
             leader.sendMessage(Text.of(TextColors.RED, "Challenger has no pokemon to battle with"));
             return;
         }
-        PlayerParticipant challengerParticipant = new PlayerParticipant((EntityPlayerMP) challenger, challengerFirstPokemon);
+        EntityPixelmon firstAble = challengerStorage.getAndSendOutFirstAblePokemon(null);
+        PlayerParticipant challengerParticipant = new PlayerParticipant((EntityPlayerMP) challenger, firstAble);
 
 
         TempTeamedParticipant leaderParticipant = new TempTeamedParticipant((EntityPlayerMP) leader);
@@ -71,22 +73,22 @@ public class BattleUtil {
 
         leaderParticipant.controlledPokemon.add(leaderParticipant.allPokemon[0]);//Only the first one needs to be controlled!!
 
-        new BattleControllerBase(leaderParticipant, challengerParticipant);
+        new BattleControllerBase(new TempTeamedParticipant[]{leaderParticipant}, new PlayerParticipant[]{challengerParticipant}, new BattleRules(EnumBattleType.Single));
     }
 
     //If you break this there is a special place in hell for you
     public static EntityPixelmon getTempBattlePokemon(PokemonSpec spec, Player player) {
-        PlayerStorage playerStorage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).get();
+        //PlayerStorage playerStorage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).get();
         EntityPixelmon pokemon = spec.create((World) player.getWorld());
         pokemon.setPosition(player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ());//TODO
-        pokemon.caughtBall = pokemon.caughtBall == null ? EnumPokeballs.PokeBall : pokemon.caughtBall;
-        pokemon.friendship.initFromCapture();
+        pokemon.getPokemonData().setCaughtBall(pokemon.getPokemonData().getCaughtBall() == null ? EnumPokeballs.PokeBall : pokemon.getPokemonData().getCaughtBall());
+//        pokemon.getPokemonData().getFriendship().initFromCapture();//TODO
         pokemon.setOwnerId(player.getUniqueId());
-        pokemon.playerOwned = true;
-        pokemon.loadMoveset();
+        //pokemon.playerOwned = true;
+        pokemon.getPokemonData().getMoveset();//TODO is this needed?
         pokemon.setBoss(EnumBossMode.NotBoss);
-        pokemon.initializeBaseStatsIfNull();
-        pokemon.setPokemonId(playerStorage.getNewPokemonID());
+        //pokemon.initializeBaseStatsIfNull();//TODO
+        pokemon.setUniqueId(UUID.randomUUID());
         return pokemon;
     }
 
@@ -96,68 +98,64 @@ public class BattleUtil {
      * @param player The player the pokemon will belong to.
      * @return An EntityPixelmon value of PixelmonData
      */
-    public static Optional<EntityPixelmon> pixelmonDataToTempBattlePokemon(Player player, PixelmonData data)
+    public static Optional<EntityPixelmon> pixelmonDataToTempBattlePokemon(Player player, Pokemon data)
     {
-        if(!data.name.isEmpty()) {
-            EntityPixelmon pixelmon = (EntityPixelmon) PixelmonEntityList.createEntityByName(data.name, (World) player.getWorld());
-            if(!data.nickname.isEmpty())
-                pixelmon.setNickname(data.nickname);
-            if(data.lvl > 0 && data.lvl <= 100)
-                pixelmon.getLvl().setLevel(data.lvl);
-            pixelmon.setHealth(data.health);
-            pixelmon.friendship.setFriendship(data.friendship);
-            if(data.gender != null)
-                pixelmon.setGender(data.gender);
-            pixelmon.setIsShiny(data.isShiny);
-            if(data.heldItem != null)
-                pixelmon.setHeldItem(data.heldItem);
-            pixelmon.getLvl().setExp(data.xp);
-            if(data.nature != null)
-                pixelmon.setNature(data.nature);
-            if(data.growth != null)
-                pixelmon.setGrowth(data.growth);
-            if(data.pokeball != null)
-                pixelmon.caughtBall = data.pokeball;
-            pixelmon.setForm(data.form);
-            if(data.moveset != null)
+        if(data.getSpecies() != null) {
+            EntityPixelmon pixelmon = (EntityPixelmon) PixelmonEntityList.createEntityByName(data.getSpecies().name, (World) player.getWorld());
+            if(!data.getNickname().isEmpty())
+                pixelmon.getPokemonData().setNickname(data.getNickname());
+            if(data.getLevel() > 0 && data.getLevel() <= 100)
+                pixelmon.getLvl().setLevel(data.getLevel());
+            pixelmon.getPokemonData().setHealth(data.getHealth());
+            pixelmon.getPokemonData().setFriendship(data.getFriendship());
+            if(data.getGender() != null)
+                pixelmon.getPokemonData().setGender(data.getGender());
+            pixelmon.getPokemonData().setShiny(data.isShiny());
+            //if(data.getHeldItem() != null)
+                pixelmon.getPokemonData().setHeldItem(data.getHeldItem());
+            pixelmon.getLvl().setExp(data.getExperience());
+            if(data.getNature() != null)
+                pixelmon.getPokemonData().setNature(data.getNature());
+            if(data.getGrowth() != null)
+                pixelmon.getPokemonData().setGrowth(data.getGrowth());
+            if(data.getCaughtBall() != null)
+                pixelmon.getPokemonData().setCaughtBall(data.getCaughtBall());
+            pixelmon.setForm(data.getForm());
+            if(data.getMoveset() != null)
             {
-                Attack attacks[] = {
-                        (data.moveset[0] != null ? data.moveset[0].getAttack() : null),
-                        (data.moveset[1] != null ? data.moveset[1].getAttack() : null),
-                        (data.moveset[2] != null ? data.moveset[2].getAttack() : null),
-                        (data.moveset[3] != null ? data.moveset[3].getAttack() : null)};
-
-                pixelmon.setMoveset(new Moveset(attacks));
+                for (int i = 0; i < 4; i++) {
+                    pixelmon.getPokemonData().getMoveset().set(i, data.getMoveset().get(i));
+                }
             }
-            if(!data.ability.isEmpty())
-                pixelmon.setAbility(data.ability);
-            if (data.evs != null) {
-                pixelmon.stats.evs.speed = data.evs[5];
-                pixelmon.stats.evs.specialAttack = data.evs[3];
-                pixelmon.stats.evs.specialDefence = data.evs[4];
-                pixelmon.stats.evs.defence = data.evs[2];
-                pixelmon.stats.evs.attack = data.evs[1];
-                pixelmon.stats.evs.hp = data.evs[0];
+            if(data.getAbility() != null)
+                pixelmon.getPokemonData().setAbility(data.getAbility());
+            if (data.getEVs() != null) {
+                pixelmon.getPokemonData().getEVs().set(StatsType.Speed, data.getEVs().get(StatsType.Speed));
+                pixelmon.getPokemonData().getEVs().set(StatsType.SpecialAttack, data.getEVs().get(StatsType.SpecialAttack));
+                pixelmon.getPokemonData().getEVs().set(StatsType.SpecialDefence, data.getEVs().get(StatsType.SpecialDefence));
+                pixelmon.getPokemonData().getEVs().set(StatsType.Defence, data.getEVs().get(StatsType.Defence));
+                pixelmon.getPokemonData().getEVs().set(StatsType.Attack, data.getEVs().get(StatsType.Attack));
+                pixelmon.getPokemonData().getEVs().set(StatsType.HP, data.getEVs().get(StatsType.HP));
             }
-            if (data.ivs != null) {
-                pixelmon.stats.ivs.Speed = data.ivs[5];
-                pixelmon.stats.ivs.SpAtt = data.ivs[3];
-                pixelmon.stats.ivs.SpDef = data.ivs[4];
-                pixelmon.stats.ivs.Defence = data.ivs[2];
-                pixelmon.stats.ivs.Attack = data.ivs[1];
-                pixelmon.stats.ivs.HP = data.ivs[0];
+            if (data.getIVs() != null) {
+                pixelmon.getPokemonData().getIVs().set(StatsType.Speed, data.getIVs().get(StatsType.Speed));
+                pixelmon.getPokemonData().getIVs().set(StatsType.SpecialAttack, data.getIVs().get(StatsType.SpecialAttack));
+                pixelmon.getPokemonData().getIVs().set(StatsType.SpecialDefence, data.getIVs().get(StatsType.SpecialDefence));
+                pixelmon.getPokemonData().getIVs().set(StatsType.Defence, data.getIVs().get(StatsType.Defence));
+                pixelmon.getPokemonData().getIVs().set(StatsType.Attack, data.getIVs().get(StatsType.Attack));
+                pixelmon.getPokemonData().getIVs().set(StatsType.HP, data.getIVs().get(StatsType.HP));
             }
 
-            PlayerStorage playerStorage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).get();
+            //PlayerStorage playerStorage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).get();
             pixelmon.setPosition(player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ());//TODO
             //pixelmon.caughtBall = pixelmon.caughtBall == null ? EnumPokeballs.PokeBall : pixelmon.caughtBall;
             //pixelmon.friendship.initFromCapture();
             pixelmon.setOwnerId(player.getUniqueId());
-            pixelmon.playerOwned = true;
+            //pixelmon.playerOwned = true;
             //pixelmon.loadMoveset();
             //pixelmon.setBoss(EnumBossMode.NotBoss);
             //pixelmon.initializeBaseStatsIfNull();
-            pixelmon.setPokemonId(playerStorage.getNewPokemonID());
+            pixelmon.setUniqueId(UUID.randomUUID());
 
             //Apply EV/IV changes
             pixelmon.updateStats();

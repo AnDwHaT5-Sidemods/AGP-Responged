@@ -9,10 +9,11 @@ import com.mcsimonflash.sponge.teslalibs.inventory.Action;
 import com.mcsimonflash.sponge.teslalibs.inventory.Element;
 import com.mcsimonflash.sponge.teslalibs.inventory.Layout;
 import com.mcsimonflash.sponge.teslalibs.inventory.View;
-import com.pixelmonmod.pixelmon.client.gui.pokemoneditor.ImportExportConverter;
-import com.pixelmonmod.pixelmon.comm.PixelmonData;
-import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
-import com.pixelmonmod.pixelmon.storage.PlayerStorage;
+import com.pixelmonmod.pixelmon.Pixelmon;
+import com.pixelmonmod.pixelmon.api.exceptions.ShowdownImportException;
+import com.pixelmonmod.pixelmon.api.pokemon.ImportExportConverter;
+import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
+import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
 import net.minecraft.entity.player.EntityPlayerMP;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
@@ -70,11 +71,15 @@ public class GymPokemonPromptGui {
         Consumer<Action.Click> giveAction = click ->
                 Task.builder().execute(task ->
                 {
-                    PlayerStorage storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).get();
-                    PixelmonData data = new PixelmonData();
-                    ImportExportConverter.importText(struc.showdownCode, data);
-                    storage.addToParty(BattleUtil.pixelmonDataToTempBattlePokemon(player, data).get());
-                    player.sendMessage(Utils.toText("&7Successfully added &b" + data.name + " &7to your party!", true));
+                    PlayerPartyStorage storage = Pixelmon.storageManager.getParty((EntityPlayerMP) player);
+                    Pokemon data = null;
+                    try {
+                        data = ImportExportConverter.importText(struc.showdownCode);
+                    } catch (ShowdownImportException e) {
+                        e.printStackTrace();
+                    }
+                    storage.add(BattleUtil.pixelmonDataToTempBattlePokemon(player, data).get().getPokemonData());
+                    player.sendMessage(Utils.toText("&7Successfully added &b" + data.getDisplayName() + " &7to your party!", true));
                     GymPokemonGui.openGymPokemonGui(player, gym);
                 }).submit(AGP.getInstance());
 

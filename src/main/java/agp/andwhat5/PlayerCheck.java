@@ -5,7 +5,7 @@ import agp.andwhat5.config.structs.DataStruc;
 import agp.andwhat5.config.structs.GymStruc;
 import com.google.common.collect.Lists;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
-import com.pixelmonmod.pixelmon.enums.EnumPokemon;
+import com.pixelmonmod.pixelmon.enums.EnumSpecies;
 import net.minecraft.util.text.TextFormatting;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.HandTypes;
@@ -205,7 +205,7 @@ public class PlayerCheck {
 
         if (targetEntity instanceof EntityPixelmon) {
             EntityPixelmon pixelmon = (EntityPixelmon) targetEntity;
-            if (pixelmon.baseStats.pokemon == EnumPokemon.Magikarp) {
+            if (pixelmon.getPokemonData().getBaseStats().pokemon == EnumSpecies.Magikarp) {
                 if (player.get(Keys.IS_SNEAKING).get()) {
                     if (eventCounter == 3) {
                         eventCounter = 0;

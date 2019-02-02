@@ -8,14 +8,15 @@ import com.mcsimonflash.sponge.teslalibs.inventory.Action;
 import com.mcsimonflash.sponge.teslalibs.inventory.Element;
 import com.mcsimonflash.sponge.teslalibs.inventory.Layout;
 import com.mcsimonflash.sponge.teslalibs.inventory.View;
-import com.pixelmonmod.pixelmon.client.gui.pokemoneditor.ImportExportConverter;
-import com.pixelmonmod.pixelmon.comm.PixelmonData;
-import com.pixelmonmod.pixelmon.comm.PixelmonMovesetData;
+import com.pixelmonmod.pixelmon.Pixelmon;
+import com.pixelmonmod.pixelmon.api.exceptions.ShowdownImportException;
+import com.pixelmonmod.pixelmon.api.pokemon.ImportExportConverter;
+import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
+import com.pixelmonmod.pixelmon.battles.attacks.Attack;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
-import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
-import com.pixelmonmod.pixelmon.storage.PlayerStorage;
+import com.pixelmonmod.pixelmon.entities.pixelmon.stats.StatsType;
+import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.world.World;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
@@ -148,9 +149,13 @@ public class ChooseTeamGui {
                 if (!selectedPokemon.isEmpty()) {
                     List<EntityPixelmon> leaderPixelmon = new ArrayList<>();
                     for (ShowdownStruc s : selectedPokemon) {
-                        PixelmonData data = new PixelmonData();
-                        ImportExportConverter.importText(s.showdownCode, data);
-                        BattleUtil.pixelmonDataToTempBattlePokemon(leader, data).ifPresent(leaderPixelmon::add);
+                        try {
+                            Pokemon data = ImportExportConverter.importText(s.showdownCode);
+                            BattleUtil.pixelmonDataToTempBattlePokemon(leader, data).ifPresent(leaderPixelmon::add);
+                        } catch (ShowdownImportException e) {
+                            e.printStackTrace();
+                            leader.sendMessage(Utils.toText("Unable to convert pokemon", true));
+                        }
                     }
 
                     ArenaStruc as = arena;
@@ -174,22 +179,16 @@ public class ChooseTeamGui {
                             Utils.setPosition(challenger.get(), as.Challenger, gym.worldUUID);
                         }
                     }
-                    Optional<PlayerStorage> challengerTeam = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) challenger.get());
+                    PlayerPartyStorage challengerTeam = Pixelmon.storageManager.getParty((EntityPlayerMP) challenger.get());
+                    challengerTeam.heal();
 
-                    if (challengerTeam.isPresent()) {
-                        challengerTeam.get().healAllPokemon((World) challenger.get().getWorld());
+                    BattleStruc bs = new BattleStruc(gym, as, leader.getUniqueId(), challenger.get().getUniqueId());
+                    DataStruc.gcon.GymBattlers.add(bs);
+                    leader.closeInventory();
+                    leader.sendMessage(Utils.toText("&7Initiating battle against &b" + challenger.get().getName() + "&7!", true));
+                    challenger.get().sendMessage(Utils.toText("&7Gym Leader &b" + leader.getName() + " &7has accepted your challenge against the &b" + gym.Name + " &bGym!", true));
+                    BattleUtil.startLeaderBattleWithTempTeam(challenger.get(), leader, leaderPixelmon);
 
-                        BattleStruc bs = new BattleStruc(gym, as, leader.getUniqueId(), challenger.get().getUniqueId());
-                        DataStruc.gcon.GymBattlers.add(bs);
-                        leader.closeInventory();
-                        leader.sendMessage(Utils.toText("&7Initiating battle against &b" + challenger.get().getName() + "&7!", true));
-                        challenger.get().sendMessage(Utils.toText("&7Gym Leader &b" + leader.getName() + " &7has accepted your challenge against the &b" + gym.Name + " &bGym!", true));
-                        BattleUtil.startLeaderBattleWithTempTeam(challenger.get(), leader, leaderPixelmon);
-                    } else {
-                        leader.sendMessage(Utils.toText("&7An error occurred starting the gym battle!", true));
-                        challenger.get().sendMessage(Utils.toText("&7An error occurred starting the gym battle!", true));
-                        leader.closeInventory();
-                    }
                 }
 
             }
@@ -213,42 +212,45 @@ public class ChooseTeamGui {
     }
 
     private Element getPokemonElement(ShowdownStruc pokemonCode, boolean isSelected, View view, int page) {
-        PixelmonData pokemon = new PixelmonData();
-        ImportExportConverter.importText(pokemonCode.showdownCode, pokemon);
+        Pokemon pokemon = null;
+        try {
+            pokemon = ImportExportConverter.importText(pokemonCode.showdownCode);
+        } catch (ShowdownImportException e) {
+            e.printStackTrace();
+        }
         ItemStack itemStack = Utils.getPixelmonSprite(pokemon);
-        itemStack.offer(Keys.DISPLAY_NAME, toText("&d\u2605 &b" + pokemon.name + (!pokemon.nickname.isEmpty()?"("+pokemon.nickname+")":"") + "&d \u2605", false));
+        itemStack.offer(Keys.DISPLAY_NAME, toText("&d\u2605 &b" + pokemon.getSpecies().name + (!pokemon.getNickname().isEmpty()?"("+pokemon.getNickname()+")":"") + "&d \u2605", false));
 
         ArrayList<Text> lore = new ArrayList<>();
-        lore.add(toText("&7Nature: &b" + pokemon.nature, false));
-        lore.add(toText("&7Ability: &b" + pokemon.ability, false));
-        lore.add(toText("&7Friendship: &b" + pokemon.friendship, false));
-        float ivHP = pokemon.ivs[0];
-        float ivAtk = pokemon.ivs[1];
-        float ivDef = pokemon.ivs[2];
-        float ivSpeed = pokemon.ivs[5];
-        float ivSAtk = pokemon.ivs[3];
-        float ivSDef = pokemon.ivs[4];
+        lore.add(toText("&7Nature: &b" + pokemon.getNature().name(), false));
+        lore.add(toText("&7Ability: &b" + pokemon.getAbility().getName(), false));
+        lore.add(toText("&7Friendship: &b" + pokemon.getFriendship(), false));
+        float ivHP = pokemon.getIVs().get(StatsType.HP);
+        float ivAtk = pokemon.getIVs().get(StatsType.Attack);
+        float ivDef = pokemon.getIVs().get(StatsType.Defence);
+        float ivSpeed = pokemon.getIVs().get(StatsType.Speed);
+        float ivSAtk = pokemon.getIVs().get(StatsType.SpecialAttack);
+        float ivSDef = pokemon.getIVs().get(StatsType.SpecialDefence);
         int percentage = Math.round(((ivHP + ivDef + ivAtk + ivSpeed + ivSAtk + ivSDef) / 186f) * 100);
         lore.add(toText("&7IVs " + "(&b"+percentage+"%&7):", false));
         lore.add((toText("    &7HP: &b" + (int)ivHP + " &d| &7Atk: &b" + (int)ivAtk + " &d| &7Def: &b" + (int)ivDef, false)));
         lore.add((toText("    &7SAtk: &b" + (int)ivSAtk + " &d| &7SDef: &b" + ivSDef + " &d| &7Spd: &b" + (int)ivSpeed, false)));
-        float evHP = pokemon.evs[0];
-        float evAtk = pokemon.evs[1];
-        float evDef = pokemon.evs[2];
-        float evSpeed = pokemon.evs[5];
-        float evSAtk = pokemon.evs[3];
-        float evSDef = pokemon.evs[4];
+        float evHP = pokemon.getEVs().get(StatsType.HP);
+        float evAtk = pokemon.getEVs().get(StatsType.Attack);
+        float evDef = pokemon.getEVs().get(StatsType.Defence);
+        float evSpeed = pokemon.getEVs().get(StatsType.Speed);
+        float evSAtk = pokemon.getEVs().get(StatsType.SpecialAttack);
+        float evSDef = pokemon.getEVs().get(StatsType.SpecialDefence);
         lore.add(toText("&7EVs:", false));
         lore.add((toText("    &7HP: &b" + (int)evHP + " &d| &7Atk: &b" + (int)evAtk + " &d| &7Def: &b" + (int)evDef, false)));
         lore.add((toText( "    &7SAtk: &b" + (int)evSAtk + " &d| &7SDef: &b" + (int)evSDef + " &d| &7Spd: &b" + (int)evSpeed, false)));
         lore.add(toText("&7Moves:", false));
-        if(pokemon.moveset != null)
+        if(pokemon.getMoveset() != null)
         {
-            for(PixelmonMovesetData da : pokemon.moveset)
-            {
-                if(da != null)
+            for (Attack attack : pokemon.getMoveset().attacks) {
+                if(attack != null)
                 {
-                    lore.add(toText("    &b" + da.getAttack().baseAttack.getUnLocalizedName(), false));
+                    lore.add(toText("    &b" + attack.baseAttack.getUnLocalizedName(), false));
                 }
             }
         }

@@ -4,10 +4,11 @@ import java.time.Instant;
 import java.util.*;
 
 import agp.andwhat5.exceptions.AGPException;
-import com.pixelmonmod.pixelmon.comm.PixelmonData;
+import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.config.PixelmonItems;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
-import com.pixelmonmod.pixelmon.enums.EnumPokemon;
+import com.pixelmonmod.pixelmon.enums.EnumSpecies;
+import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
 import com.pixelmonmod.pixelmon.util.helpers.SpriteHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -22,8 +23,6 @@ import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.Lists;
 import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.storage.NbtKeys;
-import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
-import com.pixelmonmod.pixelmon.storage.PlayerStorage;
 
 import agp.andwhat5.api.AGPBadgeGivenEvent;
 import agp.andwhat5.config.AGPConfig;
@@ -76,12 +75,10 @@ public class Utils {
             Sponge.getEventManager().post(new AGPBadgeGivenEvent(getPlayerData(player), bs, frame.getCurrentCause()));
         }
 
-        Optional<PlayerStorage> storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player);
-        if (storage.isPresent()) {
-            for (NBTTagCompound nbt : storage.get().getList()) {
-                if (nbt != null)
-                    bs.Pokemon.add(nbt.getString(NbtKeys.NAME));
-            }
+        PlayerPartyStorage storage = Pixelmon.storageManager.getParty((EntityPlayerMP) player);
+        for (Pokemon pokemon : storage.getAll()) {
+            if(pokemon != null)
+                bs.Pokemon.add(pokemon.getDisplayName());
         }
         AGP.getInstance().getStorage().updateObtainedBadges(player.getUniqueId(), player.getName(), bs, true);
         saveAGPData();
@@ -265,12 +262,11 @@ public class Utils {
         if (cap == 0) {
             return true;
         }
-        Optional<PlayerStorage> ps = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player);
-        for (NBTTagCompound l : ps.get().partyPokemon) {
-            if (l != null && l.getInteger(NbtKeys.LEVEL) > cap) {
+        PlayerPartyStorage storage = Pixelmon.storageManager.getParty((EntityPlayerMP) player);
+        for (Pokemon pokemon : storage.getAll()) {
+            if(pokemon != null && pokemon.getLevel() > cap) {
                 return false;
             }
-
         }
         return true;
     }
@@ -431,18 +427,18 @@ public class Utils {
      * @param pixelmon The EntityPixelmon you would like to convert.
      * @return The PixelmonData of the EntityPixelmon provided.
      */
-    public static PixelmonData entityPixelmonToPixelmonData(EntityPixelmon pixelmon)
+    public static Pokemon entityPixelmonToPixelmonData(EntityPixelmon pixelmon)
     {
-        return new PixelmonData(pixelmon);
+        return pixelmon.getPokemonData();
     }
 
-    public static ItemStack getPixelmonSprite(PixelmonData data)
+    public static ItemStack getPixelmonSprite(Pokemon data)
     {
         net.minecraft.item.ItemStack nativeItem = new net.minecraft.item.ItemStack(PixelmonItems.itemPixelmonSprite);
         NBTTagCompound nbt = new NBTTagCompound();
-        EnumPokemon species = EnumPokemon.getFromNameAnyCase(data.name);
+        EnumSpecies species = data.getSpecies();
         String idValue = String.format("%03d", species.getNationalPokedexInteger());
-        if (data.isEgg){
+        if (data.isEgg()){
             switch(species) {
                 case Manaphy:
                 case Togepi:
@@ -453,13 +449,13 @@ public class Utils {
                     break;
             }
         } else {
-            if (data.isShiny) {
+            if (data.isShiny()) {
                 nbt.setString(NbtKeys.SPRITE_NAME, "pixelmon:sprites/shinypokemon/" + idValue + SpriteHelper.getSpriteExtra(
-                        species.name, data.form)
+                        species.name, data.getForm())
                 );
             } else {
                 nbt.setString(NbtKeys.SPRITE_NAME, "pixelmon:sprites/pokemon/" + idValue + SpriteHelper.getSpriteExtra(
-                        species.name, data.form)
+                        species.name, data.getForm())
                 );
             }
         }

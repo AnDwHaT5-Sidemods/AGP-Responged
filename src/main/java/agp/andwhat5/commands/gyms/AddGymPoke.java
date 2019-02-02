@@ -4,12 +4,14 @@ import agp.andwhat5.Utils;
 import agp.andwhat5.commands.utils.PlayerOnlyCommand;
 import agp.andwhat5.config.structs.GymStruc;
 import agp.andwhat5.config.structs.ShowdownStruc;
-import com.pixelmonmod.pixelmon.client.gui.pokemoneditor.ImportExportConverter;
+import com.pixelmonmod.pixelmon.Pixelmon;
+import com.pixelmonmod.pixelmon.api.pokemon.ImportExportConverter;
+import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.config.PixelmonEntityList;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
-import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
-import com.pixelmonmod.pixelmon.storage.PlayerStorage;
+import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -24,12 +26,15 @@ public class AddGymPoke extends PlayerOnlyCommand {
         GymStruc gym = args.<GymStruc>getOne("GymName").get();
         if(slot >= 1 && slot <= 6) {
             slot = slot - 1;
-            PlayerStorage storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).get();
-            if (storage.partyPokemon[slot] == null) {
+
+            PlayerPartyStorage storage = Pixelmon.storageManager.getParty((EntityPlayerMP) player);
+            Pokemon pokemon = storage.get(slot);
+            if (pokemon == null) {
                 player.sendMessage(Utils.toText("&7There is no Pokemon in the specified slot.", true));
                 return CommandResult.success();
             }
-            EntityPixelmon pixelmon = (EntityPixelmon) PixelmonEntityList.createEntityFromNBT(storage.partyPokemon[slot], (World) player.getWorld());
+            NBTTagCompound pixelmondata = new NBTTagCompound();
+            EntityPixelmon pixelmon = (EntityPixelmon) PixelmonEntityList.createEntityFromNBT(pokemon.writeToNBT(pixelmondata), (World) player.getWorld());
             ShowdownStruc struc = new ShowdownStruc();
             struc.showdownCode = ImportExportConverter.getExportText(Utils.entityPixelmonToPixelmonData(pixelmon));
             struc.uuid = UUID.randomUUID();

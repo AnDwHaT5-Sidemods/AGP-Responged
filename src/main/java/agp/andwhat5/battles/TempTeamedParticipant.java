@@ -1,6 +1,7 @@
 package agp.andwhat5.battles;
 
 import com.pixelmonmod.pixelmon.RandomHelper;
+import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.battles.controller.participants.BattleParticipant;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PixelmonWrapper;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PlayerParticipant;
@@ -9,10 +10,7 @@ import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.enums.battle.EnumBattleEndCause;
 import net.minecraft.entity.player.EntityPlayerMP;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @SuppressWarnings("WeakerAccess")
 public class TempTeamedParticipant extends PlayerParticipant {
@@ -21,8 +19,9 @@ public class TempTeamedParticipant extends PlayerParticipant {
         super(p, startingPixelmon);
     }
 
+    //    public PixelmonWrapper switchPokemon(PixelmonWrapper pw, UUID newPixelmonUUID) {
     @Override
-    public PixelmonWrapper switchPokemon(PixelmonWrapper pw, int[] newPixelmonId) {
+    public PixelmonWrapper switchPokemon(PixelmonWrapper pw, UUID newPixelmonUUID) {
         double x = this.player.posX;
         double y = this.player.posY;
         double z = this.player.posZ;
@@ -36,7 +35,7 @@ public class TempTeamedParticipant extends PlayerParticipant {
         PixelmonWrapper newWrapper = null;
 
         for (PixelmonWrapper pixelmonWrapper : allPokemon) {
-            if(Arrays.equals(pixelmonWrapper.getPokemonID(), newPixelmonId)) {
+            if(pixelmonWrapper.getPokemonUUID().equals(newPixelmonUUID)) {
                 newWrapper = pixelmonWrapper;
                 break;
             }
@@ -49,19 +48,19 @@ public class TempTeamedParticipant extends PlayerParticipant {
         }
 
         if (!this.bc.simulateMode) {
-            pw.pokemon.catchInPokeball();
-            Optional<EntityPixelmon> newPokemonOptional = this.storage.getAlreadyExists(newPixelmonId, this.player.world);
-            EntityPixelmon newPixelmon;
-            if (newPokemonOptional.isPresent()) {
-                newPixelmon = newPokemonOptional.get();
-                newPixelmon.motionX = newPixelmon.motionY = newPixelmon.motionZ = 0.0D;
-                newPixelmon.setLocationAndAngles(x, y, z, this.player.rotationYaw, 0.0F);
+            pw.pokemon.retrieve();//catchInPokeball
+            int slot = this.getStorage().getSlot(newPixelmonUUID);
+            Pokemon newPixelmon;
+            if (slot != -1) {
+                newPixelmon = getStorage().get(slot);
+                //newPixelmon.motionX = newPixelmon.motionY = newPixelmon.motionZ = 0.0D;
+                //newPixelmon.setLocationAndAngles(x, y, z, this.player.rotationYaw, 0.0F);
             } else {
                 newPixelmon = newWrapper.pokemon;
-                getWorld().spawnEntity(newPixelmon);
-                newPixelmon.motionX = newPixelmon.motionY = newPixelmon.motionZ = 0.0D;
-                newPixelmon.setLocationAndAngles(x, y, z, this.player.rotationYaw, 0.0F);
-                newPixelmon.releaseFromPokeball();
+                getWorld().spawnEntity(newPixelmon.getOrSpawnPixelmon(null));
+                //newPixelmon.motionX = newPixelmon.motionY = newPixelmon.motionZ = 0.0D;
+                //newPixelmon.setLocationAndAngles(x, y, z, this.player.rotationYaw, 0.0F);
+                //newPixelmon.releaseFromPokeball();
             }
 
             newWrapper.pokemon = newPixelmon;
@@ -78,6 +77,8 @@ public class TempTeamedParticipant extends PlayerParticipant {
         newWrapper.afterSwitch();
         return newWrapper;
     }
+
+    //TODO we need to return a custom storage i recon
 
     //Default code checks if the pw.entity is null, which won't work here as we need it to exist
     //So check if the pokemon is currently controlled by this battle instead

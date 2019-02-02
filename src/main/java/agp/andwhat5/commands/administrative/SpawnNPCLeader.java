@@ -4,7 +4,6 @@ import agp.andwhat5.Utils;
 import agp.andwhat5.commands.utils.PlayerOnlyCommand;
 import agp.andwhat5.config.structs.GymStruc;
 import com.pixelmonmod.pixelmon.Pixelmon;
-import com.pixelmonmod.pixelmon.comm.PixelmonData;
 import com.pixelmonmod.pixelmon.comm.SetTrainerData;
 import com.pixelmonmod.pixelmon.comm.packetHandlers.ClearTrainerPokemon;
 import com.pixelmonmod.pixelmon.comm.packetHandlers.npc.SetNPCEditData;
@@ -37,8 +36,8 @@ public class SpawnNPCLeader extends PlayerOnlyCommand {
         trainer.ignoreDespawnCounter = true;
 
         Pixelmon.network.sendTo(new ClearTrainerPokemon(), (EntityPlayerMP) src);
-        for (int i = 0; i < trainer.getPokemonStorage().count(); i++) {
-            Pixelmon.network.sendTo(new StoreTrainerPokemon(new PixelmonData(trainer.getPokemonStorage().getList()[i])), (EntityPlayerMP) src);
+        for (int i = 0; i < trainer.getPokemonStorage().countAll(); i++) {
+            Pixelmon.network.sendTo(new StoreTrainerPokemon(trainer.getPokemonStorage().get(i)), (EntityPlayerMP) src);
         }
         SetTrainerData trainerData = new SetTrainerData(trainer, "en_US");
         Pixelmon.network.sendTo(new SetNPCEditData(trainerData), (EntityPlayerMP) src);

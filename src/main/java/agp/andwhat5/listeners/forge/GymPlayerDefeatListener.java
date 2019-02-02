@@ -4,13 +4,14 @@ import agp.andwhat5.Utils;
 import agp.andwhat5.config.AGPConfig;
 import agp.andwhat5.config.structs.BattleStruc;
 import agp.andwhat5.config.structs.DataStruc;
+import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.api.events.battles.BattleEndEvent;
 import com.pixelmonmod.pixelmon.battles.controller.participants.BattleParticipant;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PlayerParticipant;
 import com.pixelmonmod.pixelmon.comm.CommandChatHandler;
 import com.pixelmonmod.pixelmon.entities.pixelmon.drops.DropItemHelper;
 import com.pixelmonmod.pixelmon.enums.battle.BattleResults;
-import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
+import javafx.scene.input.PickResult;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.NumberInvalidException;
@@ -57,7 +58,7 @@ public class GymPlayerDefeatListener {
                         return;
                     }
                     if (result.equals(BattleResults.VICTORY)) {
-                        if (PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) challenger).get().getFirstAblePokemon((World) challenger.getWorld()) == null)
+                        if (Pixelmon.storageManager.getParty((EntityPlayerMP) challenger).countAblePokemon() == 0)
                         {
                             if(bts.arena != null)
                                 bts.arena.inUse = false;
