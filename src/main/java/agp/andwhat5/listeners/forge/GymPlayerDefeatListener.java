@@ -1,6 +1,7 @@
 package agp.andwhat5.listeners.forge;
 
 import agp.andwhat5.Utils;
+import agp.andwhat5.battles.TempPlayerPartyStorage;
 import agp.andwhat5.config.AGPConfig;
 import agp.andwhat5.config.structs.BattleStruc;
 import agp.andwhat5.config.structs.DataStruc;
@@ -11,7 +12,6 @@ import com.pixelmonmod.pixelmon.battles.controller.participants.PlayerParticipan
 import com.pixelmonmod.pixelmon.comm.CommandChatHandler;
 import com.pixelmonmod.pixelmon.entities.pixelmon.drops.DropItemHelper;
 import com.pixelmonmod.pixelmon.enums.battle.BattleResults;
-import javafx.scene.input.PickResult;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.NumberInvalidException;
@@ -19,7 +19,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -92,9 +91,13 @@ public class GymPlayerDefeatListener {
                         bts.arena.inUse = false;
                     DataStruc.gcon.GymBattlers.remove(bts);
                     Utils.saveAGPData();
+
+                    //Clean up any temp teams
+                    Sponge.getServer().getPlayer(leader.getUniqueId()).ifPresent(TempPlayerPartyStorage::removeTempStorage);
                 }
             }
         }
+
     }
 
     @SubscribeEvent
@@ -108,6 +111,9 @@ public class GymPlayerDefeatListener {
                 Optional<BattleStruc> bts = DataStruc.gcon.GymBattlers.stream().filter(b -> b.challenger.equals(s.getEntity().getUniqueID())).findAny();
 
                 bts.ifPresent(battleStruc -> {
+                    //Clean up any temp teams
+                    Sponge.getServer().getPlayer(battleStruc.leader).ifPresent(TempPlayerPartyStorage::removeTempStorage);
+
                     Sponge.getServer().getPlayer(battleStruc.challenger).ifPresent(player -> CommandChatHandler.sendChat((ICommandSender) player, TextFormatting.RED + "It appears the gym battle ended abnormally..."));//The extra . was needed. Adds to the aw fuck effect.
                     Sponge.getServer().getPlayer(battleStruc.leader).ifPresent(player -> CommandChatHandler.sendChat((ICommandSender) player, TextFormatting.RED + "It appears the gym battle ended abnormally..."));//The extra . was needed. Adds to the aw fuck effect.
                     if(battleStruc.arena != null)

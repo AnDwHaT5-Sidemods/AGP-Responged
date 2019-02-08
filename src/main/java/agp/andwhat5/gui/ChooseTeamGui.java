@@ -24,6 +24,7 @@ import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.InventoryArchetypes;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.item.inventory.property.InventoryTitle;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
@@ -216,10 +217,11 @@ public class ChooseTeamGui {
         try {
             pokemon = ImportExportConverter.importText(pokemonCode.showdownCode);
         } catch (ShowdownImportException e) {
-            e.printStackTrace();
+            System.out.println("Aha crap, someone did a dumb - getPokemonElement");
+            return Element.of(ItemStackSnapshot.NONE);
         }
         ItemStack itemStack = Utils.getPixelmonSprite(pokemon);
-        itemStack.offer(Keys.DISPLAY_NAME, toText("&d\u2605 &b" + pokemon.getSpecies().name + (!pokemon.getNickname().isEmpty()?"("+pokemon.getNickname()+")":"") + "&d \u2605", false));
+        itemStack.offer(Keys.DISPLAY_NAME, toText("&d\u2605 &b" + pokemon.getSpecies().name + (!pokemon.getDisplayName().isEmpty()?"("+pokemon.getDisplayName()+")":"") + "&d \u2605", false));
 
         ArrayList<Text> lore = new ArrayList<>();
         lore.add(toText("&7Nature: &b" + pokemon.getNature().name(), false));

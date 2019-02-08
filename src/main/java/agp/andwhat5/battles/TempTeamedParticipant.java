@@ -1,13 +1,9 @@
 package agp.andwhat5.battles;
 
-import com.pixelmonmod.pixelmon.RandomHelper;
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
-import com.pixelmonmod.pixelmon.battles.controller.participants.BattleParticipant;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PixelmonWrapper;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PlayerParticipant;
-import com.pixelmonmod.pixelmon.comm.ChatHandler;
-import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
-import com.pixelmonmod.pixelmon.enums.battle.EnumBattleEndCause;
+import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
 import net.minecraft.entity.player.EntityPlayerMP;
 
 import java.util.*;
@@ -15,14 +11,33 @@ import java.util.*;
 @SuppressWarnings("WeakerAccess")
 public class TempTeamedParticipant extends PlayerParticipant {
 
-    public TempTeamedParticipant(EntityPlayerMP p, EntityPixelmon... startingPixelmon) {
-        super(p, startingPixelmon);
+    static final HashMap<UUID, PlayerPartyStorage> tempTeamStorage = new HashMap<>();
+
+    public static TempTeamedParticipant setupTempTeamParticipant(EntityPlayerMP p, List<Pokemon> storageList) {
+        TempPlayerPartyStorage storage = new TempPlayerPartyStorage(UUID.randomUUID(), p.getUniqueID());//Pixelmon.storageManager.getParty(UUID.randomUUID());
+        for (Pokemon pokemon: storageList) {
+            storage.add(pokemon);
+        }
+        tempTeamStorage.put(p.getUniqueID(), storage);
+
+        storageList.get(0).getOrSpawnPixelmon(p);//Stupid workaround for a bug..
+
+        return new TempTeamedParticipant(p, storageList);
     }
 
-    //    public PixelmonWrapper switchPokemon(PixelmonWrapper pw, UUID newPixelmonUUID) {
+    private TempTeamedParticipant(EntityPlayerMP p, List<Pokemon> storageList) {
+        super(p, storageList.get(0).getOrSpawnPixelmon(p));
+    }
+
+    @Override
+    public PlayerPartyStorage getStorage() {
+        return tempTeamStorage.get(this.player.getUniqueID());
+    }
+
     @Override
     public PixelmonWrapper switchPokemon(PixelmonWrapper pw, UUID newPixelmonUUID) {
-        double x = this.player.posX;
+        return super.switchPokemon(pw, newPixelmonUUID);
+/*        double x = this.player.posX;
         double y = this.player.posY;
         double z = this.player.posZ;
         String beforeName = pw.getNickname();
@@ -76,6 +91,7 @@ public class TempTeamedParticipant extends PlayerParticipant {
         this.bc.participants.forEach(BattleParticipant::updateOtherPokemon);
         newWrapper.afterSwitch();
         return newWrapper;
+        */
     }
 
     //TODO we need to return a custom storage i recon
@@ -84,7 +100,7 @@ public class TempTeamedParticipant extends PlayerParticipant {
     //So check if the pokemon is currently controlled by this battle instead
     @Override
     public PixelmonWrapper getRandomPartyPokemon() {
-        List<PixelmonWrapper> choices = new ArrayList<>();
+/*        List<PixelmonWrapper> choices = new ArrayList<>();
         PixelmonWrapper[] var2 = this.allPokemon;
 
         for (PixelmonWrapper pw : var2) {
@@ -93,7 +109,8 @@ public class TempTeamedParticipant extends PlayerParticipant {
             }
         }
 
-        return RandomHelper.getRandomElementFromList(choices);
+        return RandomHelper.getRandomElementFromList(choices);*/
+        return super.getRandomPartyPokemon();
     }
 
 }

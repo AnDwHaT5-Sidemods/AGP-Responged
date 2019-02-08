@@ -6,5 +6,5 @@ jdk:
 
 script:
   - mkdir ./libs-
-  - wget https://download.nodecdn.net/containers/reforged/server/release/6.3.4/Pixelmon-1.12.2-6.3.4-server.jar -O ./libs-/Pixelmon-1.12.2-6.3.4-server.jar
+  - wget https://download.nodecdn.net/containers/reforged/server/release/7.0.1/Pixelmon-1.12.2-7.0.1-server.jar -O ./libs-/Pixelmon-1.12.2-7.0.1-server.jar
   - ./gradlew build --scan -s

@@ -3,15 +3,12 @@ package agp.andwhat5.battles;
 import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.api.pokemon.PokemonSpec;
-import com.pixelmonmod.pixelmon.battles.controller.BattleControllerBase;
-import com.pixelmonmod.pixelmon.battles.controller.participants.PixelmonWrapper;
+import com.pixelmonmod.pixelmon.battles.BattleRegistry;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PlayerParticipant;
-import com.pixelmonmod.pixelmon.battles.rules.BattleRules;
 import com.pixelmonmod.pixelmon.config.PixelmonEntityList;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.StatsType;
 import com.pixelmonmod.pixelmon.enums.EnumBossMode;
-import com.pixelmonmod.pixelmon.enums.battle.EnumBattleType;
 import com.pixelmonmod.pixelmon.enums.items.EnumPokeballs;
 import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -30,7 +27,7 @@ public class BattleUtil {
 
     //TODO sanity checks
     //Starts a battle between players with two temp teams
-    public static void startPlayerBattleWithTempTeams(Player player1, List<EntityPixelmon> player1TempTeam, Player player2, List<EntityPixelmon> player2TempTeam) {
+    /*public static void startPlayerBattleWithTempTeams(Player player1, List<EntityPixelmon> player1TempTeam, Player player2, List<EntityPixelmon> player2TempTeam) {
 
         TempTeamedParticipant player1Participant = new TempTeamedParticipant((EntityPlayerMP) player1);
         player1Participant.allPokemon = new PixelmonWrapper[player1TempTeam.size()];
@@ -50,10 +47,11 @@ public class BattleUtil {
         player2Participant.controlledPokemon.add(player2Participant.allPokemon[0]);//Only the first one needs to be controlled!!
 
         new BattleControllerBase(new TempTeamedParticipant[]{player1Participant}, new TempTeamedParticipant[]{player2Participant}, new BattleRules(EnumBattleType.Single));
-    }
+    }*/
 
     public static void startLeaderBattleWithTempTeam(Player challenger, Player leader, List<EntityPixelmon> leadersTempTeam) {
         PlayerPartyStorage challengerStorage = Pixelmon.storageManager.getParty((EntityPlayerMP) challenger);
+        challengerStorage.heal();
         if(challengerStorage.countAblePokemon() == 0) {
             challenger.sendMessage(Text.of(TextColors.RED, "You have no pokemon to battle with"));
             leader.sendMessage(Text.of(TextColors.RED, "Challenger has no pokemon to battle with"));
@@ -62,18 +60,16 @@ public class BattleUtil {
         EntityPixelmon firstAble = challengerStorage.getAndSendOutFirstAblePokemon(null);
         PlayerParticipant challengerParticipant = new PlayerParticipant((EntityPlayerMP) challenger, firstAble);
 
-
-        TempTeamedParticipant leaderParticipant = new TempTeamedParticipant((EntityPlayerMP) leader);
-        leaderParticipant.allPokemon = new PixelmonWrapper[leadersTempTeam.size()];
-        leaderParticipant.controlledPokemon = new ArrayList<>(1);
-
-        for (int i = 0; i < leadersTempTeam.size(); i++) {
-            leaderParticipant.allPokemon[i] = new PixelmonWrapper(leaderParticipant, leadersTempTeam.get(i), i);
+        ArrayList<Pokemon> pokemons = new ArrayList<>();
+        for (EntityPixelmon pixelmon : leadersTempTeam) {
+            pokemons.add(pixelmon.getPokemonData());
         }
 
-        leaderParticipant.controlledPokemon.add(leaderParticipant.allPokemon[0]);//Only the first one needs to be controlled!!
+        TempTeamedParticipant leaderParticipant = TempTeamedParticipant.setupTempTeamParticipant((EntityPlayerMP) leader, pokemons);//new TempTeamedParticipant((EntityPlayerMP) leader, pokemons);
 
-        new BattleControllerBase(new TempTeamedParticipant[]{leaderParticipant}, new PlayerParticipant[]{challengerParticipant}, new BattleRules(EnumBattleType.Single));
+        leaderParticipant.startedBattle = true;
+        challengerParticipant.startedBattle = true;
+        BattleRegistry.startBattle(leaderParticipant, challengerParticipant);
     }
 
     //If you break this there is a special place in hell for you
@@ -102,7 +98,7 @@ public class BattleUtil {
     {
         if(data.getSpecies() != null) {
             EntityPixelmon pixelmon = (EntityPixelmon) PixelmonEntityList.createEntityByName(data.getSpecies().name, (World) player.getWorld());
-            if(!data.getNickname().isEmpty())
+            if(data.getNickname() != null)//Because fucking logic.
                 pixelmon.getPokemonData().setNickname(data.getNickname());
             if(data.getLevel() > 0 && data.getLevel() <= 100)
                 pixelmon.getLvl().setLevel(data.getLevel());
@@ -146,11 +142,11 @@ public class BattleUtil {
                 pixelmon.getPokemonData().getIVs().set(StatsType.HP, data.getIVs().get(StatsType.HP));
             }
 
-            //PlayerStorage playerStorage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).get();
             pixelmon.setPosition(player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ());//TODO
             //pixelmon.caughtBall = pixelmon.caughtBall == null ? EnumPokeballs.PokeBall : pixelmon.caughtBall;
             //pixelmon.friendship.initFromCapture();
             pixelmon.setOwnerId(player.getUniqueId());
+            pixelmon.getPokemonData().setOriginalTrainer((EntityPlayerMP) player);
             //pixelmon.playerOwned = true;
             //pixelmon.loadMoveset();
             //pixelmon.setBoss(EnumBossMode.NotBoss);
