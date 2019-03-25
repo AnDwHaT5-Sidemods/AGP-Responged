@@ -148,11 +148,12 @@ public class ChooseTeamGui {
                     return;
                 }
                 if (!selectedPokemon.isEmpty()) {
-                    List<EntityPixelmon> leaderPixelmon = new ArrayList<>();
+                    List<Pokemon> leaderPixelmon = new ArrayList<>();
                     for (ShowdownStruc s : selectedPokemon) {
                         try {
                             Pokemon data = ImportExportConverter.importText(s.showdownCode);
-                            BattleUtil.pixelmonDataToTempBattlePokemon(leader, data).ifPresent(leaderPixelmon::add);
+                            leaderPixelmon.add(data);
+                            //BattleUtil.pixelmonDataToTempBattlePokemon(leader, data).ifPresent(leaderPixelmon::add);
                         } catch (ShowdownImportException e) {
                             e.printStackTrace();
                             leader.sendMessage(Utils.toText("Unable to convert pokemon", true));

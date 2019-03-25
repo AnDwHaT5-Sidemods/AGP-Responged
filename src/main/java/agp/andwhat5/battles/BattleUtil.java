@@ -1,9 +1,18 @@
 package agp.andwhat5.battles;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
+
 import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.api.pokemon.PokemonSpec;
 import com.pixelmonmod.pixelmon.battles.BattleRegistry;
+import com.pixelmonmod.pixelmon.battles.controller.BattleControllerBase;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PlayerParticipant;
 import com.pixelmonmod.pixelmon.config.PixelmonEntityList;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
@@ -11,16 +20,9 @@ import com.pixelmonmod.pixelmon.entities.pixelmon.stats.StatsType;
 import com.pixelmonmod.pixelmon.enums.EnumBossMode;
 import com.pixelmonmod.pixelmon.enums.items.EnumPokeballs;
 import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
+
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @SuppressWarnings("Duplicates")
 public class BattleUtil {
@@ -49,7 +51,9 @@ public class BattleUtil {
         new BattleControllerBase(new TempTeamedParticipant[]{player1Participant}, new TempTeamedParticipant[]{player2Participant}, new BattleRules(EnumBattleType.Single));
     }*/
 
-    public static void startLeaderBattleWithTempTeam(Player challenger, Player leader, List<EntityPixelmon> leadersTempTeam) {
+	
+	
+    public static void startLeaderBattleWithTempTeam(Player challenger, Player leader, List<Pokemon> leadersTempTeam) {
         PlayerPartyStorage challengerStorage = Pixelmon.storageManager.getParty((EntityPlayerMP) challenger);
         challengerStorage.heal();
         if(challengerStorage.countAblePokemon() == 0) {
@@ -60,18 +64,37 @@ public class BattleUtil {
         EntityPixelmon firstAble = challengerStorage.getAndSendOutFirstAblePokemon(null);
         PlayerParticipant challengerParticipant = new PlayerParticipant((EntityPlayerMP) challenger, firstAble);
 
-        ArrayList<Pokemon> pokemons = new ArrayList<>();
-        for (EntityPixelmon pixelmon : leadersTempTeam) {
-            pokemons.add(pixelmon.getPokemonData());
-        }
+        TempTeamedParticipant pla =  TempTeamedParticipant.setupTempTeamParticipant((EntityPlayerMP)leader, leadersTempTeam);
 
-        TempTeamedParticipant leaderParticipant = TempTeamedParticipant.setupTempTeamParticipant((EntityPlayerMP) leader, pokemons);//new TempTeamedParticipant((EntityPlayerMP) leader, pokemons);
-
-        leaderParticipant.startedBattle = true;
+        pla.startedBattle = true;
         challengerParticipant.startedBattle = true;
-        BattleRegistry.startBattle(leaderParticipant, challengerParticipant);
+        BattleRegistry.startBattle(pla, challengerParticipant);
     }
-
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     //If you break this there is a special place in hell for you
     public static EntityPixelmon getTempBattlePokemon(PokemonSpec spec, Player player) {
         //PlayerStorage playerStorage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).get();
