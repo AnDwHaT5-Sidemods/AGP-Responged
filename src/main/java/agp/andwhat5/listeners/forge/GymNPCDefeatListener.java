@@ -13,7 +13,6 @@ import net.minecraft.command.NumberInvalidException;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -86,8 +85,7 @@ public class GymNPCDefeatListener {
                     ItemStack item = new ItemStack(CommandBase.getItemByText(e.player, gs.Badge), 1);
                     DropItemHelper.giveItemStackToPlayer(e.player, item);
                 }
-                if(!gs.Commands.isEmpty())
-                {
+                if (!gs.Commands.isEmpty()) {
                     gs.Commands.forEach(i -> Sponge.getCommandManager().process((CommandSource) Sponge.getServer(), i.trim().replace("%player%", e.player.getName()).replace("%leader%", "NPC")));
                 }
                 ((Player) e.player).sendMessage(Utils.toText("&7Congratulations, you defeated the &b" + gs.Name + " &7Gym!", true));

@@ -16,12 +16,9 @@ public class GymList implements CommandExecutor {
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) {
-        if (src instanceof Player)
-        {
+        if (src instanceof Player) {
             GymListGui.openGymListGUI((Player) src);
-        }
-        else
-        {
+        } else {
             src.sendMessage(Utils.toText("&f--==[&dAGP - Gyms List&f]==--", false));
             src.sendMessage(Utils.toText("&bGyms: &7(&aOpen&7) &7(&cClosed&7)", false));
             src.sendMessage(Utils.toText("&bLeaders: &7(&aOnline&7) &7(&eNPC&7) &7(&cOffline&7)", false));

@@ -22,12 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static agp.andwhat5.Utils.getNameFromUUID;
-import static agp.andwhat5.Utils.setPosition;
-import static agp.andwhat5.Utils.toText;
-import static org.spongepowered.api.data.type.DyeColors.BLACK;
-import static org.spongepowered.api.data.type.DyeColors.RED;
-import static org.spongepowered.api.data.type.DyeColors.WHITE;
+import static agp.andwhat5.Utils.*;
+import static org.spongepowered.api.data.type.DyeColors.*;
 
 public class GymListGui {
 
@@ -46,8 +42,7 @@ public class GymListGui {
         constructGymListPage(player, view, 0);
     }
 
-    private static void constructGymListPage(Player player, View view, int page)
-    {
+    private static void constructGymListPage(Player player, View view, int page) {
 
         int startOnLine = 1;
         int rowStart = 1;
@@ -58,10 +53,10 @@ public class GymListGui {
         List<GymStruc> gymData = DataStruc.gcon.GymData;
 
         //Sanity checks
-        int maxPages = Math.max(0, (int) (Math.ceil((double)gymData.size() / (double)itemsPerPage) - 1));
-        if(page < 0)
+        int maxPages = Math.max(0, (int) (Math.ceil((double) gymData.size() / (double) itemsPerPage) - 1));
+        if (page < 0)
             page = 0;
-        if(page >= maxPages)
+        if (page >= maxPages)
             page = maxPages;
 
         //Clear out previous layout / items
@@ -76,14 +71,14 @@ public class GymListGui {
         view.define(newLayout);
 
         int slotsDone = 0;
-        for(int i = page * itemsPerPage; i < gymData.size(); i++) {
-            if(slotsDone == itemsPerPage) {
+        for (int i = page * itemsPerPage; i < gymData.size(); i++) {
+            if (slotsDone == itemsPerPage) {
                 break;
             }
 
             int currentRow = slotsDone / itemsPerRow;
             int currentSlot = slotsDone % itemsPerRow;
-            int slot = (startOnLine*9) + (currentRow*9) + rowStart + currentSlot;
+            int slot = (startOnLine * 9) + (currentRow * 9) + rowStart + currentSlot;
 
             view.setElement(slot, getGymElement(player, gymData.get(i)));
             slotsDone++;
@@ -119,15 +114,14 @@ public class GymListGui {
         ArrayList<Text> lore = new ArrayList<>();
         lore.add(toText("&7Gym Status: &b" + (gym.Status.equals(GymStruc.EnumStatus.CLOSED) ? "&4Closed" : gym.Status.equals(GymStruc.EnumStatus.OPEN) ? "&2Open" : "&eNPC Mode"), false));
         lore.add(toText("&7Requires: &b" + (gym.Requirement.equals("null") ? "None" : gym.Requirement), false));
-        lore.add(toText("&7Level Cap: &b" + (gym.LevelCap == 0 ? "None" : ""+gym.LevelCap), false));
+        lore.add(toText("&7Level Cap: &b" + (gym.LevelCap == 0 ? "None" : "" + gym.LevelCap), false));
         lore.add(toText("&7Leaders:", false));
 
-        if(gym.NPCAmount > 0) {
-            lore.add(toText("  &2NPC " + (gym.NPCAmount > 1 ? "(" + gym.NPCAmount + ")" : "") , false));
+        if (gym.NPCAmount > 0) {
+            lore.add(toText("  &2NPC " + (gym.NPCAmount > 1 ? "(" + gym.NPCAmount + ")" : ""), false));
         }
 
-        if(!gym.PlayerLeaders.isEmpty())
-        {
+        if (!gym.PlayerLeaders.isEmpty()) {
             for (int i = 0; i < gym.PlayerLeaders.size(); i++) {
                 lore.add(toText("  " + (gym.OnlineLeaders.contains(gym.PlayerLeaders.get(i)) ? "&2" : "&4") + getNameFromUUID(gym.PlayerLeaders.get(i)), false));
             }
@@ -136,7 +130,7 @@ public class GymListGui {
         itemStack.offer(Keys.ITEM_LORE, lore);
 
         Consumer<Action.Click> clickConsumer = click -> Task.builder().execute(task -> {
-            if(gym.Lobby != null) {
+            if (gym.Lobby != null) {
                 setPosition(player, gym.Lobby, gym.worldUUID);
                 player.sendMessage(toText("&7Teleported to the &b" + gym.Name + " &7Gym lobby!", true));
             }

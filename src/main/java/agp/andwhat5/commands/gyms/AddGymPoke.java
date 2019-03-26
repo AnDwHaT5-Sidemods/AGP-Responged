@@ -24,7 +24,7 @@ public class AddGymPoke extends PlayerOnlyCommand {
     protected CommandResult execute(Player player, CommandContext args) {
         int slot = args.<Integer>getOne("slot").get();
         GymStruc gym = args.<GymStruc>getOne("GymName").get();
-        if(slot >= 1 && slot <= 6) {
+        if (slot >= 1 && slot <= 6) {
             slot = slot - 1;
 
             PlayerPartyStorage storage = Pixelmon.storageManager.getParty((EntityPlayerMP) player);
@@ -43,9 +43,7 @@ public class AddGymPoke extends PlayerOnlyCommand {
             Utils.saveAGPData();
             player.sendMessage(Utils.toText("&7Successfully added that Pokemon to the gym pool.", true));
             return CommandResult.success();
-        }
-        else
-        {
+        } else {
             player.sendMessage(Utils.toText("&7Enter a slot between 1 and 6.", true));
             return CommandResult.success();
 

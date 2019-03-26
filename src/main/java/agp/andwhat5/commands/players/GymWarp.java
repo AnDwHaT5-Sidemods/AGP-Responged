@@ -19,7 +19,7 @@ public class GymWarp extends PlayerOnlyCommand {
 
         switch (location.toLowerCase()) {
             case "lobby":
-                if(gym.Lobby == null) {
+                if (gym.Lobby == null) {
                     player.sendMessage(Utils.toText("&7The &b" + gym.Name + " &7Gym's lobby has not been set!", true));
                     return CommandResult.success();
                 }
@@ -31,7 +31,7 @@ public class GymWarp extends PlayerOnlyCommand {
                 Optional<ArenaStruc> optArena = args.getOne("GymArena");
                 Optional<String> optArenaSubLocationName = args.getOne("arenaSubLocation");
 
-                if(!optArena.isPresent() || !optArenaSubLocationName.isPresent()) {
+                if (!optArena.isPresent() || !optArenaSubLocationName.isPresent()) {
                     player.sendMessage(Utils.toText("&7Incorrect usage: &b/GymWarp <gym> <lobby|arena> [(if arena) <name> <stands|challenger|leader>]&7.", true));
                     return CommandResult.success();
                 }
@@ -41,7 +41,7 @@ public class GymWarp extends PlayerOnlyCommand {
 
                 switch (arenaSubLocationName) {
                     case "stands":
-                        if(arena.Stands == null) {
+                        if (arena.Stands == null) {
                             player.sendMessage(Utils.toText("&7The &b" + gym.Name + " &7Gym's &b" + arena.Name + " &7stands has not been set!", true));
                             return CommandResult.success();
                         }
@@ -51,7 +51,7 @@ public class GymWarp extends PlayerOnlyCommand {
                         break;
 
                     case "challenger":
-                        if(arena.Challenger == null) {
+                        if (arena.Challenger == null) {
                             player.sendMessage(Utils.toText("&7The &b" + gym.Name + " &7Gym's &b" + arena.Name + " &challenger stage has not been set!", true));
                             return CommandResult.success();
                         }

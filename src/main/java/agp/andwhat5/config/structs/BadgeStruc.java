@@ -8,31 +8,31 @@ import java.util.List;
 
 @SuppressWarnings("CanBeFinal")
 public class BadgeStruc {
-	
-	/**
-	 * The name of the gym that this badge belongs to.
-	 */
+
+    /**
+     * The name of the gym that this badge belongs to.
+     */
     @Expose
     public String Gym;
-    
+
     /**
      * The badge of the gym noted like pixelmon:boulder_badge.
      */
     @Expose
     public String Badge;
-    
+
     /**
      * The leader defeated to win this badge.
      */
     @Expose
     public String Leader;
-    
+
     /**
      * The date the badge was obtained.
      */
     @Expose
     public Date Obtained;
-    
+
     /**
      * A {@link List} of Pokemon names the player had when they defeated the gym.
      */

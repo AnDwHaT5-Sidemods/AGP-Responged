@@ -27,7 +27,7 @@ public class AGPConfig {
 
         @Setting(comment = "The prefix AGP will use in all chat messages.")
         public static String agpPrefix = "&f[&dAGP-R&f] ";
-        
+
         @Setting(comment = "The time in ticks between each AGP announcement message.")
         public static int announcementTimer = 16_800;
 

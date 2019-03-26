@@ -13,7 +13,6 @@ import com.pixelmonmod.pixelmon.api.exceptions.ShowdownImportException;
 import com.pixelmonmod.pixelmon.api.pokemon.ImportExportConverter;
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.battles.attacks.Attack;
-import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.StatsType;
 import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -67,8 +66,7 @@ public class ChooseTeamGui {
         constructChooseTeamPage(gymLeader, challengerUUID, view, pokeGym, arena, 0);
     }
 
-    private void constructChooseTeamPage(Player leader, UUID challUUID, View view, GymStruc gym, @Nullable ArenaStruc arena, int page)
-    {
+    private void constructChooseTeamPage(Player leader, UUID challUUID, View view, GymStruc gym, @Nullable ArenaStruc arena, int page) {
 
         int startOnLine = 3;
         int rowStart = 1;
@@ -79,10 +77,10 @@ public class ChooseTeamGui {
         List<ShowdownStruc> gymData = gym.Pokemon;
 
         //Sanity checks
-        int maxPages = Math.max(0, (int) (Math.ceil((double)gymData.size() / (double)itemsPerPage) - 1));
-        if(page < 0)
+        int maxPages = Math.max(0, (int) (Math.ceil((double) gymData.size() / (double) itemsPerPage) - 1));
+        if (page < 0)
             page = 0;
-        if(page >= maxPages)
+        if (page >= maxPages)
             page = maxPages;
 
         //Clear out previous layout / items
@@ -97,30 +95,29 @@ public class ChooseTeamGui {
         view.define(newLayout);
 
         int slotsDone = 0;
-            for(int i = 10; i <= 16; i++)
-            {
-                if(i != 13) {
-                    if(!selectedPokemon.isEmpty())
-                        if (slotsDone < selectedPokemon.size()) {
-                            view.setElement(i, getPokemonElement(selectedPokemon.get(slotsDone), true, view, page));
-                            slotsDone++;
-                        }
-                }
+        for (int i = 10; i <= 16; i++) {
+            if (i != 13) {
+                if (!selectedPokemon.isEmpty())
+                    if (slotsDone < selectedPokemon.size()) {
+                        view.setElement(i, getPokemonElement(selectedPokemon.get(slotsDone), true, view, page));
+                        slotsDone++;
+                    }
             }
-            slotsDone = 0;
-            for(int i = page * itemsPerPage; i < gymData.size(); i++) {
-                if(slotsDone == itemsPerPage) {
-                    break;
-                }
-                if(!selectedPokemon.contains(gymData.get(i))) {
-                    int currentRow = slotsDone / itemsPerRow;
-                    int currentSlot = slotsDone % itemsPerRow;
-                    int slot = (startOnLine * 9) + (currentRow * 9) + rowStart + currentSlot;
-                    //PixelmonData data = new PixelmonData();
-                    //ImportExportConverter.importText(gymData.get(i), data);
-                    view.setElement(slot, getPokemonElement(gymData.get(i), false, view, page));
-                    slotsDone++;
-                }
+        }
+        slotsDone = 0;
+        for (int i = page * itemsPerPage; i < gymData.size(); i++) {
+            if (slotsDone == itemsPerPage) {
+                break;
+            }
+            if (!selectedPokemon.contains(gymData.get(i))) {
+                int currentRow = slotsDone / itemsPerRow;
+                int currentSlot = slotsDone % itemsPerRow;
+                int slot = (startOnLine * 9) + (currentRow * 9) + rowStart + currentSlot;
+                //PixelmonData data = new PixelmonData();
+                //ImportExportConverter.importText(gymData.get(i), data);
+                view.setElement(slot, getPokemonElement(gymData.get(i), false, view, page));
+                slotsDone++;
+            }
         }
 
         //Next / Prev
@@ -139,8 +136,7 @@ public class ChooseTeamGui {
         ItemStack confirmStack = ItemStack.builder().itemType(ItemTypes.DYE).add(Keys.DISPLAY_NAME, Utils.toText("&aStart Battle", false)).add(Keys.DYE_COLOR, LIME).build();
         Consumer<Action.Click> startBattleAction = click -> Task.builder().execute(task ->
         {
-            if(selectedPokemon.size() >= gym.minimumPokemon && selectedPokemon.size() <= gym.maximumPokemon)
-            {
+            if (selectedPokemon.size() >= gym.minimumPokemon && selectedPokemon.size() <= gym.maximumPokemon) {
                 Optional<Player> challenger = Sponge.getServer().getPlayer(challUUID);
                 if (!challenger.isPresent()) {
                     leader.sendMessage(Utils.toText("&7The challenger has gone offline!", true));
@@ -190,9 +186,7 @@ public class ChooseTeamGui {
                     leader.sendMessage(Utils.toText("&7Initiating battle against &b" + challenger.get().getName() + "&7!", true));
                     challenger.get().sendMessage(Utils.toText("&7Gym Leader &b" + leader.getName() + " &7has accepted your challenge against the &b" + gym.Name + " &bGym!", true));
                     BattleUtil.startLeaderBattleWithTempTeam(challenger.get(), leader, leaderPixelmon);
-
                 }
-
             }
         }).submit(AGP.getInstance());
         Element confirm = Element.of(confirmStack, startBattleAction);
@@ -222,7 +216,7 @@ public class ChooseTeamGui {
             return Element.of(ItemStackSnapshot.NONE);
         }
         ItemStack itemStack = Utils.getPixelmonSprite(pokemon);
-        itemStack.offer(Keys.DISPLAY_NAME, toText("&d\u2605 &b" + pokemon.getSpecies().name + (!pokemon.getDisplayName().isEmpty()?"("+pokemon.getDisplayName()+")":"") + "&d \u2605", false));
+        itemStack.offer(Keys.DISPLAY_NAME, toText("&d\u2605 &b" + pokemon.getSpecies().name + (!pokemon.getDisplayName().isEmpty() ? "(" + pokemon.getDisplayName() + ")" : "") + "&d \u2605", false));
 
         ArrayList<Text> lore = new ArrayList<>();
         lore.add(toText("&7Nature: &b" + pokemon.getNature().name(), false));
@@ -235,9 +229,9 @@ public class ChooseTeamGui {
         float ivSAtk = pokemon.getIVs().get(StatsType.SpecialAttack);
         float ivSDef = pokemon.getIVs().get(StatsType.SpecialDefence);
         int percentage = Math.round(((ivHP + ivDef + ivAtk + ivSpeed + ivSAtk + ivSDef) / 186f) * 100);
-        lore.add(toText("&7IVs " + "(&b"+percentage+"%&7):", false));
-        lore.add((toText("    &7HP: &b" + (int)ivHP + " &d| &7Atk: &b" + (int)ivAtk + " &d| &7Def: &b" + (int)ivDef, false)));
-        lore.add((toText("    &7SAtk: &b" + (int)ivSAtk + " &d| &7SDef: &b" + ivSDef + " &d| &7Spd: &b" + (int)ivSpeed, false)));
+        lore.add(toText("&7IVs " + "(&b" + percentage + "%&7):", false));
+        lore.add((toText("    &7HP: &b" + (int) ivHP + " &d| &7Atk: &b" + (int) ivAtk + " &d| &7Def: &b" + (int) ivDef, false)));
+        lore.add((toText("    &7SAtk: &b" + (int) ivSAtk + " &d| &7SDef: &b" + ivSDef + " &d| &7Spd: &b" + (int) ivSpeed, false)));
         float evHP = pokemon.getEVs().get(StatsType.HP);
         float evAtk = pokemon.getEVs().get(StatsType.Attack);
         float evDef = pokemon.getEVs().get(StatsType.Defence);
@@ -245,14 +239,12 @@ public class ChooseTeamGui {
         float evSAtk = pokemon.getEVs().get(StatsType.SpecialAttack);
         float evSDef = pokemon.getEVs().get(StatsType.SpecialDefence);
         lore.add(toText("&7EVs:", false));
-        lore.add((toText("    &7HP: &b" + (int)evHP + " &d| &7Atk: &b" + (int)evAtk + " &d| &7Def: &b" + (int)evDef, false)));
-        lore.add((toText( "    &7SAtk: &b" + (int)evSAtk + " &d| &7SDef: &b" + (int)evSDef + " &d| &7Spd: &b" + (int)evSpeed, false)));
+        lore.add((toText("    &7HP: &b" + (int) evHP + " &d| &7Atk: &b" + (int) evAtk + " &d| &7Def: &b" + (int) evDef, false)));
+        lore.add((toText("    &7SAtk: &b" + (int) evSAtk + " &d| &7SDef: &b" + (int) evSDef + " &d| &7Spd: &b" + (int) evSpeed, false)));
         lore.add(toText("&7Moves:", false));
-        if(pokemon.getMoveset() != null)
-        {
+        if (pokemon.getMoveset() != null) {
             for (Attack attack : pokemon.getMoveset().attacks) {
-                if(attack != null)
-                {
+                if (attack != null) {
                     lore.add(toText("    &b" + attack.baseAttack.getUnLocalizedName(), false));
                 }
             }
@@ -261,14 +253,11 @@ public class ChooseTeamGui {
 
 
         Consumer<Action.Click> clickConsumer = click -> Task.builder().execute(task -> {
-            if(isSelected)
-            {
+            if (isSelected) {
                 selectedPokemon.remove(pokemonCode);
                 constructChooseTeamPage(leader, challengerUUID, view, gym, arena, page);
-            }
-            else
-            {
-                if(selectedPokemon.size() < 6)
+            } else {
+                if (selectedPokemon.size() < 6)
                     if (!selectedPokemon.contains(pokemonCode)) {
                         selectedPokemon.add(pokemonCode);
                         constructChooseTeamPage(leader, challengerUUID, view, gym, arena, page);

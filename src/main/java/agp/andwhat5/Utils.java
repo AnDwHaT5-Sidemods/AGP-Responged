@@ -1,15 +1,21 @@
 package agp.andwhat5;
 
-import java.time.Instant;
-import java.util.*;
-
+import agp.andwhat5.api.AGPBadgeGivenEvent;
+import agp.andwhat5.config.AGPConfig;
+import agp.andwhat5.config.structs.*;
 import agp.andwhat5.exceptions.AGPException;
+import com.flowpowered.math.vector.Vector3d;
+import com.google.common.collect.Lists;
+import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.config.PixelmonItems;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.enums.EnumSpecies;
+import com.pixelmonmod.pixelmon.storage.NbtKeys;
 import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
 import com.pixelmonmod.pixelmon.util.helpers.SpriteHelper;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
@@ -18,23 +24,10 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
-
-import com.flowpowered.math.vector.Vector3d;
-import com.google.common.collect.Lists;
-import com.pixelmonmod.pixelmon.Pixelmon;
-import com.pixelmonmod.pixelmon.storage.NbtKeys;
-
-import agp.andwhat5.api.AGPBadgeGivenEvent;
-import agp.andwhat5.config.AGPConfig;
-import agp.andwhat5.config.structs.ArenaStruc;
-import agp.andwhat5.config.structs.BadgeStruc;
-import agp.andwhat5.config.structs.DataStruc;
-import agp.andwhat5.config.structs.GymStruc;
-import agp.andwhat5.config.structs.PlayerStruc;
-import agp.andwhat5.config.structs.Vec3dStruc;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
 import org.spongepowered.api.world.World;
+
+import java.time.Instant;
+import java.util.*;
 
 @SuppressWarnings("Duplicates")
 public class Utils {
@@ -57,7 +50,7 @@ public class Utils {
      * @return A {@link PlayerStruc} representation of the player
      */
     public static PlayerStruc getPlayerData(Player player) {
-    	return DataStruc.gcon.PlayerData.getOrDefault(player.getUniqueId(), new PlayerStruc(player.getUniqueId()));
+        return DataStruc.gcon.PlayerData.getOrDefault(player.getUniqueId(), new PlayerStruc(player.getUniqueId()));
     }
 
     /**
@@ -77,37 +70,32 @@ public class Utils {
 
         PlayerPartyStorage storage = Pixelmon.storageManager.getParty((EntityPlayerMP) player);
         for (Pokemon pokemon : storage.getAll()) {
-            if(pokemon != null)
+            if (pokemon != null)
                 bs.Pokemon.add(pokemon.getDisplayName());
         }
         AGP.getInstance().getStorage().updateObtainedBadges(player.getUniqueId(), player.getName(), bs, true);
         saveAGPData();
     }
 
-    public static String getNameFromUUID(UUID uuid)
-    {
-    	UserStorageService userStorage = Sponge.getServiceManager().provide(UserStorageService.class).get();
+    public static String getNameFromUUID(UUID uuid) {
+        UserStorageService userStorage = Sponge.getServiceManager().provide(UserStorageService.class).get();
         Optional<User> userop = userStorage.get(uuid);
         return userop.map(User::getName).orElse("INVALID USER");
     }
-    
-    public static UUID getUUIDFromName(String name)
-    {
-    	UserStorageService userStorageService = Sponge.getServiceManager().provide(UserStorageService.class).get();
+
+    public static UUID getUUIDFromName(String name) {
+        UserStorageService userStorageService = Sponge.getServiceManager().provide(UserStorageService.class).get();
         Optional<User> user = userStorageService.get(name);
         UUID uuid = null;
         if (!user.isPresent()) {
             //Attempt 2, grab from the cache file incase the player files were wiped
-            
+
             User user1 = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(name).orElse(null);
-            if(user1 != null)
-            {
-            	uuid = user1.getUniqueId();
+            if (user1 != null) {
+                uuid = user1.getUniqueId();
             }
-        }
-        else
-        {
-        	uuid = user.get().getUniqueId();
+        } else {
+            uuid = user.get().getUniqueId();
         }
         return uuid;
     }
@@ -264,7 +252,7 @@ public class Utils {
         }
         PlayerPartyStorage storage = Pixelmon.storageManager.getParty((EntityPlayerMP) player);
         for (Pokemon pokemon : storage.getAll()) {
-            if(pokemon != null && pokemon.getLevel() > cap) {
+            if (pokemon != null && pokemon.getLevel() > cap) {
                 return false;
             }
         }
@@ -304,11 +292,12 @@ public class Utils {
     public static boolean isArenaEmpty(ArenaStruc as) {
         return (as.Leader == null && as.Challenger == null);
     }
-    
+
     /**
      * Sets the players position to the specified position.
-     * @param player The player whom will be teleported.
-     * @param loc The {@link Vec3dStruc} where the player will be teleported.
+     *
+     * @param player    The player whom will be teleported.
+     * @param loc       The {@link Vec3dStruc} where the player will be teleported.
      * @param worldUUID The UUID of the destination world.
      */
     public static void setPosition(Player player, Vec3dStruc loc, UUID worldUUID) {
@@ -325,6 +314,7 @@ public class Utils {
 
     /**
      * Checks to see if the specified player is a leader of any gyms.
+     *
      * @param player The player which you would like to check against.
      * @return True: The player is a leader of a gym. False: The player is not a leader of any gym.
      */
@@ -339,8 +329,9 @@ public class Utils {
 
     /**
      * Checks to see if a player is the leader of a specific gym.
+     *
      * @param player The player which you would like to check against.
-     * @param gs The {@link GymStruc} of the gym you are checking against.
+     * @param gs     The {@link GymStruc} of the gym you are checking against.
      * @return True: The player is the leader of the gym. False: The player is not a leader of the gym.
      */
     public static boolean isGymLeader(Player player, GymStruc gs) {
@@ -349,6 +340,7 @@ public class Utils {
 
     /**
      * Checks to see if the player is in any gyms queue for battle.
+     *
      * @param player The player which you would like to check against.
      * @return True: The player is in a gym queue. False: The player is not in a gym queue.
      */
@@ -363,6 +355,7 @@ public class Utils {
 
     /**
      * Checks to see if the specified player is in a gym battle.
+     *
      * @param player The player which you would like to check against.
      * @return True: The player is in a gym battle. False: The player is not in a gym battle.
      */
@@ -373,7 +366,8 @@ public class Utils {
 
     /**
      * Converts a string of text into a {@link Text}. Supports Minecraft color code formats.
-     * @param msg The message you would like to be converted to {@link Text}.
+     *
+     * @param msg    The message you would like to be converted to {@link Text}.
      * @param prefix Whether or not to apply the AGP prefix
      * @return A {@link Text} instance of msg.
      */
@@ -387,6 +381,7 @@ public class Utils {
 
     /**
      * Gets all of the players on the server and returns them as a {@link Collection}
+     *
      * @return Returns all of the players as a {@link Collection}.
      */
     @Deprecated //Marked so i can see all the crap code used for broadcasts
@@ -395,8 +390,10 @@ public class Utils {
     }
 
     //TODO: Replace methods that use this with gymstruc.Queue
+
     /**
      * Gets all of the players waiting in the specified gyms queue for battle.
+     *
      * @param gs The {@link GymStruc} of the gym you are checking against.
      * @return Returns a {@link List} of {@link UUID}s of the players waiting in the list.
      */
@@ -406,17 +403,19 @@ public class Utils {
 
     /**
      * Gets a {@link List} of {@link UUID}s of the leaders of the specified gym.
+     *
      * @param gs The {@link GymStruc} of the gym you are checking against.
      * @return Returns a {@link List} of {@link UUID}s of the leaders of the specified gym.
      */
     public static List<UUID> getGymLeaders(GymStruc gs) {
         return gs.PlayerLeaders;
     }
-    
+
     /**
      * Adds the specified amount of money to the players balance.
+     *
      * @param player The player which you would like to give the money to.
-     * @param money The amount of money you would like to give the player.
+     * @param money  The amount of money you would like to give the player.
      */
     public static void addCurrency(Player player, int money) {
         Pixelmon.moneyManager.getBankAccount((EntityPlayerMP) player).get().changeMoney(money);
@@ -424,22 +423,21 @@ public class Utils {
 
     /**
      * A custom converter for EntityPixelmon to PixelmonData
+     *
      * @param pixelmon The EntityPixelmon you would like to convert.
      * @return The PixelmonData of the EntityPixelmon provided.
      */
-    public static Pokemon entityPixelmonToPixelmonData(EntityPixelmon pixelmon)
-    {
+    public static Pokemon entityPixelmonToPixelmonData(EntityPixelmon pixelmon) {
         return pixelmon.getPokemonData();
     }
 
-    public static ItemStack getPixelmonSprite(Pokemon data)
-    {
+    public static ItemStack getPixelmonSprite(Pokemon data) {
         net.minecraft.item.ItemStack nativeItem = new net.minecraft.item.ItemStack(PixelmonItems.itemPixelmonSprite);
         NBTTagCompound nbt = new NBTTagCompound();
         EnumSpecies species = data.getSpecies();
         String idValue = String.format("%03d", species.getNationalPokedexInteger());
-        if (data.isEgg()){
-            switch(species) {
+        if (data.isEgg()) {
+            switch (species) {
                 case Manaphy:
                 case Togepi:
                     nbt.setString(NbtKeys.SPRITE_NAME, "pixelmon:sprites/eggs/manaphy1");

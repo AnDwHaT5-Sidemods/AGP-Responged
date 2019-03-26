@@ -40,10 +40,9 @@ public class GiveBadge implements CommandExecutor {
             ItemType itemType = Sponge.getRegistry().getType(ItemType.class, gym.Badge).orElse(ItemTypes.POTATO);
             ItemStack itemStack = ItemStack.of(itemType, 1);
             //noinspection ConstantConditions
-            DropItemHelper.giveItemStackToPlayer((EntityPlayer) target, (net.minecraft.item.ItemStack)(Object)itemStack);//TODO make helper function for this
+            DropItemHelper.giveItemStackToPlayer((EntityPlayer) target, (net.minecraft.item.ItemStack) (Object) itemStack);//TODO make helper function for this
         }
-        if(!gym.Commands.isEmpty())
-        {
+        if (!gym.Commands.isEmpty()) {
             gym.Commands.forEach(i -> Sponge.getCommandManager().process((CommandSource) Sponge.getServer(), i.trim().replace("%player%", target.getName()).replace("%leader%", src.getName())));
         }
 

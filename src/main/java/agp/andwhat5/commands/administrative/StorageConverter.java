@@ -31,7 +31,7 @@ public class StorageConverter implements CommandExecutor {
 
         if (!confirm.isPresent()) {
             src.sendMessage(Utils.toText("&7Incorrect usage: &b/STC <flatfile|h2|mysql> <confirm>&7.", true));
-        	return CommandResult.success();
+            return CommandResult.success();
         }
 
         if (confirm.get().equalsIgnoreCase("confirm")) {

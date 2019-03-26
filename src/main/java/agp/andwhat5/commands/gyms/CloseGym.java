@@ -65,5 +65,4 @@ public class CloseGym implements CommandExecutor {
     }
 
 
-
 }

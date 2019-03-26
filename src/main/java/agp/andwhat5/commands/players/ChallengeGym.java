@@ -19,7 +19,7 @@ public class ChallengeGym implements CommandExecutor {
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) {
-        if(!(src instanceof Player)) {
+        if (!(src instanceof Player)) {
             src.sendMessage(Text.of(TextColors.RED, "This command can only be ran by players"));
             return CommandResult.success();
         }

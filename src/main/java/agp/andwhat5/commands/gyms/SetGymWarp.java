@@ -16,7 +16,7 @@ public class SetGymWarp extends PlayerOnlyCommand {
 
     @Override
     public CommandResult execute(Player player, CommandContext args) {
-       // /SetGymWarp <gym> <lobby|home|arena> [(if arena) <name> <stands|challenger|leader> <opt-(-delete)>
+        // /SetGymWarp <gym> <lobby|home|arena> [(if arena) <name> <stands|challenger|leader> <opt-(-delete)>
 
         GymStruc gym = args.<GymStruc>getOne("GymName").get();
         String location = args.<String>getOne("location").get();
@@ -39,7 +39,7 @@ public class SetGymWarp extends PlayerOnlyCommand {
                 Optional<String> optDelete = args.getOne("-delete");
                 boolean deleteMode = optDelete.map(s -> s.equals("-delete")).orElse(false);
 
-                if(!optArenaName.isPresent() || !optArenaSubLocationName.isPresent()) {
+                if (!optArenaName.isPresent() || !optArenaSubLocationName.isPresent()) {
                     player.sendMessage(Utils.toText("&7Incorrect usage: &b/SetGymWarp <gym> <lobby|arena> [(if arena) <name> <stands|challenger|leader> <opt-(-delete)>]&7.", true));
                     return CommandResult.success();
                 }
@@ -48,7 +48,7 @@ public class SetGymWarp extends PlayerOnlyCommand {
                 String arenaSubLocationName = optArenaSubLocationName.get();
 
                 ArenaStruc as = Utils.getArena(gym, arenaName);
-                if(as == null) {
+                if (as == null) {
                     as = new ArenaStruc(arenaName);
                     gym.Arenas.add(as);
                 }
@@ -58,22 +58,22 @@ public class SetGymWarp extends PlayerOnlyCommand {
                     case "stands":
                         as.Stands = deleteMode ? null : loc;
                         gym.worldUUID = player.getWorldUniqueId().get();
-                        lName = arenaName+" stands";
+                        lName = arenaName + " stands";
                         break;
 
                     case "challenger":
                         as.Challenger = deleteMode ? null : loc;
                         gym.worldUUID = player.getWorldUniqueId().get();
-                        lName = arenaName+" challenger stage";
+                        lName = arenaName + " challenger stage";
                         break;
 
                     case "leader":
                         as.Leader = deleteMode ? null : loc;
                         gym.worldUUID = player.getWorldUniqueId().get();
-                        lName = arenaName+" leader stage";
+                        lName = arenaName + " leader stage";
                         break;
 
-                     default:
+                    default:
                         player.sendMessage(Utils.toText("&7The location &b" + arenaSubLocationName + " &7was not recognized!", true));
                         if (Utils.isArenaEmpty(as)) {
                             gym.Arenas.remove(as);
@@ -81,7 +81,7 @@ public class SetGymWarp extends PlayerOnlyCommand {
                         return CommandResult.success();
                 }
 
-                if(deleteMode) {
+                if (deleteMode) {
                     player.sendMessage(Utils.toText("&7The &b" + gym.Name + " &7Gym's &b" + lName + " &7has been deleted!", true));
                 } else {
                     player.sendMessage(Utils.toText("&7The &b" + gym.Name + " &7Gym's &b" + lName + " &7has been set to your current location!", true));
@@ -93,9 +93,9 @@ public class SetGymWarp extends PlayerOnlyCommand {
                 }
                 break;
 
-                default:
-                    player.sendMessage(Utils.toText("&7Incorrect usage: &b/SetGymWarp <gym> <lobby|arena> [(if arena) <name> <stands|challenger|leader> <opt-(-delete)>]&7.", true));
-                    break;
+            default:
+                player.sendMessage(Utils.toText("&7Incorrect usage: &b/SetGymWarp <gym> <lobby|arena> [(if arena) <name> <stands|challenger|leader> <opt-(-delete)>]&7.", true));
+                break;
         }
 
         Utils.editGym(gym);

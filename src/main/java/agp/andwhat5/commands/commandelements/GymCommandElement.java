@@ -13,6 +13,10 @@ public class GymCommandElement extends SelectorCommandElement {
         super(Text.of("GymName"));
     }
 
+    public static CommandElement gym() {
+        return new GymCommandElement();
+    }
+
     @Override
     protected Iterable<String> getChoices(CommandSource source) {
         return Utils.getGymNames(true);
@@ -26,10 +30,6 @@ public class GymCommandElement extends SelectorCommandElement {
         }
 
         return value;
-    }
-
-    public static CommandElement gym() {
-        return new GymCommandElement();
     }
 
 }

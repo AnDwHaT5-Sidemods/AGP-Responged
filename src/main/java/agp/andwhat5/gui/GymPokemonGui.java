@@ -30,9 +30,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static agp.andwhat5.Utils.toText;
-import static org.spongepowered.api.data.type.DyeColors.BLACK;
-import static org.spongepowered.api.data.type.DyeColors.RED;
-import static org.spongepowered.api.data.type.DyeColors.WHITE;
+import static org.spongepowered.api.data.type.DyeColors.*;
 
 public class GymPokemonGui {
 
@@ -51,8 +49,7 @@ public class GymPokemonGui {
         constructGymPokemonPage(player, view, gym, 0);
     }
 
-    private static void constructGymPokemonPage(Player player, View view, GymStruc gym, int page)
-    {
+    private static void constructGymPokemonPage(Player player, View view, GymStruc gym, int page) {
 
         int startOnLine = 1;
         int rowStart = 1;
@@ -63,10 +60,10 @@ public class GymPokemonGui {
         List<ShowdownStruc> gymData = gym.Pokemon;
 
         //Sanity checks
-        int maxPages = Math.max(0, (int) (Math.ceil((double)gymData.size() / (double)itemsPerPage) - 1));
-        if(page < 0)
+        int maxPages = Math.max(0, (int) (Math.ceil((double) gymData.size() / (double) itemsPerPage) - 1));
+        if (page < 0)
             page = 0;
-        if(page >= maxPages)
+        if (page >= maxPages)
             page = maxPages;
 
         //Clear out previous layout / items
@@ -81,7 +78,7 @@ public class GymPokemonGui {
         view.define(newLayout);
 
         int slotsDone = 0;
-        if(!gymData.isEmpty()) {
+        if (!gymData.isEmpty()) {
             for (int i = page * itemsPerPage; i < gymData.size(); i++) {
                 if (slotsDone == itemsPerPage) {
                     break;
@@ -124,7 +121,7 @@ public class GymPokemonGui {
     }
 
     private static Element getPokemonElement(Player player, GymStruc gym, ShowdownStruc struc) {
-       Pokemon pokemon = null;
+        Pokemon pokemon = null;
         try {
             pokemon = ImportExportConverter.importText(struc.showdownCode);
         } catch (ShowdownImportException e) {
@@ -132,7 +129,7 @@ public class GymPokemonGui {
             return Element.of(ItemStackSnapshot.NONE);
         }
         ItemStack itemStack = Utils.getPixelmonSprite(pokemon);
-        itemStack.offer(Keys.DISPLAY_NAME, toText("&d\u2605 &b" + pokemon.getSpecies().name + (!pokemon.getDisplayName().isEmpty()?"("+pokemon.getDisplayName()+")":"") + "&d \u2605", false));
+        itemStack.offer(Keys.DISPLAY_NAME, toText("&d\u2605 &b" + pokemon.getSpecies().name + (!pokemon.getDisplayName().isEmpty() ? "(" + pokemon.getDisplayName() + ")" : "") + "&d \u2605", false));
 
         ArrayList<Text> lore = new ArrayList<>();
         lore.add(toText("&7Nature: &b" + pokemon.getNature().name(), false));
@@ -145,9 +142,9 @@ public class GymPokemonGui {
         float ivSAtk = pokemon.getIVs().get(StatsType.SpecialAttack);
         float ivSDef = pokemon.getIVs().get(StatsType.SpecialDefence);
         int percentage = Math.round(((ivHP + ivDef + ivAtk + ivSpeed + ivSAtk + ivSDef) / 186f) * 100);
-        lore.add(toText("&7IVs " + "(&b"+percentage+"%&7):", false));
-        lore.add((toText("    &7HP: &b" + (int)ivHP + " &d| &7Atk: &b" + (int)ivAtk + " &d| &7Def: &b" + (int)ivDef, false)));
-        lore.add((toText("    &7SAtk: &b" + (int)ivSAtk + " &d| &7SDef: &b" + (int)ivSDef + " &d| &7Spd: &b" + (int)ivSpeed, false)));
+        lore.add(toText("&7IVs " + "(&b" + percentage + "%&7):", false));
+        lore.add((toText("    &7HP: &b" + (int) ivHP + " &d| &7Atk: &b" + (int) ivAtk + " &d| &7Def: &b" + (int) ivDef, false)));
+        lore.add((toText("    &7SAtk: &b" + (int) ivSAtk + " &d| &7SDef: &b" + (int) ivSDef + " &d| &7Spd: &b" + (int) ivSpeed, false)));
         float evHP = pokemon.getEVs().get(StatsType.HP);
         float evAtk = pokemon.getEVs().get(StatsType.Attack);
         float evDef = pokemon.getEVs().get(StatsType.Defence);
@@ -155,13 +152,12 @@ public class GymPokemonGui {
         float evSAtk = pokemon.getEVs().get(StatsType.SpecialAttack);
         float evSDef = pokemon.getEVs().get(StatsType.SpecialDefence);
         lore.add(toText("&7EVs:", false));
-        lore.add((toText("    &7HP: &b" + (int)evHP + " &d| &7Atk: &b" + (int)evAtk + " &d| &7Def: &b" + (int)evDef, false)));
-        lore.add((toText( "    &7SAtk: &b" + (int)evSAtk + " &d| &7SDef: &b" + (int)evSDef + " &d| &7Spd: &b" + (int)evSpeed, false)));
+        lore.add((toText("    &7HP: &b" + (int) evHP + " &d| &7Atk: &b" + (int) evAtk + " &d| &7Def: &b" + (int) evDef, false)));
+        lore.add((toText("    &7SAtk: &b" + (int) evSAtk + " &d| &7SDef: &b" + (int) evSDef + " &d| &7Spd: &b" + (int) evSpeed, false)));
         lore.add(toText("&7Moves:", false));
-        if(pokemon.getMoveset() != null)
-        {
+        if (pokemon.getMoveset() != null) {
             for (Attack attack : pokemon.getMoveset().attacks) {
-                if(attack != null) {
+                if (attack != null) {
                     lore.add(toText("    &b" + attack.baseAttack.getUnLocalizedName(), false));
                 }
             }
@@ -170,7 +166,7 @@ public class GymPokemonGui {
 
 
         Consumer<Action.Click> clickConsumer = click -> Task.builder().execute(task -> {
-            if(player.hasPermission("agp.headleader") || player.hasPermission("agp.gympokemon.admin")) {
+            if (player.hasPermission("agp.headleader") || player.hasPermission("agp.gympokemon.admin")) {
                 GymPokemonPromptGui.openPromptGui(player, gym, struc);
             }
         }).submit(AGP.getInstance());

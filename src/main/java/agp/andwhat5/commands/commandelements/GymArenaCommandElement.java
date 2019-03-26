@@ -33,7 +33,7 @@ public class GymArenaCommandElement extends SelectorCommandElement {
 
     @Override
     protected Iterable<String> getChoices(CommandSource source) {
-        if(currentGym != null) {
+        if (currentGym != null) {
             List<ArenaStruc> arenas = currentGym.Arenas;
             List<String> arenaNames = new ArrayList<>(arenas.size());
             for (ArenaStruc arena : arenas) {
@@ -79,18 +79,18 @@ public class GymArenaCommandElement extends SelectorCommandElement {
         return ImmutableList.of();
     }
 
-        private Pattern getFormattedPattern(String input) {
-            if (!input.startsWith("^")) { // Anchor matches to the beginning -- this lets us use find()
-                input = "^" + input;
-            }
-            return Pattern.compile(input, Pattern.CASE_INSENSITIVE);
-
+    private Pattern getFormattedPattern(String input) {
+        if (!input.startsWith("^")) { // Anchor matches to the beginning -- this lets us use find()
+            input = "^" + input;
         }
+        return Pattern.compile(input, Pattern.CASE_INSENSITIVE);
+
+    }
 
     private List<String> getGymArenas(CommandContext context) {
 
         Optional<GymStruc> gymName = context.getOne("GymName");
-        if(!gymName.isPresent()) {
+        if (!gymName.isPresent()) {
             currentGym = null;
             return ImmutableList.of();
         }

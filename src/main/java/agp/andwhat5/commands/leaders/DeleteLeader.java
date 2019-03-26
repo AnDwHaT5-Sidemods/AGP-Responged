@@ -18,11 +18,10 @@ public class DeleteLeader implements CommandExecutor {
         GymStruc gym = args.<GymStruc>getOne("GymName").get();
 
         if (target.equalsIgnoreCase("npc")) {
-        	if(gym.NPCAmount <= 0)
-        	{
+            if (gym.NPCAmount <= 0) {
                 src.sendMessage(Utils.toText("&7This gym has no NPC leaders.", true));
-        		return CommandResult.success();
-        	}
+                return CommandResult.success();
+            }
             gym.NPCAmount -= 1;
             Utils.editGym(gym);
             Utils.saveAGPData();
@@ -31,8 +30,7 @@ public class DeleteLeader implements CommandExecutor {
         }
 
         UUID pUUID = Utils.getUUIDFromName(target);
-        if(pUUID == null)
-        {
+        if (pUUID == null) {
             src.sendMessage(Utils.toText("&7Could not find specified player.", true));
             return CommandResult.success();
         }

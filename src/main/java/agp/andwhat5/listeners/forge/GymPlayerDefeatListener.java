@@ -1,7 +1,7 @@
 package agp.andwhat5.listeners.forge;
 
 import agp.andwhat5.Utils;
-import agp.andwhat5.battles.TempPlayerPartyStorage;
+import agp.andwhat5.battles.BattleUtil;
 import agp.andwhat5.config.AGPConfig;
 import agp.andwhat5.config.structs.BattleStruc;
 import agp.andwhat5.config.structs.DataStruc;
@@ -20,6 +20,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -43,7 +44,7 @@ public class GymPlayerDefeatListener {
                 if (bts != null) {
                     Player challenger = Sponge.getServer().getPlayer(bts.challenger).get();
 
-                    if(!bts.challenger.equals(challenger.getUniqueId())) {
+                    if (!bts.challenger.equals(challenger.getUniqueId())) {
                         //Return if the player is the gym leader
                         return;
                     }
@@ -51,18 +52,17 @@ public class GymPlayerDefeatListener {
                     Player leader = Sponge.getServer().getPlayer(bts.leader).get();
 
                     if (result.equals(BattleResults.FLEE) || result.equals(BattleResults.DRAW)) {
-                        if(bts.arena != null)
+                        if (bts.arena != null)
                             bts.arena.inUse = false;
                         DataStruc.gcon.GymBattlers.remove(bts);
                         return;
                     }
                     if (result.equals(BattleResults.VICTORY)) {
-                        if (Pixelmon.storageManager.getParty((EntityPlayerMP) challenger).countAblePokemon() == 0)
-                        {
-                            if(bts.arena != null)
+                        if (Pixelmon.storageManager.getParty((EntityPlayerMP) challenger).countAblePokemon() == 0) {
+                            if (bts.arena != null)
                                 bts.arena.inUse = false;
                             DataStruc.gcon.GymBattlers.remove(bts);
-                                return;
+                            return;
                         }
                         if (!Utils.hasBadge(bts.challenger, bts.gym)) {
                             Utils.giveBadge(challenger, bts.gym, leader.getName());
@@ -73,9 +73,8 @@ public class GymPlayerDefeatListener {
                                 ItemStack item = new ItemStack(CommandBase.getItemByText((ICommandSender) leader, bts.gym.Badge), 1);
                                 DropItemHelper.giveItemStackToPlayer((EntityPlayer) challenger, item);
                             }
-                            if(!bts.gym.Commands.isEmpty())
-                            {
-                            	bts.gym.Commands.forEach(i -> Sponge.getCommandManager().process((CommandSource) Sponge.getServer(), i.trim().replace("%player%", challenger.getName()).replace("%leader%", leader.getName())));
+                            if (!bts.gym.Commands.isEmpty()) {
+                                bts.gym.Commands.forEach(i -> Sponge.getCommandManager().process((CommandSource) Sponge.getServer(), i.trim().replace("%player%", challenger.getName()).replace("%leader%", leader.getName())));
                             }
 
                             challenger.sendMessage(Utils.toText("&7Congratulations, you defeated the &b" + bts.gym.Name + " &7gym! ", true));
@@ -87,13 +86,13 @@ public class GymPlayerDefeatListener {
                             Utils.saveAGPData();
                         }
                     }
-                    if(bts.arena != null)
+                    if (bts.arena != null)
                         bts.arena.inUse = false;
                     DataStruc.gcon.GymBattlers.remove(bts);
                     Utils.saveAGPData();
 
                     //Clean up any temp teams
-                    Sponge.getServer().getPlayer(leader.getUniqueId()).ifPresent(TempPlayerPartyStorage::removeTempStorage);
+                    Sponge.getServer().getPlayer(leader.getUniqueId()).ifPresent(BattleUtil::restoreOriginalTeam);
                 }
             }
         }
@@ -112,11 +111,11 @@ public class GymPlayerDefeatListener {
 
                 bts.ifPresent(battleStruc -> {
                     //Clean up any temp teams
-                    Sponge.getServer().getPlayer(battleStruc.leader).ifPresent(TempPlayerPartyStorage::removeTempStorage);
+                    Sponge.getServer().getPlayer(battleStruc.leader).ifPresent(BattleUtil::restoreOriginalTeam);
 
                     Sponge.getServer().getPlayer(battleStruc.challenger).ifPresent(player -> CommandChatHandler.sendChat((ICommandSender) player, TextFormatting.RED + "It appears the gym battle ended abnormally..."));//The extra . was needed. Adds to the aw fuck effect.
                     Sponge.getServer().getPlayer(battleStruc.leader).ifPresent(player -> CommandChatHandler.sendChat((ICommandSender) player, TextFormatting.RED + "It appears the gym battle ended abnormally..."));//The extra . was needed. Adds to the aw fuck effect.
-                    if(battleStruc.arena != null)
+                    if (battleStruc.arena != null)
                         battleStruc.arena.inUse = false;
                     DataStruc.gcon.GymBattlers.remove(battleStruc);
                 });
@@ -124,4 +123,12 @@ public class GymPlayerDefeatListener {
         }
     }
 
+    /**
+     * This should never do anything as teams should be restored thru the above methods
+     * but I'm going to add it just in case
+     */
+    @SubscribeEvent
+    public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
+        BattleUtil.restoreOriginalTeam((Player) event.player);
+    }
 }

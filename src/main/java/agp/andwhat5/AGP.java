@@ -81,17 +81,20 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 
-import static agp.andwhat5.config.structs.GymStruc.EnumStatus.*;
-
-
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.UUID;
+
+import static agp.andwhat5.config.structs.GymStruc.EnumStatus.CLOSED;
+import static agp.andwhat5.config.structs.GymStruc.EnumStatus.NPC;
 
 @Plugin(id = "agp", name = "AGP Responged", version = "1.0.2 Psyduck Edition II", dependencies = @Dependency(id = "pixelmon"), description = "Another gym plugin... but for Sponge!", authors = {"AnDwHaT5", "ClientHax"})
 public class AGP {
 
     private static AGP instance;
+    private final File base = new File(".");
     @Inject
     public PluginContainer container;
     private AGPConfig config;
@@ -101,7 +104,6 @@ public class AGP {
     private ConfigurationLoader<CommentedConfigurationNode> configLoader;
     private CommentedConfigurationNode node;
     private Storage storage; //TODO: Look into storage options.
-    private final File base = new File(".");
 
     //TODO: Move storage related actions to a dedicated class
 
@@ -132,7 +134,7 @@ public class AGP {
     }
 
     @SuppressWarnings("deprecation")
-	@Listener
+    @Listener
     public void init(GameStartedServerEvent event) {
         instance = this;
         if (AGPConfig.Storage.storageType.equalsIgnoreCase("mysql")) {
@@ -149,56 +151,54 @@ public class AGP {
         try {
             this.storage.init();
             //Do conversion from old type player list
-            if(Utils.getGymStrucs(true).stream().anyMatch(g -> !g.Leaders.isEmpty()))
-            {
-	            for (GymStruc gym : Utils.getGymStrucs(true)) {
-	                if (!gym.Leaders.isEmpty()) {
-		                //Skip if the list is empt
-		
-		                gym.PlayerLeaders = new ArrayList<>(gym.Leaders.size());
-		                for (String leader : new ArrayList<>(gym.Leaders)) {//Clone list to avoid issues when removing entrys
-		                    //Convert name to uuid
-		                    if (leader.length() == 36) {
-		                        //Assume uuid
-		                        gym.PlayerLeaders.add(UUID.fromString(leader));
-		                        gym.Leaders.remove(leader);
-		                        System.out.println("Converting uuid to new format " + leader);
-		                    } else if (leader.equalsIgnoreCase("npc")) {
-		                        gym.NPCAmount++;
-		                        gym.Leaders.remove(leader);
-		                        System.out.println("Converting npc to new format");
-		                    } else {
-		                        //Assume player name
-		                        UserStorageService userStorageService = Sponge.getServiceManager().provide(UserStorageService.class).get();
-		                        Optional<User> user = userStorageService.get(leader);
-		                        if (!user.isPresent()) {
-		                            //Attempt 2, grab from the cache file incase the player files were wiped
-		                            User user1 = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(leader).orElse(null);
-		                            if(user1 != null)
-		                            {
-		                            	UUID lastKnownUUID = user1.getUniqueId();
-		    	                        if (lastKnownUUID == null) {
-		    	                            System.out.println("Error while looking up user for leader " + leader + " in gym " + gym.Name);
-		    	                        } else {
-		    	                            gym.PlayerLeaders.add(lastKnownUUID);
-		    	                            System.out.println("Converting username to new format " + leader + " " + lastKnownUUID);
-		    	                            gym.Leaders.remove(leader);
-		    	                        }
-		                            }
-		                            System.out.println("Could not convert " + leader + " to UUID. This user likely changed their name to something new.");
-		                            gym.Leaders.remove(leader);
-		                        } else {
-		                            gym.PlayerLeaders.add(user.get().getUniqueId());
-		                            System.out.println("Converting username to new format " + user.get().getName() + " " + user.get().getUniqueId());
-		                            gym.Leaders.remove(leader);
-		                        }
-		                    }
-		                }
-	
-	                }
-	
-	            }
-	            Utils.saveAGPData();
+            if (Utils.getGymStrucs(true).stream().anyMatch(g -> !g.Leaders.isEmpty())) {
+                for (GymStruc gym : Utils.getGymStrucs(true)) {
+                    if (!gym.Leaders.isEmpty()) {
+                        //Skip if the list is empt
+
+                        gym.PlayerLeaders = new ArrayList<>(gym.Leaders.size());
+                        for (String leader : new ArrayList<>(gym.Leaders)) {//Clone list to avoid issues when removing entrys
+                            //Convert name to uuid
+                            if (leader.length() == 36) {
+                                //Assume uuid
+                                gym.PlayerLeaders.add(UUID.fromString(leader));
+                                gym.Leaders.remove(leader);
+                                System.out.println("Converting uuid to new format " + leader);
+                            } else if (leader.equalsIgnoreCase("npc")) {
+                                gym.NPCAmount++;
+                                gym.Leaders.remove(leader);
+                                System.out.println("Converting npc to new format");
+                            } else {
+                                //Assume player name
+                                UserStorageService userStorageService = Sponge.getServiceManager().provide(UserStorageService.class).get();
+                                Optional<User> user = userStorageService.get(leader);
+                                if (!user.isPresent()) {
+                                    //Attempt 2, grab from the cache file incase the player files were wiped
+                                    User user1 = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(leader).orElse(null);
+                                    if (user1 != null) {
+                                        UUID lastKnownUUID = user1.getUniqueId();
+                                        if (lastKnownUUID == null) {
+                                            System.out.println("Error while looking up user for leader " + leader + " in gym " + gym.Name);
+                                        } else {
+                                            gym.PlayerLeaders.add(lastKnownUUID);
+                                            System.out.println("Converting username to new format " + leader + " " + lastKnownUUID);
+                                            gym.Leaders.remove(leader);
+                                        }
+                                    }
+                                    System.out.println("Could not convert " + leader + " to UUID. This user likely changed their name to something new.");
+                                    gym.Leaders.remove(leader);
+                                } else {
+                                    gym.PlayerLeaders.add(user.get().getUniqueId());
+                                    System.out.println("Converting username to new format " + user.get().getName() + " " + user.get().getUniqueId());
+                                    gym.Leaders.remove(leader);
+                                }
+                            }
+                        }
+
+                    }
+
+                }
+                Utils.saveAGPData();
             }
             //AGP.getInstance().getStorage().getGyms()
             for (GymStruc gs : Utils.getGymStrucs(true)) {
@@ -214,7 +214,7 @@ public class AGP {
 
         DataStruc.gcon.GymData.forEach(gym ->
         {
-            if(gym.worldUUID == null) {
+            if (gym.worldUUID == null) {
                 try {
                     gym.worldUUID = Sponge.getServer().getDefaultWorld().orElseThrow(() -> new AGPException("No Default World")).getUniqueId();
                 } catch (AGPException e) {
@@ -276,9 +276,9 @@ public class AGP {
                         GenericArguments.onlyOne(GymCommandElement.gym()),
                         GenericArguments.onlyOne(GenericArguments.string(Text.of("location"))),
                         GenericArguments.optional(GenericArguments.seq(
-                                    GenericArguments.optional(GenericArguments.string(Text.of("GymArena"))),
-                                    GenericArguments.optional(GenericArguments.string(Text.of("arenaSubLocation"))),
-                                    GenericArguments.optional(GenericArguments.string(Text.of("-delete")))
+                                GenericArguments.optional(GenericArguments.string(Text.of("GymArena"))),
+                                GenericArguments.optional(GenericArguments.string(Text.of("arenaSubLocation"))),
+                                GenericArguments.optional(GenericArguments.string(Text.of("-delete")))
                         ))
                 )
                 .build();

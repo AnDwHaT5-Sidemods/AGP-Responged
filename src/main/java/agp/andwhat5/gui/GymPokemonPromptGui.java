@@ -29,9 +29,7 @@ import org.spongepowered.api.text.Text;
 import java.util.function.Consumer;
 
 import static agp.andwhat5.Utils.toText;
-import static org.spongepowered.api.data.type.DyeColors.BLACK;
-import static org.spongepowered.api.data.type.DyeColors.RED;
-import static org.spongepowered.api.data.type.DyeColors.WHITE;
+import static org.spongepowered.api.data.type.DyeColors.*;
 
 @SuppressWarnings("WeakerAccess")
 public class GymPokemonPromptGui {
@@ -52,8 +50,7 @@ public class GymPokemonPromptGui {
         constructopenPromptPage(player, view, gym, struc);
     }
 
-    private static void constructopenPromptPage(Player player, View view, GymStruc gym, ShowdownStruc struc)
-    {
+    private static void constructopenPromptPage(Player player, View view, GymStruc gym, ShowdownStruc struc) {
         //Clear out previous layout / items
         Layout newLayout = Layout.builder()
                 .row(redGlassElement, 0)

@@ -64,8 +64,7 @@ public class AcceptChallenge extends PlayerOnlyCommand {
             battlecontroller.endBattle(EnumBattleEndCause.NORMAL);
         }
 
-        if(challenger.getName().equalsIgnoreCase(sender.getName()))
-        {
+        if (challenger.getName().equalsIgnoreCase(sender.getName())) {
             sender.sendMessage(Utils.toText("&7You can not accept a challenge from yourself!", true));
             gym.Queue.remove(0);
             return CommandResult.success();

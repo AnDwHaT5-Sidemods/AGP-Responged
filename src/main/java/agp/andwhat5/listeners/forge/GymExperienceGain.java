@@ -1,7 +1,6 @@
 package agp.andwhat5.listeners.forge;
 
 import agp.andwhat5.Utils;
-import agp.andwhat5.battles.TempPlayerPartyStorage;
 import com.pixelmonmod.pixelmon.api.events.ExperienceGainEvent;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -19,18 +18,11 @@ public class GymExperienceGain {
     @SubscribeEvent
     public void onExpGain(ExperienceGainEvent event) {
         EntityPlayerMP player = event.pokemon.getPlayerOwner();
-        if(player != null) {
+        if (player != null) {
             if (Utils.isInGymBattle((Player) player)) {
                 event.setExperience(0);
             }
-        } else {
-            //ARGGGGGHHHHHHHHH
-            if(TempPlayerPartyStorage.checkFakeUUIDExists(event.pokemon.getStorage().uuid)) {
-                event.setExperience(0);
-            }
         }
-
-
     }
 
 }

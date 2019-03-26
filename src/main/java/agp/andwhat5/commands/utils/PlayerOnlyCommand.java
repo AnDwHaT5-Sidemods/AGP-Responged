@@ -13,12 +13,12 @@ public abstract class PlayerOnlyCommand implements CommandExecutor {
     @Override
     public final CommandResult execute(CommandSource src, CommandContext args) {
 
-        if(!(src instanceof Player)) {
+        if (!(src instanceof Player)) {
             src.sendMessage(Text.of(TextColors.RED, "This command may only be executed by a player"));
             return CommandResult.success();
         }
 
-        return execute((Player)src, args);
+        return execute((Player) src, args);
 
     }
 
