@@ -131,4 +131,8 @@ public class GymPlayerDefeatListener {
     public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
         BattleUtil.restoreOriginalTeam((Player) event.player);
     }
+    @SubscribeEvent
+    public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
+        BattleUtil.restoreOriginalTeam((Player) event.player);
+    }
 }

@@ -8,11 +8,15 @@ import com.pixelmonmod.pixelmon.battles.controller.participants.PlayerParticipan
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,7 +24,6 @@ import java.util.UUID;
 
 @SuppressWarnings("Duplicates")
 public class BattleUtil {
-    public static Map<UUID, Pokemon[]> storageForStoredStorages = Maps.newHashMap();
 
     public static void startLeaderBattleWithTempTeam(Player challenger, Player leader, List<Pokemon> leadersTempTeam) {
         PlayerPartyStorage challengerStorage = Pixelmon.storageManager.getParty((EntityPlayerMP) challenger);
@@ -33,12 +36,21 @@ public class BattleUtil {
         }
         EntityPixelmon firstAble = challengerStorage.getAndSendOutFirstAblePokemon(null);
         PlayerParticipant challengerParticipant = new PlayerParticipant((EntityPlayerMP) challenger, firstAble);
-        storageForStoredStorages.put(leader.getUniqueId(), leaderStorage.getAll());
-        for (int i = 0; i < 6; i++) {
-            leaderStorage.set(i, leadersTempTeam.size() > i ? leadersTempTeam.get(i) : null);
+        File file = new File("./config/agp/temp-teams/"+leader.getUniqueId()+".party");
+        if (!file.getParentFile().exists())
+            file.getParentFile().mkdir();
+        try {
+            CompressedStreamTools.write(leaderStorage.writeToNBT(new NBTTagCompound()), file);
+            for (int i = 0; i < 6; i++) {
+                leaderStorage.set(i, leadersTempTeam.size() > i ? leadersTempTeam.get(i) : null);
+            }
+            PlayerParticipant pla = new PlayerParticipant((EntityPlayerMP) leader, leaderStorage.getAndSendOutFirstAblePokemon(null));
+            BattleRegistry.startBattle(pla, challengerParticipant);
+        } catch (IOException e) {
+            e.printStackTrace();
+            challenger.sendMessage(Text.of(TextColors.RED, "An error has occurred"));
+            leader.sendMessage(Text.of(TextColors.RED, "An error has occurred"));
         }
-        PlayerParticipant pla = new PlayerParticipant((EntityPlayerMP) leader, leaderStorage.getAndSendOutFirstAblePokemon(null));
-        BattleRegistry.startBattle(pla, challengerParticipant);
     }
 
     /**
@@ -58,11 +70,14 @@ public class BattleUtil {
     }
 
     public static void restoreOriginalTeam(Player player) {
-        if (storageForStoredStorages.containsKey(player.getUniqueId())) {
+        File file = new File("./config/agp/temp-teams/"+player.getUniqueId()+".party");
+        if (file.exists()) {
             PlayerPartyStorage storage = Pixelmon.storageManager.getParty(player.getUniqueId());
-            Pokemon[] team = storageForStoredStorages.remove(player.getUniqueId());
-            for (int i = 0; i < 6; i++) {
-                storage.set(i, team.length > i ? team[i] : null);
+            try {
+                storage.readFromNBT(CompressedStreamTools.read(file));
+                file.delete();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
