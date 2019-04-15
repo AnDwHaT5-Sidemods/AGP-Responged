@@ -33,6 +33,10 @@ import java.util.*;
 public class Utils {
     //TODO: Utility methods for Player <-> EntityPlayerMP
 
+	
+	public static HashMap<UUID, PlayerPartyStorage> tempTeamStorage = new HashMap<>();
+
+	
     /**
      * Saves all data currently in the DataStruc.gcon field
      * <p>

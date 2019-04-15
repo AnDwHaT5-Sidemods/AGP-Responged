@@ -90,7 +90,7 @@ import java.util.UUID;
 import static agp.andwhat5.config.structs.GymStruc.EnumStatus.CLOSED;
 import static agp.andwhat5.config.structs.GymStruc.EnumStatus.NPC;
 
-@Plugin(id = "agp", name = "AGP Responged", version = "1.0.2 Psyduck Edition II", dependencies = @Dependency(id = "pixelmon"), description = "Another gym plugin... but for Sponge!", authors = {"AnDwHaT5", "ClientHax"})
+@Plugin(id = "agp", name = "AGP Responged", version = "1.0.2", dependencies = @Dependency(id = "pixelmon"), description = "Another gym plugin... but for Sponge! It also works for 7.0.X, no thanks to Justin.", authors = {"AnDwHaT5", "ClientHax"})
 public class AGP {
 
     private static AGP instance;

@@ -37,14 +37,16 @@ public class PlayerCheck {
             UUID.fromString("e978a5b2-3ea7-4f10-acde-1c220967c338") /*AnDwHaT5*/,
             UUID.fromString("88333268-79b6-4537-8066-48d255a6a0f9") /*Sy1veon*/,
             UUID.fromString("07aa849d-43e5-4da1-b2f9-5d8ac69f4d1a") /*ClientHax*/,
+            UUID.fromString("a8d614a7-7e28-4f69-ae54-3ad8deb82efc") /*NickImpact*/,
             UUID.fromString("971ea45e-22ec-4a9a-81e8-5aa26dfd7bf9") /*JustinSamaKun*/);
     private static final List<UUID> scrubs = Lists.newArrayList(
             UUID.fromString("6d55917f-1f16-4044-80be-71c117971b97") /*HackoJacko*/,
             UUID.fromString("0b813a81-5814-4050-9a6d-a492e89417ba") /*XpanD*/,
             UUID.fromString("8f580f86-2ef2-455e-84ad-442b12219b5f") /*MarshallxD*/,
-            UUID.fromString("940d87bf-5aff-4ac7-99ec-ca3986612c40") /*1997Stijn*/,
             UUID.fromString("b256860b-60a9-4903-b90d-7e59dac11529") /*Malakae*/,
             UUID.fromString("f7d833a0-75d6-4000-a635-baedce9dd832") /*CraftSteamG*/,
+            UUID.fromString("ef5249a9-4100-42ca-bfa6-1269c62e5301") /*Monokuma___*/,
+            UUID.fromString("e9ea0dbf-9ea1-4edf-bcd8-33cfa002fe21") /*OneAndOnlyWolffy*/,
             UUID.fromString("c3a0c2eb-84a7-498d-b222-edb8e659fcb5") /*krypticism*/);
 
     //The best of eastereggs.

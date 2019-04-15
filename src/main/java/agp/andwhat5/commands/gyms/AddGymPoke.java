@@ -35,6 +35,11 @@ public class AddGymPoke extends PlayerOnlyCommand {
             }
             NBTTagCompound pixelmondata = new NBTTagCompound();
             EntityPixelmon pixelmon = (EntityPixelmon) PixelmonEntityList.createEntityFromNBT(pokemon.writeToNBT(pixelmondata), (World) player.getWorld());
+            if(pixelmon.getSpecies().name.startsWith("Tapu"))
+            {
+                player.sendMessage(Utils.toText("&7Due to a bug, you are currently unable to add any Tapus into the gym temp team.", true));
+                return CommandResult.success();
+            }
             ShowdownStruc struc = new ShowdownStruc();
             struc.showdownCode = ImportExportConverter.getExportText(Utils.entityPixelmonToPixelmonData(pixelmon));
             struc.uuid = UUID.randomUUID();
