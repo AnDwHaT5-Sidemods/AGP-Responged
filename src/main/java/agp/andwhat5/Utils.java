@@ -10,10 +10,14 @@ import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.config.PixelmonItems;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
+import com.pixelmonmod.pixelmon.entities.pixelmon.EnumSpecialTexture;
+import com.pixelmonmod.pixelmon.entities.pixelmon.stats.Gender;
 import com.pixelmonmod.pixelmon.enums.EnumSpecies;
+import com.pixelmonmod.pixelmon.enums.forms.EnumGreninja;
+import com.pixelmonmod.pixelmon.enums.forms.EnumNoForm;
+import com.pixelmonmod.pixelmon.enums.forms.IEnumForm;
 import com.pixelmonmod.pixelmon.storage.NbtKeys;
 import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
-import com.pixelmonmod.pixelmon.util.helpers.SpriteHelper;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import org.spongepowered.api.Sponge;
@@ -452,17 +456,33 @@ public class Utils {
             }
         } else {
             if (data.isShiny()) {
-                nbt.setString(NbtKeys.SPRITE_NAME, "pixelmon:sprites/shinypokemon/" + idValue + SpriteHelper.getSpriteExtra(
-                        species.name, data.getForm())
-                );
+                nbt.setString(NbtKeys.SPRITE_NAME, "pixelmon:sprites/shinypokemon/" + idValue + getSpriteExtra(species, data.getFormEnum(), data.getGender(), data.getSpecialTexture()));
             } else {
-                nbt.setString(NbtKeys.SPRITE_NAME, "pixelmon:sprites/pokemon/" + idValue + SpriteHelper.getSpriteExtra(
-                        species.name, data.getForm())
-                );
+                nbt.setString(NbtKeys.SPRITE_NAME, "pixelmon:sprites/pokemon/" + idValue + getSpriteExtra(species, data.getFormEnum(), data.getGender(), data.getSpecialTexture()));
             }
         }
         nativeItem.setTagCompound(nbt);
         return (ItemStack) (Object) nativeItem;
+    }
+
+    private static String getSpriteExtra(EnumSpecies species, IEnumForm form, Gender gender, EnumSpecialTexture specialTexture) {
+        if (species == EnumSpecies.Greninja && (form == EnumGreninja.BASE || form == EnumGreninja.BATTLE_BOND) && specialTexture.id > 0 && species.hasSpecialTexture()) {
+            return "-special";
+        }
+
+        if(form != EnumNoForm.NoForm) {
+            return species.getFormEnum(form.getForm()).getSpriteSuffix();
+        }
+
+        if(EnumSpecies.mfSprite.contains(species)) {
+            return "-" + gender.name().toLowerCase();
+        }
+
+        if(specialTexture.id > 0 && species.hasSpecialTexture()) {
+            return "-special";
+        }
+
+        return "";
     }
 
 }

@@ -22,7 +22,7 @@ plugins {
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 group 'agp.andwhat5'
-version '1.0.0'
+version '1.0.3'
 ext.spongeversion = '7.1.0-SNAPSHOT'
 ext.teslaversion = '1.1.4'
 ext.pixelmonversion = '7.0.6'
@@ -40,11 +40,9 @@ repositories {
 }
 
 dependencies {
-    //shadow "org.spongepowered:spongecommon:${spongeversion}:dev"
-    deobfProvided ':Pixelmon-1.12.2-7.0.6-server:7.0.6'
-    provided 'org.spongepowered:spongeapi:7.1.0-SNAPSHOT'
+    deobfProvided (":Pixelmon-1.12.2-${pixelmonversion}-server:${pixelmonversion}")
+    provided ("org.spongepowered:spongeapi:${spongeversion}")
     implementation "com.github.SimonFlash.TeslaPowered:TeslaLibs:v${teslaversion}"
-    shadow fileTree(dir: 'libs-', include: "spritepatch-1.0-SNAPSHOT.jar")
 	compile group: 'com.zaxxer', name: 'HikariCP', version: '2.7.9'
 }
 
