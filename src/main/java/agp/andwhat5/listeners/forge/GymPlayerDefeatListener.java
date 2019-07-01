@@ -92,14 +92,14 @@ public class GymPlayerDefeatListener {
                     Utils.saveAGPData();
 
                     //Clean up any temp teams
-                    //Sponge.getServer().getPlayer(leader.getUniqueId()).ifPresent(BattleUtil::restoreOriginalTeam);
+                    Sponge.getServer().getPlayer(leader.getUniqueId()).ifPresent(BattleUtil::restoreOriginalTeam);
                 }
             }
         }
 
     }
 
-    /*@SubscribeEvent
+    @SubscribeEvent
     public void onAbruptEnd(BattleEndEvent e) {
         if (e.abnormal) {
             if (e.getPlayers().isEmpty()) {
@@ -121,18 +121,18 @@ public class GymPlayerDefeatListener {
                 });
             }
         }
-    }*/
+    }
 
     /**
      * This should never do anything as teams should be restored thru the above methods
      * but I'm going to add it just in case
      */
-    /*@SubscribeEvent
+    @SubscribeEvent
     public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
         BattleUtil.restoreOriginalTeam((Player) event.player);
     }
     @SubscribeEvent
     public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
         BattleUtil.restoreOriginalTeam((Player) event.player);
-    }*/
+    }
 }

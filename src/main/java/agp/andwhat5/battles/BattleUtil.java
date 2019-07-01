@@ -31,6 +31,7 @@ public class BattleUtil {
 
 	public static void startLeaderBattleWithTempTeam(Player challenger, Player leader, List<Pokemon> leadersTempTeam) {
         PlayerPartyStorage challengerStorage = Pixelmon.storageManager.getParty((EntityPlayerMP) challenger);
+        PlayerPartyStorage leaderStorage = Pixelmon.storageManager.getParty(leader.getUniqueId());
         challengerStorage.heal();
         if(challengerStorage.countAblePokemon() == 0) {
             challenger.sendMessage(Text.of(TextColors.RED, "You have no pokemon to battle with"));
@@ -39,12 +40,12 @@ public class BattleUtil {
         }
         EntityPixelmon firstAble = challengerStorage.getAndSendOutFirstAblePokemon(null);
         PlayerParticipant challengerParticipant = new PlayerParticipant((EntityPlayerMP) challenger, firstAble);
-        TempTeamParticipant pla = new TempTeamParticipant((EntityPlayerMP)leader, leadersTempTeam, 1);        
-        BattleRegistry.startBattle(pla, challengerParticipant);
+        //TempTeamParticipant pla = new TempTeamParticipant((EntityPlayerMP)leader, leadersTempTeam, 1);        
+        //BattleRegistry.startBattle(pla, challengerParticipant);
 
 
         
-        /*File file = new File("./config/agp/temp-teams/"+leader.getUniqueId()+".party");
+        File file = new File("./config/agp/temp-teams/"+leader.getUniqueId()+".party");
         if (!file.getParentFile().exists())
             file.getParentFile().mkdir();
         try {
@@ -58,7 +59,7 @@ public class BattleUtil {
             e.printStackTrace();
             challenger.sendMessage(Text.of(TextColors.RED, "An error has occurred"));
             leader.sendMessage(Text.of(TextColors.RED, "An error has occurred"));
-        }*/
+        }
     }
 
     /**
@@ -77,7 +78,7 @@ public class BattleUtil {
         return Optional.empty();
     }
 
-    /*public static void restoreOriginalTeam(Player player) {
+    public static void restoreOriginalTeam(Player player) {
         File file = new File("./config/agp/temp-teams/"+player.getUniqueId()+".party");
         if (file.exists()) {
             PlayerPartyStorage storage = Pixelmon.storageManager.getParty(player.getUniqueId());
@@ -88,5 +89,5 @@ public class BattleUtil {
                 e.printStackTrace();
             }
         }
-    }*/
+    }
 }

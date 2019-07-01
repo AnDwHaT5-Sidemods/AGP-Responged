@@ -245,7 +245,7 @@ public class ChooseTeamGui {
         if (pokemon.getMoveset() != null) {
             for (Attack attack : pokemon.getMoveset().attacks) {
                 if (attack != null) {
-                    lore.add(toText("    &b" + attack.baseAttack.getUnLocalizedName(), false));
+                    lore.add(toText("    &b" + attack.baseAttack.getUnlocalizedName(), false));
                 }
             }
         }

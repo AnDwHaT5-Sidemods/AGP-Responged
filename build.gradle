@@ -25,19 +25,27 @@ group 'agp.andwhat5'
 version '1.0.0'
 ext.spongeversion = '7.1.0-SNAPSHOT'
 ext.teslaversion = '1.1.4'
-ext.pixelmonversion = '7.0.1'
+ext.pixelmonversion = '7.0.6'
 
 repositories {
     maven {
         url 'https://jitpack.io'
     }
+    ivy {
+        url "http://download.nodecdn.net/containers/reforged/server/release"
+        layout "pattern", {
+            artifact "[organisation]/[revision]/[artifact].[ext]"
+        }
+    } 
 }
 
 dependencies {
-    shadow "org.spongepowered:spongecommon:${spongeversion}:dev"
+    //shadow "org.spongepowered:spongecommon:${spongeversion}:dev"
+    deobfProvided ':Pixelmon-1.12.2-7.0.6-server:7.0.6'
+    provided 'org.spongepowered:spongeapi:7.1.0-SNAPSHOT'
     implementation "com.github.SimonFlash.TeslaPowered:TeslaLibs:v${teslaversion}"
-    shadow fileTree(dir: 'libs-', include: "Pixelmon-1.12.2-${pixelmonversion}-server.jar")
-	compile group: 'com.zaxxer', name: 'HikariCP', version: '2.5.1'
+    shadow fileTree(dir: 'libs-', include: "spritepatch-1.0-SNAPSHOT.jar")
+	compile group: 'com.zaxxer', name: 'HikariCP', version: '2.7.9'
 }
 
 shadowJar {
@@ -61,9 +69,9 @@ build.dependsOn(reobfShadowJar)
 build.dependsOn(copyJars)
 
 minecraft {
-    version = "1.12.2-14.23.2.2611"
+    version = "1.12.2-14.23.5.2838"
     runDir = "run"
-    mappings = "snapshot_20171003"
+    mappings = "stable_39"
     useDepAts = true
 }
 
