@@ -83,7 +83,7 @@ public class GymNPCDefeatListener {
                 }
                 if (AGPConfig.General.physicalBadge) {
                     ItemStack item = new ItemStack(CommandBase.getItemByText(e.player, gs.Badge), 1);
-                    DropItemHelper.giveItemStackToPlayer(e.player, item);
+                    DropItemHelper.giveItemStack(e.player, item, false);
                 }
                 if (!gs.Commands.isEmpty()) {
                     gs.Commands.forEach(i -> Sponge.getCommandManager().process((CommandSource) Sponge.getServer(), i.trim().replace("%player%", e.player.getName()).replace("%leader%", "NPC")));
