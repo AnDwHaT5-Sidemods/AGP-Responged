@@ -40,6 +40,11 @@ public class AddGymPoke extends PlayerOnlyCommand {
                 player.sendMessage(Utils.toText("&7Due to a bug, you are currently unable to add any Tapus into the gym temp team.", true));
                 return CommandResult.success();
             }
+            if(pokemon.isEgg())
+            {
+                player.sendMessage(Utils.toText("&7You are not allowed to add eggs into the Temporary Team Pool!", true));
+                return CommandResult.success();
+            }
             ShowdownStruc struc = new ShowdownStruc();
             struc.showdownCode = ImportExportConverter.getExportText(Utils.entityPixelmonToPixelmonData(pixelmon));
             struc.uuid = UUID.randomUUID();
