@@ -79,9 +79,12 @@ public class PlayerCheck {
             return;
 
         DataStruc.gcon.GymData.forEach(g -> {
-            if (g.PlayerLeaders.contains(player.getUniqueId())) {
-                g.OnlineLeaders.add(player.getUniqueId());
-            }
+        	if(g.PlayerLeaders != null && g.PlayerLeaders.size() != 0)
+        	{
+	            if (g.PlayerLeaders.contains(player.getUniqueId())) {
+	                g.OnlineLeaders.add(player.getUniqueId());
+	            }
+        	}
         });
         if (AGPConfig.Announcements.announceLeaderJoin) {
             Utils.sendToAll(AGPConfig.Announcements.leaderJoinMessage.replace("{leader}", player.getName()), true);

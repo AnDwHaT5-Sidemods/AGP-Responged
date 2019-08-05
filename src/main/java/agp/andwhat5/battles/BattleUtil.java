@@ -40,12 +40,14 @@ public class BattleUtil {
         }
         EntityPixelmon firstAble = challengerStorage.getAndSendOutFirstAblePokemon(null);
         PlayerParticipant challengerParticipant = new PlayerParticipant((EntityPlayerMP) challenger, firstAble);
-        //TempTeamParticipant pla = new TempTeamParticipant((EntityPlayerMP)leader, leadersTempTeam, 1);
-        //BattleRegistry.startBattle(pla, challengerParticipant);
+        TempTeamParticipant pla = new TempTeamParticipant((EntityPlayerMP)leader, leadersTempTeam, 1);
+        challengerParticipant.getStorage().heal();
+        pla.getStorage().heal();
+        BattleRegistry.startBattle(pla, challengerParticipant);
 
 
         
-        File file = new File("./config/agp/temp-teams/"+leader.getUniqueId()+".party");
+        /*File file = new File("./config/agp/temp-teams/"+leader.getUniqueId()+".party");
         if (!file.getParentFile().exists())
             file.getParentFile().mkdir();
         try {
@@ -53,13 +55,13 @@ public class BattleUtil {
             for (int i = 0; i < 6; i++) {
                 leaderStorage.set(i, leadersTempTeam.size() > i ? leadersTempTeam.get(i) : null);
             }
-            PlayerParticipant pla = new PlayerParticipant((EntityPlayerMP) leader, leaderStorage.getAndSendOutFirstAblePokemon(null));
+            //PlayerParticipant pla = new PlayerParticipant((EntityPlayerMP) leader, leaderStorage.getAndSendOutFirstAblePokemon(null));
             BattleRegistry.startBattle(pla, challengerParticipant);
         } catch (IOException e) {
             e.printStackTrace();
             challenger.sendMessage(Text.of(TextColors.RED, "An error has occurred"));
             leader.sendMessage(Text.of(TextColors.RED, "An error has occurred"));
-        }
+        }*/
     }
 
     /**
@@ -78,7 +80,7 @@ public class BattleUtil {
         return Optional.empty();
     }
 
-    public static void restoreOriginalTeam(Player player) {
+    /*public static void restoreOriginalTeam(Player player) {
         File file = new File("./config/agp/temp-teams/"+player.getUniqueId()+".party");
         if (file.exists()) {
             PlayerPartyStorage storage = Pixelmon.storageManager.getParty(player.getUniqueId());
@@ -89,5 +91,5 @@ public class BattleUtil {
                 e.printStackTrace();
             }
         }
-    }
+    }*/
 }

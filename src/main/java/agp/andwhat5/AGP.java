@@ -90,7 +90,7 @@ import java.util.UUID;
 import static agp.andwhat5.config.structs.GymStruc.EnumStatus.CLOSED;
 import static agp.andwhat5.config.structs.GymStruc.EnumStatus.NPC;
 
-@Plugin(id = "agp", name = "AGP Responged", version = "1.0.2", dependencies = @Dependency(id = "pixelmon"), description = "Another gym plugin... but for Sponge! It also works for 7.0.X, no thanks to Justin.", authors = {"AnDwHaT5", "ClientHax"})
+@Plugin(id = "agp", name = "AGP Responged", version = "1.0.3", dependencies = @Dependency(id = "pixelmon"), description = "Another gym plugin... but for Sponge! It also works for 7.0.X, no thanks to Justin.", authors = {"AnDwHaT5", "ClientHax"})
 public class AGP {
 
     private static AGP instance;
@@ -239,7 +239,6 @@ public class AGP {
 
     @Listener
     public void postInit(GameStartedServerEvent event) {
-        setupTasks();
         Sponge.getEventManager().registerListeners(this, new PlayerCheck());
         Pixelmon.EVENT_BUS.register(new GymNPCDefeatListener());
         Pixelmon.EVENT_BUS.register(new GymPlayerDefeatListener());
@@ -249,7 +248,7 @@ public class AGP {
     @Listener
     public void onServerStart(GameStartedServerEvent event) throws IOException, ObjectMappingException {
         loadConfig();
-
+        setupTasks();
         CommandManager commandManager = Sponge.getCommandManager();
 
         CommandSpec gymWarpSpec = CommandSpec.builder()
