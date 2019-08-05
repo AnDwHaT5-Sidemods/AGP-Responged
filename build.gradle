@@ -22,22 +22,30 @@ plugins {
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 group 'agp.andwhat5'
-version '1.0.0'
+version '1.0.3'
 ext.spongeversion = '7.1.0-SNAPSHOT'
-ext.teslaversion = '1.1.4'
-ext.pixelmonversion = '7.0.1'
+ext.teslaversion = '1.1.6'
+ext.pixelmonversion = '7.0.7'
 
 repositories {
     maven {
         url 'https://jitpack.io'
     }
+    ivy {
+        url "http://download.nodecdn.net/containers/reforged/server/release"
+        layout "pattern", {
+            artifact "[organisation]/[revision]/[artifact].[ext]"
+        }
+    }
+
+
 }
 
 dependencies {
-    shadow "org.spongepowered:spongecommon:${spongeversion}:dev"
+    provided 'org.spongepowered:spongeapi:7.1.0'
+    deobfProvided ':Pixelmon-1.12.2-7.0.7-server:7.0.7'
     implementation "com.github.SimonFlash.TeslaPowered:TeslaLibs:v${teslaversion}"
-    shadow fileTree(dir: 'libs-', include: "Pixelmon-1.12.2-${pixelmonversion}-server.jar")
-	compile group: 'com.zaxxer', name: 'HikariCP', version: '2.5.1'
+    	compile group: 'com.zaxxer', name: 'HikariCP', version: '2.7.9'
 }
 
 shadowJar {
@@ -61,9 +69,9 @@ build.dependsOn(reobfShadowJar)
 build.dependsOn(copyJars)
 
 minecraft {
-    version = "1.12.2-14.23.2.2611"
+    version = "1.12.2-14.23.5.2838"
     runDir = "run"
-    mappings = "snapshot_20171003"
+    mappings = "stable_39"
     useDepAts = true
 }
 

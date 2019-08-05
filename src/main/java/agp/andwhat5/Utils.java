@@ -10,10 +10,8 @@ import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.config.PixelmonItems;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
-import com.pixelmonmod.pixelmon.enums.EnumSpecies;
-import com.pixelmonmod.pixelmon.storage.NbtKeys;
+import com.pixelmonmod.pixelmon.entities.pixelmon.EnumSpecialTexture;
 import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
-import com.pixelmonmod.pixelmon.util.helpers.SpriteHelper;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import org.spongepowered.api.Sponge;
@@ -435,34 +433,22 @@ public class Utils {
         return pixelmon.getPokemonData();
     }
 
-    public static ItemStack getPixelmonSprite(Pokemon data) {
-        net.minecraft.item.ItemStack nativeItem = new net.minecraft.item.ItemStack(PixelmonItems.itemPixelmonSprite);
+    public static ItemStack getPixelmonSprite(Pokemon pokemon) {
+        net.minecraft.item.ItemStack itemStack = new net.minecraft.item.ItemStack(PixelmonItems.itemPixelmonSprite);
         NBTTagCompound nbt = new NBTTagCompound();
-        EnumSpecies species = data.getSpecies();
-        String idValue = String.format("%03d", species.getNationalPokedexInteger());
-        if (data.isEgg()) {
-            switch (species) {
-                case Manaphy:
-                case Togepi:
-                    nbt.setString(NbtKeys.SPRITE_NAME, "pixelmon:sprites/eggs/manaphy1");
-                    break;
-                default:
-                    nbt.setString(NbtKeys.SPRITE_NAME, "pixelmon:sprites/eggs/egg1");
-                    break;
-            }
-        } else {
-            if (data.isShiny()) {
-                nbt.setString(NbtKeys.SPRITE_NAME, "pixelmon:sprites/shinypokemon/" + idValue + SpriteHelper.getSpriteExtra(
-                        species.name, data.getForm())
-                );
-            } else {
-                nbt.setString(NbtKeys.SPRITE_NAME, "pixelmon:sprites/pokemon/" + idValue + SpriteHelper.getSpriteExtra(
-                        species.name, data.getForm())
-                );
-            }
+        itemStack.setTagCompound(nbt);
+        nbt.setShort("ndex", (short)pokemon.getSpecies().getNationalPokedexInteger());
+        nbt.setByte("form", (byte)pokemon.getForm());
+        nbt.setByte("gender", pokemon.getGender().getForm());
+        nbt.setBoolean("Shiny", pokemon.isShiny());
+        if (pokemon.getSpecialTexture() != EnumSpecialTexture.None) {
+            nbt.setByte("specialTexture", (byte)pokemon.getSpecialTexture().id);
         }
-        nativeItem.setTagCompound(nbt);
-        return (ItemStack) (Object) nativeItem;
+        if (pokemon.getNickname() != null && !pokemon.getNickname().isEmpty()) {
+            nbt.setString("Nickname", pokemon.getNickname());
+        }
+        itemStack.setTagCompound(nbt);
+        return (ItemStack) (Object) itemStack;
     }
 
 }

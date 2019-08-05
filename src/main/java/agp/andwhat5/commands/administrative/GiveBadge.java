@@ -4,7 +4,7 @@ import agp.andwhat5.Utils;
 import agp.andwhat5.config.AGPConfig;
 import agp.andwhat5.config.structs.GymStruc;
 import com.pixelmonmod.pixelmon.entities.pixelmon.drops.DropItemHelper;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -40,7 +40,7 @@ public class GiveBadge implements CommandExecutor {
             ItemType itemType = Sponge.getRegistry().getType(ItemType.class, gym.Badge).orElse(ItemTypes.POTATO);
             ItemStack itemStack = ItemStack.of(itemType, 1);
             //noinspection ConstantConditions
-            DropItemHelper.giveItemStackToPlayer((EntityPlayer) target, (net.minecraft.item.ItemStack) (Object) itemStack);//TODO make helper function for this
+            DropItemHelper.giveItemStack((EntityPlayerMP) target, (net.minecraft.item.ItemStack) (Object) itemStack, false);//TODO make helper function for this
         }
         if (!gym.Commands.isEmpty()) {
             gym.Commands.forEach(i -> Sponge.getCommandManager().process((CommandSource) Sponge.getServer(), i.trim().replace("%player%", target.getName()).replace("%leader%", src.getName())));

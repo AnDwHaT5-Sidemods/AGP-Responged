@@ -71,7 +71,7 @@ public class GymPlayerDefeatListener {
                             }
                             if (AGPConfig.General.physicalBadge) {
                                 ItemStack item = new ItemStack(CommandBase.getItemByText((ICommandSender) leader, bts.gym.Badge), 1);
-                                DropItemHelper.giveItemStackToPlayer((EntityPlayer) challenger, item);
+                                DropItemHelper.giveItemStack((EntityPlayerMP) challenger, item, false);
                             }
                             if (!bts.gym.Commands.isEmpty()) {
                                 bts.gym.Commands.forEach(i -> Sponge.getCommandManager().process((CommandSource) Sponge.getServer(), i.trim().replace("%player%", challenger.getName()).replace("%leader%", leader.getName())));
@@ -92,7 +92,7 @@ public class GymPlayerDefeatListener {
                     Utils.saveAGPData();
 
                     //Clean up any temp teams
-                    //Sponge.getServer().getPlayer(leader.getUniqueId()).ifPresent(BattleUtil::restoreOriginalTeam);
+                    Sponge.getServer().getPlayer(leader.getUniqueId()).ifPresent(BattleUtil::restoreOriginalTeam);
                 }
             }
         }
@@ -127,12 +127,12 @@ public class GymPlayerDefeatListener {
      * This should never do anything as teams should be restored thru the above methods
      * but I'm going to add it just in case
      */
-    /*@SubscribeEvent
+    @SubscribeEvent
     public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
         BattleUtil.restoreOriginalTeam((Player) event.player);
     }
     @SubscribeEvent
     public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
         BattleUtil.restoreOriginalTeam((Player) event.player);
-    }*/
+    }
 }
